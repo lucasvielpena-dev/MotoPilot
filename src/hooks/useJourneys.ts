@@ -25,7 +25,10 @@ export function useJourneys() {
   const odometer = useOdometer(activeJourney?.id || null);
 
   const fetchActiveJourney = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const { data, error } = await supabase
       .from('journeys')
