@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "build:android": "EXPORT_STATIC=true next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "reset": "ts-node resetAppData.ts"
