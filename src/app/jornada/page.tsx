@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { MapPin, Clock, Stop, Play, WifiHigh, Warning, MapTrifold, Calendar } from '@phosphor-icons/react';
+import { MapPin, Clock, Stop, Play, WifiHigh, Warning, MapTrifold } from '@phosphor-icons/react';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useGoals } from '@/hooks/useGoals';
 
@@ -193,8 +193,9 @@ export default function Jornada() {
                     style={{ animationDelay: `${100 + index * 50}ms` }}
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="p-3 bg-[var(--color-card-secondary)] rounded-2xl flex items-center justify-center">
-                        <Calendar size={24} className="text-[var(--color-muted)]" />
+                      <div className="w-12 h-12 bg-[var(--color-card-secondary)] rounded-2xl flex flex-col items-center justify-center leading-none">
+                        <span className="text-[10px] font-medium text-[var(--color-muted)] uppercase">{new Date(journey.started_at).toLocaleDateString('pt-BR', { month: 'short' })}</span>
+                        <span className="text-[18px] font-bold text-[var(--color-foreground)]">{new Date(journey.started_at).getDate()}</span>
                       </div>
                       <div>
                         <p className="text-[16px] font-medium text-[var(--color-foreground)]">{new Date(journey.started_at).toLocaleDateString()}</p>
