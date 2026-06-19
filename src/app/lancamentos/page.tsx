@@ -6,7 +6,7 @@ import { useEntries } from '@/hooks/useEntries';
 import BrandLogo from '@/components/BrandLogo';
 
 export default function Lancamentos() {
-  const { entries, fetchRecentEntries, addEntry, deleteEntry } = useEntries();
+  const { entries, loading: entriesLoading, fetched, fetchRecentEntries, addEntry, deleteEntry } = useEntries();
   const [type, setType] = useState<'gain' | 'expense'>('gain');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -14,8 +14,10 @@ export default function Lancamentos() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchRecentEntries(50);
-  }, [fetchRecentEntries]);
+    if (!fetched) {
+      fetchRecentEntries(500);
+    }
+  }, [fetchRecentEntries, fetched]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +149,12 @@ export default function Lancamentos() {
             <h2 className="text-[20px] font-semibold text-[var(--color-foreground)] px-1">Histórico</h2>
             
             <div className="space-y-3">
-              {entries.length === 0 ? (
+              {entriesLoading && !fetched ? (
+                <div className="card-premium rounded-3xl p-6 text-center">
+                  <div className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                  <p className="text-[14px] text-[var(--color-muted)]">Carregando lançamentos...</p>
+                </div>
+              ) : entries.length === 0 ? (
                 <div className="card-premium rounded-3xl p-6 text-center">
                   <p className="text-[14px] text-[var(--color-muted)]">Nenhum lançamento encontrado.</p>
                 </div>

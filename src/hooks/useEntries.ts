@@ -20,8 +20,9 @@ export function useEntries() {
   const { activeJourney } = useJourneys();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fetched, setFetched] = useState(false);
 
-  const fetchRecentEntries = useCallback(async (limit = 10) => {
+  const fetchRecentEntries = useCallback(async (limit = 500) => {
     if (!user) return;
     setLoading(true);
     const { data, error } = await supabase
@@ -33,6 +34,7 @@ export function useEntries() {
 
     if (!error && data) {
       setEntries(data);
+      setFetched(true);
     }
     setLoading(false);
   }, [user]);
@@ -80,6 +82,7 @@ export function useEntries() {
   return {
     entries,
     loading,
+    fetched,
     fetchRecentEntries,
     addEntry,
     deleteEntry
