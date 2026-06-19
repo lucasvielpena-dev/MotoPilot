@@ -6,6 +6,38 @@ import { calculateDistance } from '@/lib/location/haversine';
 
 type GpsStatus = 'inactive' | 'acquiring' | 'active';
 
+const STORAGE_KEY = 'motopilot_distance';
+const STORAGE_LOC_KEY = 'motopilot_last_location';
+
+function loadSavedDistance(): number {
+  try {
+    const val = localStorage.getItem(STORAGE_KEY);
+    return val ? parseFloat(val) : 0;
+  } catch { return 0; }
+}
+
+function saveDistance(km: number) {
+  try { localStorage.setItem(STORAGE_KEY, String(km)); } catch {}
+}
+
+function loadLastLocation(): { lat: number; lon: number } | null {
+  try {
+    const val = localStorage.getItem(STORAGE_LOC_KEY);
+    return val ? JSON.parse(val) : null;
+  } catch { return null; }
+}
+
+function saveLastLocation(lat: number, lon: number) {
+  try { localStorage.setItem(STORAGE_LOC_KEY, JSON.stringify({ lat, lon })); } catch {}
+}
+
+function clearOdometerStorage() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_LOC_KEY);
+  } catch {}
+}
+
 export function useOdometer(journeyId: string | null) {
   const [distanceKm, setDistanceKm] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
@@ -17,19 +49,30 @@ export function useOdometer(journeyId: string | null) {
   const watchIdRef = useRef<number | null>(null);
   const distanceRef = useRef(0);
   const lastSaveTimeRef = useRef<number>(0);
+  const journeyIdRef = useRef<string | null>(null);
+
+  // Sincroniza o journeyId ref
+  useEffect(() => {
+    journeyIdRef.current = journeyId;
+  }, [journeyId]);
 
   const saveLocationToDb = useCallback(async (lat: number, lon: number) => {
-    if (!journeyId) return;
+    const jId = journeyIdRef.current;
+    if (!jId) return;
 
     supabase.from('journey_locations').insert([
-      { journey_id: journeyId, latitude: lat, longitude: lon }
+      { journey_id: jId, latitude: lat, longitude: lon }
     ]).then();
 
     supabase.from('journeys')
       .update({ distance_km: distanceRef.current })
-      .eq('id', journeyId)
+      .eq('id', jId)
       .then();
-  }, [journeyId]);
+  }, []);
+
+  const persistDistance = useCallback(() => {
+    saveDistance(distanceRef.current);
+  }, []);
 
   const startTracking = useCallback(async () => {
     if (!journeyId) return;
@@ -38,7 +81,6 @@ export function useOdometer(journeyId: string | null) {
       return;
     }
 
-    // Solicitar permissão em dispositivos móveis (Android/Capacitor)
     try {
       const permission = await navigator.permissions?.query({ name: 'geolocation' });
       if (permission && permission.state === 'denied') {
@@ -46,28 +88,31 @@ export function useOdometer(journeyId: string | null) {
         setGpsStatus('inactive');
         return;
       }
-    } catch {
-      // permissions API pode não existir em todos os browsers — ignora
-    }
+    } catch {}
 
     setIsTracking(true);
     setError(null);
     setGpsStatus('acquiring');
-    lastLocationRef.current = null;
+
+    // Restaurar última localização salva para continuidade
+    const savedLoc = loadLastLocation();
+    if (savedLoc) {
+      lastLocationRef.current = savedLoc;
+    } else {
+      lastLocationRef.current = null;
+    }
+
     lastSaveTimeRef.current = 0;
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
         const { latitude, longitude, accuracy } = position.coords;
 
-        // Atualiza indicador de precisão do GPS
         setGpsAccuracy(Math.round(accuracy));
         setGpsStatus('active');
 
-        // Filtro de precisão: aceita até 100m (era 50m — muito restritivo no celular)
         if (accuracy > 100) return;
 
-        let moved = false;
         if (lastLocationRef.current) {
           const dist = calculateDistance(
             lastLocationRef.current.lat,
@@ -76,26 +121,22 @@ export function useOdometer(journeyId: string | null) {
             longitude
           );
 
-          // Ignora distâncias irracionais (>5km de uma vez) e micro-tremores (<5m)
           if (dist > 0.005 && dist < 5) {
-            const novoKm = distanceRef.current + dist;
-            distanceRef.current = novoKm;
-            setDistanceKm(novoKm);
-            moved = true;
+            distanceRef.current += dist;
+            setDistanceKm(distanceRef.current);
+            persistDistance();
           }
-        } else {
-          // Primeiro ponto capturado — marca como referência
-          moved = true;
         }
 
         lastLocationRef.current = { lat: latitude, lon: longitude };
+        saveLastLocation(latitude, longitude);
 
         const now = Date.now();
         const timeSinceLastSave = now - lastSaveTimeRef.current;
         const isFirstSave = lastSaveTimeRef.current === 0;
 
-        // Salva no banco a cada 15s ou no primeiro ponto
-        if (moved && (isFirstSave || timeSinceLastSave >= 15000)) {
+        // Salva no banco a cada 10s
+        if (isFirstSave || timeSinceLastSave >= 10000) {
           lastSaveTimeRef.current = now;
           saveLocationToDb(latitude, longitude);
         }
@@ -117,7 +158,7 @@ export function useOdometer(journeyId: string | null) {
         timeout: 15000
       }
     );
-  }, [journeyId, saveLocationToDb]);
+  }, [journeyId, saveLocationToDb, persistDistance]);
 
   const stopTracking = useCallback(() => {
     if (watchIdRef.current !== null) {
@@ -129,11 +170,42 @@ export function useOdometer(journeyId: string | null) {
     setGpsAccuracy(null);
   }, []);
 
+  // Salva a distância no Supabase quando a app vai ser suspensa
+  useEffect(() => {
+    const saveOnPause = () => {
+      persistDistance();
+      const jId = journeyIdRef.current;
+      if (jId && distanceRef.current > 0) {
+        supabase.from('journeys')
+          .update({ distance_km: distanceRef.current })
+          .eq('id', jId)
+          .then();
+      }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') saveOnPause();
+    });
+    window.addEventListener('beforeunload', saveOnPause);
+
+    return () => {
+      document.removeEventListener('visibilitychange', saveOnPause);
+      window.removeEventListener('beforeunload', saveOnPause);
+    };
+  }, [persistDistance]);
+
   useEffect(() => {
     if (journeyId) {
+      // Restaurar distância do localStorage antes de buscar do Supabase
+      const saved = loadSavedDistance();
+      if (saved > 0) {
+        distanceRef.current = saved;
+        setDistanceKm(saved);
+      }
       startTracking();
     } else {
       stopTracking();
+      clearOdometerStorage();
     }
 
     return () => {
@@ -144,8 +216,13 @@ export function useOdometer(journeyId: string | null) {
   return {
     distanceKm,
     setInitialDistance: useCallback((km: number) => {
-      distanceRef.current = km;
-      setDistanceKm(km);
+      // Só atualiza se o valor do Supabase for maior que o local
+      // (protege contra reset ao re-montar)
+      const saved = loadSavedDistance();
+      const best = Math.max(km, saved);
+      distanceRef.current = best;
+      setDistanceKm(best);
+      saveDistance(best);
     }, []),
     isTracking,
     gpsAccuracy,
