@@ -76,7 +76,7 @@ export default function Login() {
     <div className="flex flex-col items-center justify-center min-h-[100dvh] p-6 space-y-8 bg-[var(--color-background)]">
       <div className="w-full max-w-sm space-y-2 text-center">
         <div className="mx-auto w-16 h-16 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center mb-4">
-          <span className="text-[#000] font-black text-[28px]">M</span>
+          <span className="text-white font-black text-[28px]">M</span>
         </div>
         <h1 className="text-3xl font-bold tracking-tight text-[var(--color-foreground)]">
           {mode === 'login' ? 'Bem-vindo' : 'Criar Conta'}
@@ -163,7 +163,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center py-4 mt-2 font-bold text-[#0A0A0A] bg-[var(--color-primary)] rounded-xl hover:bg-[#1ea850] active:scale-[0.98] transition-transform disabled:opacity-50 disabled:active:scale-100"
+          className="w-full flex items-center justify-center py-4 mt-2 font-bold text-white bg-[var(--color-primary)] rounded-xl hover:bg-[#ff3b4b] active:scale-[0.98] transition-transform disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
         >
           {loading ? 'Processando...' : (
             <>

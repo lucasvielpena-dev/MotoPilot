@@ -4,8 +4,8 @@
   "description": "Painel de gestão para motoristas e entregadores.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0A0A0A",
-  "theme_color": "#1ea850",
+  "background_color": "#FFF7F5",
+  "theme_color": "#EA1D2C",
   "orientation": "portrait",
   "icons": [
     {

@@ -241,7 +241,7 @@ export default function Perfil() {
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full py-5 mt-2 font-bold text-[#0A0A0A] bg-[var(--color-primary)] rounded-2xl hover:bg-[#1ea850] active:scale-[0.98] transition-transform disabled:opacity-50 text-[16px]"
+                className="w-full py-5 mt-2 font-bold text-white bg-[var(--color-primary)] rounded-2xl hover:bg-[#ff3b4b] active:scale-[0.98] transition-transform disabled:opacity-50 text-[16px] cursor-pointer"
               >
                 {loading ? 'Salvando...' : 'Atualizar Meta'}
               </button>
@@ -312,7 +312,7 @@ export default function Perfil() {
 
               <button 
                 type="submit" 
-                className="w-full py-4 mt-2 font-bold text-[#0A0A0A] bg-[var(--color-primary)] rounded-2xl hover:bg-[#1ea850] active:scale-[0.98] transition-transform text-[16px]"
+                className="w-full py-4 mt-2 font-bold text-white bg-[var(--color-primary)] rounded-2xl hover:bg-[#ff3b4b] active:scale-[0.98] transition-transform text-[16px] cursor-pointer"
               >
                 Salvar Veículo
               </button>
