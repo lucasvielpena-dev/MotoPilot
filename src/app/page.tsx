@@ -127,17 +127,14 @@ export default function Home() {
     <div className="space-y-6 pb-28 pt-2">
       {/* Logo */}
       <div className="flex items-center justify-center space-x-2 mb-6">
-        <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-primary-muted flex items-center justify-center">
           <Motorbike size={18} strokeWidth={2.5} className="text-white" />
         </div>
         <span className="text-[18px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 
-      {/* Cartão de Lucro Líquido Redesenhado */}
-      <section 
-        onClick={() => router.push('/relatorios')}
-        className="delivery-hero rounded-[28px] p-5 relative overflow-hidden flex flex-col justify-between cursor-pointer space-y-4 shadow-lg active-scale"
-      >
+      {/* Cartão de Lucro Líquido */}
+      <section className="delivery-hero rounded-[28px] p-5 relative overflow-hidden flex flex-col justify-between space-y-4 shadow-lg">
         <div className="flex justify-between items-center">
           <span className="text-[12px] font-bold tracking-wide uppercase opacity-85">lucro líquido</span>
           <button 
@@ -156,13 +153,13 @@ export default function Home() {
           {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
         </div>
 
-        {/* Progresso da Meta Diária */}
+        {/* Progresso da Meta Diária - Barra grossa */}
         <div className="space-y-1.5 pt-1">
           <div className="flex justify-between text-[11px] font-bold text-white/90">
             <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}% concluída</span>
             <span>R$ {netProfit.toFixed(2).replace('.', ',')} / R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
           </div>
-          <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+          <div className="w-full h-4 bg-white/20 rounded-full overflow-hidden">
             <div 
               className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
@@ -189,9 +186,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Grid de Estatísticas Recalibradas */}
+      {/* Resumo Financeiro Rápido (movido para cima) */}
+      <section className="bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
+        <div className="flex-1">
+          <span className="text-[10px] font-bold text-muted block uppercase">Ganhos</span>
+          <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
+        </div>
+        <div className="h-6 border-l border-border" />
+        <div className="flex-1">
+          <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
+          <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
+        </div>
+        <div className="h-6 border-l border-border" />
+        <div className="flex-1">
+          <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
+          <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDeliveriesSemana}</span>
+        </div>
+      </section>
+
+      {/* Grid de Estatísticas */}
       <section className="grid grid-cols-2 gap-4">
-        {/* Tempo Online */}
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
           <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-1">
             <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
@@ -202,7 +216,6 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Km rodados */}
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
           <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center mb-1">
             <Map size={16} strokeWidth={2.5} className="text-rose-500" />
@@ -213,7 +226,6 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Entregas */}
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
           <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-1">
             <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
@@ -224,7 +236,6 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Média por Hora */}
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
           <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center mb-1">
             <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
@@ -238,20 +249,11 @@ export default function Home() {
 
       {/* Seção da Jornada */}
       <section className="space-y-3">
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-foreground font-heading">Jornada</h2>
-          <button 
-            onClick={() => router.push('/jornada')}
-            className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
-          >
-            Ver todas
-          </button>
-        </div>
+        <h2 className="text-[16px] font-extrabold text-foreground font-heading px-1">Jornada</h2>
         
-        <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] space-y-5 card-premium">
+        <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-5 card-premium">
           {activeJourney ? (
             <>
-              {/* Cabeçalho da Jornada ativa */}
               <div className="flex justify-between items-center">
                 <span className="text-[15px] font-bold text-foreground">Jornada atual</span>
                 <span className="delivery-pill text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -259,7 +261,6 @@ export default function Home() {
                 </span>
               </div>
               
-              {/* Grid de detalhes da Jornada */}
               <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-border pt-4">
                 <div>
                   <span className="text-[11px] font-semibold text-muted block uppercase">Início</span>
@@ -275,11 +276,10 @@ export default function Home() {
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-muted block uppercase">Lucro</span>
-                  <span className="text-[14px] font-extrabold text-[#19A85B] font-heading">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-[14px] font-extrabold text-success-muted font-heading">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
                 </div>
               </div>
 
-              {/* Botão de Encerrar */}
               <button
                 onClick={async () => {
                   setIsTransitioning(true);
@@ -287,7 +287,7 @@ export default function Home() {
                   setIsTransitioning(false);
                 }}
                 disabled={isTransitioning}
-                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
+                className="w-full bg-primary-muted hover:bg-primary/80 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
               >
                 <Square size={18} fill="currentColor" />
                 <span>{isTransitioning ? 'Encerrando...' : 'Encerrar jornada'}</span>
@@ -306,7 +306,7 @@ export default function Home() {
                   setIsTransitioning(false);
                 }}
                 disabled={isTransitioning}
-                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
+                className="w-full bg-primary-muted hover:bg-primary/80 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
               >
                 <Play size={18} fill="currentColor" />
                 <span>{isTransitioning ? 'Iniciando...' : 'Iniciar jornada'}</span>
@@ -316,28 +316,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Nova Seção de Metas */}
+      {/* Seção de Metas */}
       <section className="space-y-3">
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-foreground font-heading">Metas</h2>
-          <button 
-            onClick={() => router.push('/perfil')}
-            className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
-          >
-            Ver todas
-          </button>
-        </div>
+        <h2 className="text-[16px] font-extrabold text-foreground font-heading px-1">Metas</h2>
 
         <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-4 card-premium">
-          {/* Meta Diária */}
-          <div className="space-y-1.5">
+          {/* Meta Diária - Barra grossa */}
+          <div className="space-y-2">
             <div className="flex justify-between text-[12px] font-bold text-foreground">
               <span>Meta diária</span>
               <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
             </div>
-            <div className="w-full h-2.5 bg-card-secondary rounded-full overflow-hidden flex items-center">
+            <div className="w-full h-4 bg-card-secondary rounded-full overflow-hidden flex items-center">
               <div 
-                className="h-full bg-[#EA1D2C] rounded-full transition-all duration-500"
+                className="h-full bg-primary-muted rounded-full transition-all duration-500"
                 style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
               />
             </div>
@@ -349,14 +341,14 @@ export default function Home() {
 
           <div className="grid grid-cols-2 gap-4 pt-1">
             {/* Meta Semanal */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex justify-between text-[11px] font-bold text-foreground">
                 <span>Meta semanal</span>
                 <span>{dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100).toFixed(0) : 0}%</span>
               </div>
-              <div className="w-full h-2 bg-card-secondary rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-card-secondary rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                  className="h-full bg-success-muted rounded-full transition-all duration-500"
                   style={{ width: `${dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100) : 0}%` }}
                 />
               </div>
@@ -366,14 +358,14 @@ export default function Home() {
             </div>
 
             {/* Meta Mensal */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex justify-between text-[11px] font-bold text-foreground">
                 <span>Meta mensal</span>
                 <span>{dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100).toFixed(0) : 0}%</span>
               </div>
-              <div className="w-full h-2 bg-card-secondary rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-card-secondary rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                  className="h-full bg-indigo-500/60 rounded-full transition-all duration-500"
                   style={{ width: `${dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100) : 0}%` }}
                 />
               </div>
@@ -385,50 +377,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seção Resumo da Semana */}
-      <section className="space-y-3">
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-foreground font-heading">Resumo da semana</h2>
-          <button 
-            onClick={() => router.push('/relatorios')}
-            className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
-          >
-            Ver relatório
-          </button>
-        </div>
-        
-        <div className="bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
-          <div className="flex-1">
-            <span className="text-[10px] font-bold text-muted block uppercase">Ganhos</span>
-            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
-          </div>
-          <div className="h-6 border-l border-border" />
-          <div className="flex-1">
-            <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
-            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
-          </div>
-          <div className="h-6 border-l border-border" />
-          <div className="flex-1">
-            <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
-            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDeliveriesSemana}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Side Menu Drawer Estilo Premium */}
+      {/* Side Menu Drawer */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[100] flex">
-          {/* Backdrop */}
           <div 
             onClick={() => setIsMenuOpen(false)}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
           />
           
-          {/* Drawer Body */}
           <div className="relative w-72 max-w-xs bg-card border-r border-border h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
             <div className="flex justify-between items-center border-b border-border pb-4">
               <div className="flex items-center space-x-2">
-                <Motorbike size={22} strokeWidth={2.5} className="text-[#EA1D2C]" />
+                <Motorbike size={22} strokeWidth={2.5} className="text-primary-muted" />
                 <span className="text-[16px] font-extrabold text-foreground font-heading">MotoPilot Menu</span>
               </div>
               <button 
@@ -439,7 +399,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Menu Items */}
             <div className="flex-1 flex flex-col justify-between py-4">
               <div className="space-y-1">
                 <button 
@@ -461,7 +420,7 @@ export default function Home() {
 
               <button 
                 onClick={() => { setIsMenuOpen(false); handleLogout(); }}
-                className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500 rounded-xl hover:bg-red-500/10 hover:text-red-600 transition-colors text-left cursor-pointer border border-red-500/20 bg-red-500/5"
+                className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500/60 rounded-xl hover:bg-red-500/10 hover:text-red-500/80 transition-colors text-left cursor-pointer border border-red-500/10 bg-red-500/5"
               >
                 <LogOut size={20} strokeWidth={2.5} />
                 <span>Sair da conta</span>

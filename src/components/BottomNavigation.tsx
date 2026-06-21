@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { 
   Home, 
-  History, 
+  CalendarCheck, 
   Plus, 
   Receipt, 
   User 
@@ -17,7 +17,7 @@ export function BottomNavigation() {
 
   const navItems = [
     { name: 'Início', href: '/', Icon: Home, active: pathname === '/' && !isNew },
-    { name: 'Histórico', href: '/jornada', Icon: History, active: pathname === '/jornada' && !isNew },
+    { name: 'Jornadas', href: '/jornada', Icon: CalendarCheck, active: pathname === '/jornada' && !isNew },
     { name: 'Novo', href: '/lancamentos?new=true', Icon: Plus, isCenter: true, active: isNew },
     { name: 'Gastos', href: '/lancamentos', Icon: Receipt, active: pathname === '/lancamentos' && !isNew },
     { name: 'Perfil', href: '/perfil', Icon: User, active: pathname === '/perfil' && !isNew },
