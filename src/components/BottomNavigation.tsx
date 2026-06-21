@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { 
-  House, 
-  ClockCounterClockwise, 
+  Home, 
+  History, 
   Plus, 
   Receipt, 
-  UserCircle 
-} from '@phosphor-icons/react';
+  User 
+} from 'lucide-react';
 
 export function BottomNavigation() {
   const pathname = usePathname();
@@ -16,11 +16,11 @@ export function BottomNavigation() {
   const isNew = searchParams.get('new') === 'true';
 
   const navItems = [
-    { name: 'Início', href: '/', Icon: House, active: pathname === '/' && !isNew },
-    { name: 'Histórico', href: '/jornada', Icon: ClockCounterClockwise, active: pathname === '/jornada' && !isNew },
+    { name: 'Início', href: '/', Icon: Home, active: pathname === '/' && !isNew },
+    { name: 'Histórico', href: '/jornada', Icon: History, active: pathname === '/jornada' && !isNew },
     { name: 'Novo', href: '/lancamentos?new=true', Icon: Plus, isCenter: true, active: isNew },
     { name: 'Gastos', href: '/lancamentos', Icon: Receipt, active: pathname === '/lancamentos' && !isNew },
-    { name: 'Perfil', href: '/perfil', Icon: UserCircle, active: pathname === '/perfil' && !isNew },
+    { name: 'Perfil', href: '/perfil', Icon: User, active: pathname === '/perfil' && !isNew },
   ];
 
   return (
@@ -35,7 +35,7 @@ export function BottomNavigation() {
                 className="flex flex-col items-center justify-center -translate-y-4 relative z-10 cursor-pointer"
               >
                 <div className="w-14 h-14 bg-[#EA1D2C] rounded-full flex items-center justify-center shadow-[0_8px_20px_-4px_rgba(234,29,44,0.6)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
-                  <Plus size={26} weight="bold" className="text-white" />
+                  <Plus size={26} strokeWidth={3} className="text-white" />
                 </div>
               </Link>
             );
@@ -50,7 +50,7 @@ export function BottomNavigation() {
             >
               <IconComponent 
                 size={22}
-                weight={item.active ? "fill" : "regular"}
+                strokeWidth={item.active ? 2.5 : 2}
                 className={`transition-all duration-200 ${
                   item.active 
                     ? 'text-[#EA1D2C] scale-110' 

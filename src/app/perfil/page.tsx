@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { 
   UserCircle, 
-  Gear, 
-  SignOut, 
+  Settings, 
+  LogOut, 
   Bell, 
   X, 
   Sun, 
   Moon 
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoals } from '@/hooks/useGoals';
 import { supabase } from '@/lib/supabase/client';
@@ -102,7 +102,7 @@ export default function Perfil() {
       <header className="flex justify-between items-center mb-6">
         <h1 className="text-[20px] font-semibold tracking-tight text-[var(--color-foreground)]">Perfil</h1>
         <button className="text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors">
-          <Gear size={24} />
+          <Settings size={24} />
         </button>
       </header>
 
@@ -162,7 +162,7 @@ export default function Perfil() {
           <div className="flex justify-between items-center p-5 border-b border-[var(--color-border)]">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-[var(--color-background)] rounded-2xl flex items-center justify-center">
-                <Gear size={24} className="text-[var(--color-muted)]" />
+                <Settings size={24} className="text-[var(--color-muted)]" />
               </div>
               <div>
                 <p className="text-[16px] font-medium text-[var(--color-foreground)]">Preferências do App</p>
@@ -175,9 +175,9 @@ export default function Perfil() {
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-[var(--color-background)] rounded-2xl flex items-center justify-center">
                 {theme === 'dark' ? (
-                  <Moon size={24} weight="fill" className="text-indigo-500" />
+                  <Moon size={24} fill="currentColor" className="text-indigo-500" />
                 ) : (
-                  <Sun size={24} weight="fill" className="text-amber-500" />
+                  <Sun size={24} fill="currentColor" className="text-amber-500" />
                 )}
               </div>
               <div>
@@ -208,7 +208,7 @@ export default function Perfil() {
           onClick={handleLogout}
           className="w-full flex items-center justify-center space-x-2 bg-[var(--color-card)] hover:bg-[var(--color-border)] text-red-500 font-semibold py-5 rounded-3xl border border-[var(--color-border)] transition-colors active:scale-[0.98] text-[16px]"
         >
-          <SignOut size={24} />
+          <LogOut size={24} />
           <span>Sair da Conta</span>
         </button>
       </section>

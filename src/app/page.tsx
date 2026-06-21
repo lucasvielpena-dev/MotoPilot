@@ -3,23 +3,23 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  List,
+  Menu,
   Bell,
-  Motorcycle,
+  Motorbike,
   Eye,
-  EyeSlash,
-  CaretRight,
+  EyeOff,
+  ChevronRight,
   Clock,
-  MapTrifold,
+  Map,
   ShoppingBag,
-  CurrencyDollar,
+  DollarSign,
   Play,
-  Stop,
+  Square,
   X,
-  SignOut,
+  LogOut,
   User,
-  Gear
-} from '@phosphor-icons/react';
+  Settings
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
@@ -107,19 +107,19 @@ export default function Home() {
           onClick={() => setIsMenuOpen(true)}
           className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
         >
-          <List size={24} weight="bold" />
+          <Menu size={24} strokeWidth={2.5} />
         </button>
         
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
-            <Motorcycle size={18} weight="fill" className="text-white" />
+            <Motorbike size={18} strokeWidth={2.5} className="text-white" />
           </div>
           <span className="text-[18px] font-extrabold tracking-tight text-neutral-900 font-sans">MotoPilot</span>
         </div>
 
         <div className="relative">
           <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
-            <Bell size={24} weight="bold" />
+            <Bell size={24} strokeWidth={2.5} />
           </button>
           <span className="absolute top-1.5 right-1.5 w-5 h-5 bg-[#EA1D2C] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
             2
@@ -147,14 +147,14 @@ export default function Home() {
             {showAmount ? (
               <Eye size={20} className="text-white" />
             ) : (
-              <EyeSlash size={20} className="text-white" />
+              <EyeOff size={20} className="text-white" />
             )}
           </button>
         </div>
         
         <div className="flex justify-between items-center pt-2 border-t border-white/10 text-white/80">
           <span className="text-[13px] font-medium tracking-wide uppercase">lucro líquido</span>
-          <CaretRight size={18} weight="bold" className="opacity-80" />
+          <ChevronRight size={18} strokeWidth={2.5} className="opacity-80" />
         </div>
       </section>
 
@@ -163,7 +163,7 @@ export default function Home() {
         {/* Tempo Online */}
         <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
           <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center mb-2">
-            <Clock size={20} weight="fill" className="text-indigo-500" />
+            <Clock size={20} strokeWidth={2.5} className="text-indigo-500" />
           </div>
           <div>
             <p className="text-[12px] font-semibold text-neutral-400">Tempo online</p>
@@ -174,7 +174,7 @@ export default function Home() {
         {/* Km rodados */}
         <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
           <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center mb-2">
-            <MapTrifold size={20} weight="fill" className="text-rose-500" />
+            <Map size={20} strokeWidth={2.5} className="text-rose-500" />
           </div>
           <div>
             <p className="text-[12px] font-semibold text-neutral-400">Km rodados</p>
@@ -185,7 +185,7 @@ export default function Home() {
         {/* Entregas */}
         <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
           <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center mb-2">
-            <ShoppingBag size={20} weight="fill" className="text-emerald-500" />
+            <ShoppingBag size={20} strokeWidth={2.5} className="text-emerald-500" />
           </div>
           <div>
             <p className="text-[12px] font-semibold text-neutral-400">Entregas</p>
@@ -196,7 +196,7 @@ export default function Home() {
         {/* Gastos */}
         <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
           <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center mb-2">
-            <CurrencyDollar size={20} weight="fill" className="text-amber-500" />
+            <DollarSign size={20} strokeWidth={2.5} className="text-amber-500" />
           </div>
           <div>
             <p className="text-[12px] font-semibold text-neutral-400">Gastos</p>
@@ -258,7 +258,7 @@ export default function Home() {
                 disabled={isTransitioning}
                 className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
               >
-                <Stop size={18} weight="fill" />
+                <Square size={18} fill="currentColor" />
                 <span>{isTransitioning ? 'Encerrando...' : 'Encerrar jornada'}</span>
               </button>
             </>
@@ -277,7 +277,7 @@ export default function Home() {
                 disabled={isTransitioning}
                 className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
               >
-                <Play size={18} weight="fill" />
+                <Play size={18} fill="currentColor" />
                 <span>{isTransitioning ? 'Iniciando...' : 'Iniciar jornada'}</span>
               </button>
             </div>
@@ -332,14 +332,14 @@ export default function Home() {
           <div className="relative w-72 max-w-xs bg-white h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
             <div className="flex justify-between items-center border-b border-neutral-100 pb-4">
               <div className="flex items-center space-x-2">
-                <Motorcycle size={22} weight="fill" className="text-[#EA1D2C]" />
+                <Motorbike size={22} strokeWidth={2.5} className="text-[#EA1D2C]" />
                 <span className="text-[16px] font-extrabold text-neutral-800">MotoPilot Menu</span>
               </div>
               <button 
                 onClick={() => setIsMenuOpen(false)}
                 className="text-neutral-500 hover:text-neutral-800 cursor-pointer"
               >
-                <X size={24} weight="bold" />
+                <X size={24} strokeWidth={2.5} />
               </button>
             </div>
 
@@ -350,7 +350,7 @@ export default function Home() {
                   onClick={() => { setIsMenuOpen(false); router.push('/perfil'); }}
                   className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-neutral-700 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-left cursor-pointer"
                 >
-                  <User size={20} weight="bold" className="text-neutral-500" />
+                  <User size={20} strokeWidth={2.5} className="text-neutral-500" />
                   <span>Meu Perfil</span>
                 </button>
                 
@@ -358,7 +358,7 @@ export default function Home() {
                   onClick={() => { setIsMenuOpen(false); router.push('/relatorios'); }}
                   className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-neutral-700 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-left cursor-pointer"
                 >
-                  <Gear size={20} weight="bold" className="text-neutral-500" />
+                  <Settings size={20} strokeWidth={2.5} className="text-neutral-500" />
                   <span>Configurações</span>
                 </button>
               </div>
@@ -367,7 +367,7 @@ export default function Home() {
                 onClick={() => { setIsMenuOpen(false); handleLogout(); }}
                 className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors text-left cursor-pointer border border-red-100 bg-red-50/10"
               >
-                <SignOut size={20} weight="bold" />
+                <LogOut size={20} strokeWidth={2.5} />
                 <span>Sair da conta</span>
               </button>
             </div>

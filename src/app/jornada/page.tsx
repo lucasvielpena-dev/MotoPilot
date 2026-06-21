@@ -4,22 +4,21 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { 
-  List,
-  CalendarBlank,
+  Menu,
   Eye,
-  EyeSlash,
+  EyeOff,
   Clock,
-  MapTrifold,
+  Map,
   ShoppingBag,
-  TrendUp,
-  CaretRight,
-  Stop,
+  TrendingUp,
+  ChevronRight,
+  Square,
   Play,
   ArrowLeft,
   Calendar,
-  Warning,
-  ChartLine
-} from '@phosphor-icons/react';
+  AlertTriangle,
+  LineChart
+} from 'lucide-react';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
 
@@ -178,7 +177,7 @@ export default function Jornada() {
           {/* Erros e Alertas */}
           {(trackerError || journeyError) && (
             <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-[20px] flex items-start space-x-3">
-              <Warning size={22} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle size={22} className="text-red-500 flex-shrink-0 mt-0.5" />
               <p className="text-[13px] text-red-500 font-medium">{trackerError || journeyError}</p>
             </div>
           )}
@@ -191,7 +190,7 @@ export default function Jornada() {
                 onClick={toggleShowAmount}
                 className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
               >
-                {showAmount ? <Eye size={18} className="text-white" /> : <EyeSlash size={18} className="text-white" />}
+                {showAmount ? <Eye size={18} className="text-white" /> : <EyeOff size={18} className="text-white" />}
               </button>
             </div>
 
@@ -219,7 +218,7 @@ export default function Jornada() {
             {/* Tempo Online */}
             <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
               <div className="w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center mb-2">
-                <Clock size={18} weight="fill" className="text-indigo-500 animate-pulse" />
+                <Clock size={18} strokeWidth={2.5} className="text-indigo-500 animate-pulse" />
               </div>
               <div>
                 <p className="text-[12px] font-semibold text-neutral-400">Tempo online</p>
@@ -230,7 +229,7 @@ export default function Jornada() {
             {/* Km Rodados */}
             <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
               <div className="w-9 h-9 rounded-2xl bg-rose-50 flex items-center justify-center mb-2">
-                <MapTrifold size={18} weight="fill" className="text-rose-500" />
+                <Map size={18} strokeWidth={2.5} className="text-rose-500" />
               </div>
               <div>
                 <p className="text-[12px] font-semibold text-neutral-400">Km rodados</p>
@@ -241,7 +240,7 @@ export default function Jornada() {
             {/* Entregas */}
             <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
               <div className="w-9 h-9 rounded-2xl bg-emerald-50 flex items-center justify-center mb-2">
-                <ShoppingBag size={18} weight="fill" className="text-emerald-500" />
+                <ShoppingBag size={18} strokeWidth={2.5} className="text-emerald-500" />
               </div>
               <div>
                 <p className="text-[12px] font-semibold text-neutral-400">Entregas</p>
@@ -252,7 +251,7 @@ export default function Jornada() {
             {/* Média de ganhos/h */}
             <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
               <div className="w-9 h-9 rounded-2xl bg-amber-50 flex items-center justify-center mb-2">
-                <TrendUp size={18} weight="fill" className="text-amber-500" />
+                <TrendingUp size={18} strokeWidth={2.5} className="text-amber-500" />
               </div>
               <div>
                 <p className="text-[12px] font-semibold text-neutral-400">Média ganhos/h</p>
@@ -264,7 +263,7 @@ export default function Jornada() {
           {/* Map display */}
           <section className="bg-white border border-neutral-100/80 rounded-[32px] p-4 shadow-[0_4px_20px_rgba(17,17,17,0.015)] relative">
             <h3 className="text-[14px] font-bold text-neutral-800 flex items-center space-x-2 mb-3">
-              <MapTrifold size={18} className="text-neutral-400" />
+              <Map size={18} className="text-neutral-400" />
               <span>Rota em tempo real</span>
             </h3>
             
@@ -278,7 +277,7 @@ export default function Jornada() {
                   <span className="text-[20px] font-extrabold text-neutral-800">{liveDistance.toFixed(1).replace('.', ',')} km</span>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-[#EA1D2C]/10 flex items-center justify-center">
-                  <ChartLine size={20} className="text-[#EA1D2C]" />
+                  <LineChart size={20} className="text-[#EA1D2C]" />
                 </div>
               </div>
             </div>
@@ -290,11 +289,11 @@ export default function Jornada() {
           {/* Header do Histórico */}
           <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
             <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
-              <List size={24} weight="bold" />
+              <Menu size={24} strokeWidth={2.5} />
             </button>
             <h1 className="text-[18px] font-extrabold text-neutral-800">Histórico</h1>
             <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
-              <CalendarBlank size={24} weight="bold" />
+              <Calendar size={24} strokeWidth={2.5} />
             </button>
           </header>
 
@@ -372,7 +371,7 @@ export default function Jornada() {
                             <span className="text-[16px] font-extrabold text-[#19A85B]">
                               R$ {stats.profit.toFixed(2).replace('.', ',')}
                             </span>
-                            <CaretRight size={16} weight="bold" className="text-neutral-400" />
+                            <ChevronRight size={16} strokeWidth={2.5} className="text-neutral-400" />
                           </div>
                         </div>
 
@@ -384,7 +383,7 @@ export default function Jornada() {
                           </div>
                           <span>|</span>
                           <div className="flex items-center space-x-1">
-                            <MapTrifold size={15} />
+                            <Map size={15} />
                             <span>{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
                           </div>
                           <span>|</span>

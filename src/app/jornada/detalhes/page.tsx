@@ -5,14 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { 
   ArrowLeft,
-  ShareNetwork,
+  Share2,
   Clock,
-  MapTrifold,
+  Map,
   ShoppingBag,
-  TrendUp,
+  TrendingUp,
   MapPin,
-  ListDashes
-} from '@phosphor-icons/react';
+  List
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import type { Journey } from '@/hooks/useJourneys';
 import type { Entry } from '@/hooks/useEntries';
@@ -117,11 +117,11 @@ function DetalhesJornadaConteudo() {
           onClick={() => router.push('/jornada')}
           className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
         >
-          <ArrowLeft size={24} weight="bold" />
+          <ArrowLeft size={24} strokeWidth={2.5} />
         </button>
         <h1 className="text-[17px] font-extrabold text-neutral-800">Detalhes da jornada</h1>
         <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
-          <ShareNetwork size={24} weight="bold" />
+          <Share2 size={24} strokeWidth={2.5} />
         </button>
       </header>
 
@@ -163,7 +163,7 @@ function DetalhesJornadaConteudo() {
           {/* Tempo Online */}
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
-              <Clock size={16} weight="fill" className="text-indigo-500" />
+              <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-neutral-400 block uppercase">Tempo online</span>
@@ -174,7 +174,7 @@ function DetalhesJornadaConteudo() {
           {/* Km rodados */}
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center">
-              <MapTrifold size={16} weight="fill" className="text-rose-500" />
+              <Map size={16} strokeWidth={2.5} className="text-rose-500" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-neutral-400 block uppercase">Km rodados</span>
@@ -185,7 +185,7 @@ function DetalhesJornadaConteudo() {
           {/* Entregas */}
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
-              <ShoppingBag size={16} weight="fill" className="text-emerald-500" />
+              <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-neutral-400 block uppercase">Entregas</span>
@@ -196,7 +196,7 @@ function DetalhesJornadaConteudo() {
           {/* Média ganhos/h */}
           <div className="flex items-center space-x-3">
               <div className="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center">
-                <TrendUp size={16} weight="fill" className="text-amber-500" />
+                <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
               </div>
             <div>
               <span className="text-[10px] font-bold text-neutral-400 block uppercase">Média ganhos/h</span>
@@ -222,7 +222,7 @@ function DetalhesJornadaConteudo() {
           /* Resumo/Lista de transacoes da jornada */
           <div className="space-y-3">
             <h3 className="text-[14px] font-bold text-neutral-800 flex items-center space-x-2">
-              <ListDashes size={18} className="text-neutral-400" />
+              <List size={18} className="text-neutral-400" />
               <span>Transações do percurso</span>
             </h3>
             {entries.length === 0 ? (

@@ -4,17 +4,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   ArrowLeft,
-  CaretDown,
+  ChevronDown,
   Calendar,
-  GasPump,
+  Fuel,
   ForkKnife,
   Wrench,
   MapPin,
-  DotsThree,
-  Trash,
+  MoreHorizontal,
+  Trash2,
   Plus,
-  ClipboardText
-} from '@phosphor-icons/react';
+  ClipboardList
+} from 'lucide-react';
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
@@ -127,7 +127,7 @@ export default function Lancamentos() {
   const getCategoryIcon = (desc: string | null) => {
     const d = (desc || '').toLowerCase();
     if (d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer')) {
-      return { Icon: GasPump, bg: 'bg-emerald-50', color: 'text-emerald-500' };
+      return { Icon: Fuel, bg: 'bg-emerald-50', color: 'text-emerald-500' };
     }
     if (d.includes('alimentação') || d.includes('almoço') || d.includes('lanche') || d.includes('comer')) {
       return { Icon: ForkKnife, bg: 'bg-rose-50', color: 'text-rose-500' };
@@ -138,7 +138,7 @@ export default function Lancamentos() {
     if (d.includes('estacionamento') || d.includes('parar') || d.includes('pedágio')) {
       return { Icon: MapPin, bg: 'bg-blue-50', color: 'text-blue-500' };
     }
-    return { Icon: DotsThree, bg: 'bg-amber-50', color: 'text-amber-500' };
+    return { Icon: MoreHorizontal, bg: 'bg-amber-50', color: 'text-amber-500' };
   };
 
   const formatDisplayDate = (dateStr: string) => {
@@ -160,7 +160,7 @@ export default function Lancamentos() {
               onClick={() => router.push('/lancamentos')}
               className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
             >
-              <ArrowLeft size={24} weight="bold" />
+              <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
             <h1 className="text-[18px] font-extrabold text-neutral-800">Novo gasto</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
@@ -207,7 +207,7 @@ export default function Lancamentos() {
                       <option value="Combustível">Combustível</option>
                       <option value="Outros">Outros</option>
                     </select>
-                    <CaretDown size={18} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                    <ChevronDown size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                   </div>
                 </div>
               )}
@@ -237,7 +237,7 @@ export default function Lancamentos() {
                     onChange={e => setDate(e.target.value)}
                     className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[15px] font-bold text-neutral-700 cursor-pointer"
                   />
-                  <Calendar size={18} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  <Calendar size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                 </div>
               </div>
 
@@ -255,7 +255,7 @@ export default function Lancamentos() {
                     <option value="Cartão de Débito">Cartão de Débito</option>
                     <option value="Pix">Pix</option>
                   </select>
-                  <CaretDown size={18} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  <ChevronDown size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                 </div>
               </div>
 
@@ -285,7 +285,7 @@ export default function Lancamentos() {
             <form onSubmit={handleImport} className="space-y-5 bg-white border border-neutral-100/60 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
               <div className="space-y-1.5">
                 <label className="text-[12px] font-bold text-neutral-400 block uppercase flex items-center space-x-1.5">
-                  <ClipboardText size={16} />
+                  <ClipboardList size={16} />
                   <span>Dados do comprovante/recibo</span>
                 </label>
                 <textarea
@@ -317,7 +317,7 @@ export default function Lancamentos() {
               onClick={() => router.push('/')}
               className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
             >
-              <ArrowLeft size={24} weight="bold" />
+              <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
             <h1 className="text-[18px] font-extrabold text-neutral-800">Gastos</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
@@ -345,7 +345,7 @@ export default function Lancamentos() {
               <div className="flex justify-center">
                 <div className="bg-white border border-neutral-150 rounded-2xl px-4 py-2 text-[13px] font-bold text-neutral-700 flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-neutral-50">
                   <span>Maio/2025</span>
-                  <CaretDown size={16} className="text-neutral-400" />
+                  <ChevronDown size={16} className="text-neutral-400" />
                 </div>
               </div>
 
@@ -399,7 +399,7 @@ export default function Lancamentos() {
                             className="p-1.5 text-neutral-400 hover:text-[#EA1D2C] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                             title="Apagar lançamento"
                           >
-                            <Trash size={16} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
@@ -414,7 +414,7 @@ export default function Lancamentos() {
                   onClick={() => router.push('/lancamentos?new=true')}
                   className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md"
                 >
-                  <Plus size={18} weight="bold" />
+                  <Plus size={18} strokeWidth={2.5} />
                   <span>Novo gasto</span>
                 </button>
               </div>

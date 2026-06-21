@@ -3,13 +3,13 @@
 import { 
   Wrench, 
   User, 
-  DotsThree, 
+  MoreHorizontal, 
   Coins,
-  GasPump,
+  Fuel,
   ForkKnife,
-  Drop,
-  Warning
-} from '@phosphor-icons/react';
+  Droplet,
+  AlertTriangle
+} from 'lucide-react';
 
 type BrandLogoProps = {
   name: string | null;
@@ -66,7 +66,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('particular') || cleanName.includes('privado')) {
       return (
         <div className={`${className} bg-[#2563EB] rounded-2xl flex items-center justify-center`} title="Corrida Particular">
-          <User size={20} weight="fill" className="text-white" />
+          <User size={20} className="text-white" />
         </div>
       );
     }
@@ -96,7 +96,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('combust') || cleanName.includes('gasolina') || cleanName.includes('etanol') || cleanName.includes('posto')) {
       return (
         <div className={`${className} bg-[#D97706] rounded-2xl flex items-center justify-center`} title="Combustível">
-          <GasPump size={20} weight="fill" className="text-white" />
+          <Fuel size={20} className="text-white" />
         </div>
       );
     }
@@ -105,7 +105,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('aliment') || cleanName.includes('almoço') || cleanName.includes('comida') || cleanName.includes('lanche') || cleanName.includes('janta')) {
       return (
         <div className={`${className} bg-[#10B981] rounded-2xl flex items-center justify-center`} title="Alimentação">
-          <ForkKnife size={20} weight="fill" className="text-white" />
+          <ForkKnife size={20} className="text-white" />
         </div>
       );
     }
@@ -114,7 +114,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('manuten') || cleanName.includes('oficina') || cleanName.includes('pneu') || cleanName.includes('mecanic') || cleanName.includes('peça')) {
       return (
         <div className={`${className} bg-[#2563EB] rounded-2xl flex items-center justify-center`} title="Manutenção">
-          <Wrench size={20} weight="fill" className="text-white" />
+          <Wrench size={20} className="text-white" />
         </div>
       );
     }
@@ -123,7 +123,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('óleo') || cleanName.includes('oleo') || cleanName.includes('lubrific')) {
       return (
         <div className={`${className} bg-[#8B5CF6] rounded-2xl flex items-center justify-center`} title="Troca de Óleo">
-          <Drop size={20} weight="fill" className="text-white" />
+          <Droplet size={20} className="text-white" />
         </div>
       );
     }
@@ -132,7 +132,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('plataforma') || cleanName.includes('taxa') || cleanName.includes('comis')) {
       return (
         <div className={`${className} bg-[#F43F5E] rounded-2xl flex items-center justify-center`} title="Taxa da Plataforma">
-          <Coins size={20} weight="fill" className="text-white" />
+          <Coins size={20} className="text-white" />
         </div>
       );
     }
@@ -141,7 +141,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('multa')) {
       return (
         <div className={`${className} bg-[#FF4444] rounded-2xl flex items-center justify-center`} title="Multa">
-          <Warning size={20} weight="fill" className="text-white" />
+          <AlertTriangle size={20} className="text-white" />
         </div>
       );
     }
@@ -157,7 +157,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
       {type === 'gain' ? (
         <span className="text-[16px] font-bold">R$</span>
       ) : (
-        <DotsThree size={24} weight="bold" />
+        <MoreHorizontal size={24} strokeWidth={2.5} />
       )}
     </div>
   );

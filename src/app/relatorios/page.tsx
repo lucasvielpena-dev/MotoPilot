@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft,
-  CaretDown,
-  TrendUp,
-  TrendDown
-} from '@phosphor-icons/react';
+  ChevronDown,
+  TrendingUp,
+  TrendingDown
+} from 'lucide-react';
 import { useEntries } from '@/hooks/useEntries';
 import { useJourneys } from '@/hooks/useJourneys';
 import { BarChart, Bar, Cell, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -76,7 +76,7 @@ export default function Relatorios() {
           onClick={() => router.push('/')}
           className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
         >
-          <ArrowLeft size={24} weight="bold" />
+          <ArrowLeft size={24} strokeWidth={2.5} />
         </button>
         <h1 className="text-[18px] font-extrabold text-neutral-800">Relatórios</h1>
         <div className="w-10 h-10" /> {/* Spacer */}
@@ -104,7 +104,7 @@ export default function Relatorios() {
           <div className="flex justify-center">
             <div className="bg-white border border-neutral-150 rounded-2xl px-4 py-2 text-[13px] font-bold text-neutral-700 flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-neutral-50">
               <span>Maio/2025</span>
-              <CaretDown size={16} className="text-neutral-400" />
+              <ChevronDown size={16} className="text-neutral-400" />
             </div>
           </div>
 
@@ -115,7 +115,7 @@ export default function Relatorios() {
               
               {/* Badge Comparativo */}
               <span className="flex items-center text-[11px] font-extrabold px-3 py-1 rounded-full text-[#19A85B] bg-[#19A85B]/10 uppercase tracking-wider">
-                <TrendUp size={14} weight="bold" className="mr-1" />
+                <TrendingUp size={14} strokeWidth={2.5} className="mr-1" />
                 <span>+12,5% vs Abril/2025</span>
               </span>
             </div>
