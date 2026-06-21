@@ -1,11 +1,12 @@
 import { supabase } from '@/lib/supabase/client';
 
 // List of tables to clean up
-const tables = ['goals', 'lancamentos', 'jornadas'];
+const tables = ['entries', 'journeys', 'goals'];
 
 async function resetSupabase() {
   for (const table of tables) {
-    const { error } = await supabase.from(table).delete().neq('id', '0'); // delete all rows
+    const filter = table === 'entries' ? 'date' : 'created_at';
+    const { error } = await supabase.from(table).delete().gte(filter, '1900-01-01'); // delete all rows
     if (error) {
       console.error(`Error deleting from ${table}:`, error.message);
     } else {
