@@ -7,7 +7,7 @@ import { BarChart, Bar, Cell, XAxis, Tooltip, ResponsiveContainer } from 'rechar
 
 export default function Relatorios() {
   const { entries, fetchRecentEntries } = useEntries();
-  const [period, setPeriod] = useState<'week' | 'month' | 'year'>('week');
+  const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'year'>('week');
 
   useEffect(() => {
     // Para simplificar no MVP, buscamos os 100 últimos lançamentos
@@ -18,7 +18,9 @@ export default function Relatorios() {
   const now = new Date();
   const filteredEntries = entries.filter(e => {
     const d = new Date(e.date);
-    if (period === 'week') {
+    if (period === 'day') {
+      return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    } else if (period === 'week') {
       return (now.getTime() - d.getTime()) <= 7 * 24 * 60 * 60 * 1000;
     } else if (period === 'month') {
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
@@ -33,8 +35,8 @@ export default function Relatorios() {
   const isPositive = netProfit >= 0;
 
   const chartData = [
-    { name: 'Ganhos', value: totalGains, fill: '#3DDB61' },
-    { name: 'Despesas', value: totalExpenses, fill: '#EF4444' }
+    { name: 'Ganhos', value: totalGains, fill: 'var(--color-gain)' },
+    { name: 'Despesas', value: totalExpenses, fill: 'var(--color-expense)' }
   ];
 
   return (
@@ -46,6 +48,7 @@ export default function Relatorios() {
 
       {/* Tabs / Filtros */}
       <div className="flex bg-[var(--color-card)] p-1.5 rounded-[20px] border border-[var(--color-border)]">
+        <button onClick={() => setPeriod('day')} className={`flex-1 py-3 text-[14px] font-medium rounded-[14px] transition-colors ${period === 'day' ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] shadow-sm border border-[var(--color-border)]' : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'}`}>Dia</button>
         <button onClick={() => setPeriod('week')} className={`flex-1 py-3 text-[14px] font-medium rounded-[14px] transition-colors ${period === 'week' ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] shadow-sm border border-[var(--color-border)]' : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'}`}>Semana</button>
         <button onClick={() => setPeriod('month')} className={`flex-1 py-3 text-[14px] font-medium rounded-[14px] transition-colors ${period === 'month' ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] shadow-sm border border-[var(--color-border)]' : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'}`}>Mês</button>
         <button onClick={() => setPeriod('year')} className={`flex-1 py-3 text-[14px] font-medium rounded-[14px] transition-colors ${period === 'year' ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] shadow-sm border border-[var(--color-border)]' : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'}`}>Ano</button>
@@ -58,7 +61,7 @@ export default function Relatorios() {
             <ChartBar size={24} className="text-[var(--color-primary)]" />
           </div>
           {/* Badge Comparativo (Mockado para o MVP) */}
-          <span className={`flex items-center text-[12px] font-semibold px-3 py-1.5 rounded-full ${isPositive ? 'text-[#3DDB61] bg-[#3DDB61]/10' : 'text-red-500 bg-red-500/10'}`}>
+          <span className={`flex items-center text-[12px] font-semibold px-3 py-1.5 rounded-full ${isPositive ? 'text-[var(--color-gain)] bg-[var(--color-gain)]/10' : 'text-[var(--color-expense)] bg-[var(--color-expense)]/10'}`}>
             {isPositive ? <TrendUp size={16} className="mr-1.5" /> : <TrendDown size={16} className="mr-1.5" />}
             {isPositive ? '+12%' : '-5%'} vs anterior
           </span>
@@ -95,16 +98,16 @@ export default function Relatorios() {
 
         {/* Detalhamento */}
         <section className="md:col-span-1 space-y-4">
-          <h2 className="text-[20px] font-semibold text-[var(--color-foreground)] px-1">Detalhamento ({period === 'week' ? 'Semana' : period === 'month' ? 'Mês' : 'Ano'})</h2>
+          <h2 className="text-[20px] font-semibold text-[var(--color-foreground)] px-1">Detalhamento ({period === 'day' ? 'Dia' : period === 'week' ? 'Semana' : period === 'month' ? 'Mês' : 'Ano'})</h2>
           
           <div className="card-premium rounded-3xl p-6 space-y-6 animate-fade-in-up delay-150">
             <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-4">
               <span className="text-[14px] text-[var(--color-muted)]">Faturamento (Ganhos)</span>
-              <span className="text-[15px] font-semibold text-[#22C55E]">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+              <span className="text-[15px] font-semibold text-[var(--color-gain)]">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
             </div>
             <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-4">
               <span className="text-[14px] text-[var(--color-muted)]">Total de Despesas</span>
-              <span className="text-[15px] font-semibold text-red-500">- R$ {totalExpenses.toFixed(2).replace('.', ',')}</span>
+              <span className="text-[15px] font-semibold text-[var(--color-expense)]">- R$ {totalExpenses.toFixed(2).replace('.', ',')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-[14px] text-[var(--color-muted)]">Qtd. de Lançamentos</span>

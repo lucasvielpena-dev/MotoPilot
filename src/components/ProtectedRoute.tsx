@@ -27,7 +27,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user && pathname !== '/login') return null;
+  if (!user && pathname !== '/login') {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
+        <div className="w-8 h-8 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }

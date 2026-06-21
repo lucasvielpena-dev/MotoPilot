@@ -232,7 +232,7 @@ export default function Home() {
                       <p className="text-[14px] text-[var(--color-muted)] mt-1">{new Date(entry.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                     </div>
                   </div>
-                  <div className={`text-[16px] font-semibold ${entry.type === 'gain' ? 'text-[var(--color-primary)]' : 'text-red-500'}`}>
+                  <div className={`text-[16px] font-semibold ${entry.type === 'gain' ? 'text-[var(--color-gain)]' : 'text-[var(--color-expense)]'}`}>
                     {entry.type === 'gain' ? '+ ' : '- '}R$ {entry.amount.toFixed(2).replace('.', ',')}
                   </div>
                 </div>

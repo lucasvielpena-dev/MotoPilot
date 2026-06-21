@@ -11,6 +11,8 @@
     "reset": "ts-node resetAppData.ts"
   },
   "dependencies": {
+    "@capacitor-community/background-geolocation": "^1.2.26",
+    "@capacitor/app": "^8.1.0",
     "@capacitor/core": "^8.4.0",
     "@ducanh2912/next-pwa": "^10.2.9",
     "@phosphor-icons/react": "^2.1.10",

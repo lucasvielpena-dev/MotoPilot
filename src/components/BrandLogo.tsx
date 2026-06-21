@@ -151,8 +151,8 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
   return (
     <div className={`${className} rounded-2xl flex items-center justify-center ${
       type === 'gain' 
-        ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
-        : 'bg-red-500/10 text-red-500 border border-red-500/20'
+        ? 'bg-[var(--color-gain)]/10 text-[var(--color-gain)] border border-[var(--color-gain)]/20' 
+        : 'bg-[var(--color-expense)]/10 text-[var(--color-expense)] border border-[var(--color-expense)]/20'
     }`}>
       {type === 'gain' ? (
         <span className="text-[16px] font-bold">R$</span>

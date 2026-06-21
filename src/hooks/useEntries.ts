@@ -3,7 +3,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useJourneys } from '@/hooks/useJourneys';
 
 export type Entry = {
   id: string;
@@ -17,7 +16,6 @@ export type Entry = {
 
 export function useEntries() {
   const { user } = useAuth();
-  const { activeJourney } = useJourneys();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetched, setFetched] = useState(false);
@@ -39,7 +37,7 @@ export function useEntries() {
     setLoading(false);
   }, [user]);
 
-  const addEntry = async (type: 'gain' | 'expense', amount: number, description: string) => {
+  const addEntry = async (type: 'gain' | 'expense', amount: number, description: string, journeyId?: string | null) => {
     if (!user) return { error: { message: 'Usuário não logado' } };
 
     const { data, error } = await supabase
@@ -47,7 +45,7 @@ export function useEntries() {
       .insert([
         {
           user_id: user.id,
-          journey_id: activeJourney?.id || null,
+          journey_id: journeyId ?? null,
           type,
           amount,
           description

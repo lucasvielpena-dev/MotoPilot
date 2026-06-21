@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { MapPin, Clock, Stop, Play, WifiHigh, Warning, MapTrifold } from '@phosphor-icons/react';
 import { useJourneys } from '@/hooks/useJourneys';
-import { useGoals } from '@/hooks/useGoals';
 
 // O mapa usa a window global, então no Next.js precisamos carregar dinamicamente sem SSR.
 const MiniMap = dynamic(() => import('@/components/MiniMap'), { ssr: false });
@@ -13,10 +12,10 @@ const MiniMap = dynamic(() => import('@/components/MiniMap'), { ssr: false });
 export default function Jornada() {
   const router = useRouter();
   const { activeJourney, historicalJourneys, loading, startJourney, finishJourney, fetchHistoricalJourneys, liveDistance, isTracking, gpsAccuracy, gpsStatus, trackerError } = useJourneys();
-  const { dailyGoal } = useGoals();
   const [elapsedTime, setElapsedTime] = useState('00:00:00');
   const [durationHours, setDurationHours] = useState(0);
   const [isFinishing, setIsFinishing] = useState(false);
+  const [journeyError, setJourneyError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchHistoricalJourneys();
@@ -65,6 +64,14 @@ export default function Jornada() {
         <div className="bg-red-500/10 border border-red-500/20 p-5 rounded-3xl flex items-start space-x-3 shadow-sm">
           <Warning size={24} className="text-red-500 flex-shrink-0" />
           <p className="text-[14px] text-red-500">{trackerError}</p>
+        </div>
+      )}
+
+      {/* Alerta de Erro da Jornada */}
+      {journeyError && (
+        <div className="bg-red-500/10 border border-red-500/20 p-5 rounded-3xl flex items-start space-x-3 shadow-sm">
+          <Warning size={24} className="text-red-500 flex-shrink-0" />
+          <p className="text-[14px] text-red-500">{journeyError}</p>
         </div>
       )}
 
@@ -142,8 +149,13 @@ export default function Jornada() {
             <button 
               onClick={async () => {
                 setIsFinishing(true);
-                await finishJourney();
+                setJourneyError(null);
+                const result = await finishJourney();
                 setIsFinishing(false);
+                if ('error' in result) {
+                  setJourneyError(result.error?.message || 'Erro ao encerrar jornada.');
+                  return;
+                }
                 router.push('/');
               }}
               disabled={isFinishing}
@@ -169,7 +181,11 @@ export default function Jornada() {
         <section className="space-y-6 pt-2">
           <button 
             onClick={async () => {
-              await startJourney();
+              setJourneyError(null);
+              const result = await startJourney();
+              if ('error' in result && result.error) {
+                setJourneyError(result.error?.message || 'Erro ao iniciar jornada.');
+              }
             }}
             className="w-full bg-[var(--color-primary)] text-[#000000] hover:brightness-110 font-bold py-5 rounded-3xl flex items-center justify-center space-x-2 transition-transform active:scale-[0.98] text-[20px]"
           >

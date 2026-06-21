@@ -13,14 +13,17 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const isCapacitor = typeof window !== 'undefined' && !!(window as any).Capacitor;
+
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError(null);
+    const redirectTo = isCapacitor
+      ? `${window.location.origin}/`
+      : window.location.origin;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
+      options: { redirectTo }
     });
     if (error) setError(error.message);
     setLoading(false);
@@ -84,21 +87,25 @@ export default function Login() {
       </div>
 
       {/* Botão Google */}
-      <button
-        onClick={handleGoogleLogin}
-        disabled={loading}
-        className="w-full max-w-sm flex items-center justify-center gap-3 py-4 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl text-[var(--color-foreground)] font-medium hover:bg-[var(--color-card-secondary)] active:scale-[0.98] transition-all disabled:opacity-50"
-      >
-        <GoogleLogo size={22} weight="fill" />
-        <span>Entrar com Google</span>
-      </button>
+      {!isCapacitor && (
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full max-w-sm flex items-center justify-center gap-3 py-4 bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl text-[var(--color-foreground)] font-medium hover:bg-[var(--color-card-secondary)] active:scale-[0.98] transition-all disabled:opacity-50"
+        >
+          <GoogleLogo size={22} weight="fill" />
+          <span>Entrar com Google</span>
+        </button>
+      )}
 
       {/* Divisor */}
-      <div className="w-full max-w-sm flex items-center gap-4">
-        <div className="flex-1 h-px bg-[var(--color-border)]"></div>
-        <span className="text-[13px] text-[var(--color-muted)]">ou</span>
-        <div className="flex-1 h-px bg-[var(--color-border)]"></div>
-      </div>
+      {!isCapacitor && (
+        <div className="w-full max-w-sm flex items-center gap-4">
+          <div className="flex-1 h-px bg-[var(--color-border)]"></div>
+          <span className="text-[13px] text-[var(--color-muted)]">ou</span>
+          <div className="flex-1 h-px bg-[var(--color-border)]"></div>
+        </div>
+      )}
 
       {/* Formulário */}
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">

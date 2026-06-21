@@ -9,24 +9,25 @@
   --color-foreground: var(--text-color);
   --color-muted: var(--text-muted);
   --color-primary: var(--primary-color);
+  --color-gain: var(--gain-color);
+  --color-expense: var(--expense-color);
   --font-sans: var(--font-inter);
 }
 
 :root {
-  /* Default Dark Mode (Premium UI) */
-  --bg-color: #08080A;
-  --card-color: #16161E;
-  --card-sec-color: #0F0F12;
-  --border-color: rgba(255, 255, 255, 0.06);
-  --text-color: #FFFFFF;
-  --text-muted: #94A3B8;
-  --primary-color: #3DDB61; /* Green */
-  
-  /* Premium Depth Shadows with top highlight line (inset bevel) */
-  --shadow-premium: 0 12px 30px -10px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.06);
-  --shadow-premium-hover: 0 22px 45px -12px rgba(0, 0, 0, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.12);
-
-  --chart-cursor-fill: rgba(255, 255, 255, 0.05);
+  --bg-color: #FFF7F5;
+  --card-color: #FFFFFF;
+  --card-sec-color: #FFF1EE;
+  --border-color: rgba(234, 29, 44, 0.10);
+  --text-color: #171717;
+  --text-muted: #737373;
+  --primary-color: #EA1D2C;
+  --primary-soft: rgba(234, 29, 44, 0.10);
+  --success-color: #19A85B;
+  --warning-color: #F59E0B;
+  --shadow-premium: 0 16px 38px -22px rgba(234, 29, 44, 0.35), 0 8px 22px -18px rgba(17, 17, 17, 0.20);
+  --gain-color: var(--success-color);
+  --expense-color: var(--primary-color);
 }
 
 :root[data-theme="light"] {
@@ -38,6 +39,8 @@
   --text-color: #1E293B;
   --text-muted: #64748B;
   --primary-color: #2B8A3E; /* Darker green for contrast */
+  --gain-color: #2B8A3E;
+  --expense-color: #E53E3E; /* Darker red for contrast */
   
   /* Premium Depth Shadows with top highlight line (inset bevel) */
   --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -70,17 +73,14 @@ body {
 
 /* Premium Card with depth and animations */
 .card-premium {
-  background: linear-gradient(145deg, var(--color-card) 0%, var(--color-card-secondary) 100%);
-  border: 1px solid var(--color-border);
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-premium);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease;
+  transition: 0.25s ease;
 }
+
 .card-premium:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-premium-hover);
-}
-.card-premium:active {
-  transform: translateY(-0.5px);
+  transform: translateY(-2px);
 }
 
 /* Professional Entrance Animations */
@@ -124,4 +124,19 @@ body {
 svg:focus,
 path:focus {
   outline: none !important;
+}
+
+.delivery-hero {
+  background:
+    radial-gradient(circle at 85% 18%, rgba(255,255,255,0.24), transparent 22%),
+    linear-gradient(135deg, #EA1D2C 0%, #FF4D34 100%);
+  color: #FFFFFF;
+  border: 0;
+  box-shadow: 0 22px 48px -24px rgba(234, 29, 44, 0.80);
+}
+
+.delivery-pill {
+  background: var(--primary-soft);
+  color: var(--primary-color);
+  border: 1px solid rgba(234, 29, 44, 0.14);
 }
