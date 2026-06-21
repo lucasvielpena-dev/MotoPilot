@@ -306,25 +306,25 @@ export default function Jornada() {
         /* SCREEN 3: HISTÓRICO */
         <div className="space-y-6">
           {/* Header do Histórico */}
-          <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+          <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
             <div className="w-10 h-10" />
-            <h1 className="text-[18px] font-extrabold text-neutral-800">Histórico</h1>
-            <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
+            <h1 className="text-[18px] font-extrabold text-foreground">Histórico</h1>
+            <button className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer">
               <Calendar size={24} strokeWidth={2.5} />
             </button>
           </header>
 
           {/* Tabs */}
-          <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+          <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
             <button 
               onClick={() => setActiveTab('jornadas')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'jornadas' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'jornadas' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Jornadas
             </button>
             <button 
               onClick={() => setActiveTab('resumo')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'resumo' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'resumo' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Resumo
             </button>
@@ -334,35 +334,35 @@ export default function Jornada() {
             <>
               {/* Seletor de período */}
               <div className="flex justify-center">
-                <div className="bg-white border border-neutral-150 rounded-2xl px-4 py-2 text-[13px] font-bold text-neutral-700 flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-neutral-50">
+                <div className="bg-card border border-border rounded-2xl px-4 py-2 text-[13px] font-bold text-foreground flex items-center space-x-2 cursor-pointer shadow-sm hover:bg-card-secondary">
                   <span>19/05/2025 - 25/05/2025</span>
-                  <Calendar size={16} className="text-neutral-400" />
+                  <Calendar size={16} className="text-muted" />
                 </div>
               </div>
 
               {/* Stats card row */}
-              <section className="bg-white border border-neutral-100/80 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.015)] flex justify-between items-center text-center">
+              <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium flex justify-between items-center text-center">
                 <div className="flex-1">
-                  <span className="text-[10px] font-bold text-neutral-400 block uppercase">Lucro líquido</span>
+                  <span className="text-[10px] font-bold text-muted block uppercase">Lucro líquido</span>
                   <span className="text-[16px] font-extrabold text-[#19A85B] mt-0.5 block">R$ {totalCompletedProfit.toFixed(2).replace('.', ',')}</span>
                 </div>
-                <div className="border-l border-neutral-100 h-8"></div>
+                <div className="border-l border-border h-8"></div>
                 <div className="flex-1">
-                  <span className="text-[10px] font-bold text-neutral-400 block uppercase">Tempo online</span>
-                  <span className="text-[16px] font-extrabold text-neutral-800 mt-0.5 block">{Math.floor(totalCompletedHours)}h {Math.round((totalCompletedHours % 1) * 60)}m</span>
+                  <span className="text-[10px] font-bold text-muted block uppercase">Tempo online</span>
+                  <span className="text-[16px] font-extrabold text-foreground mt-0.5 block">{Math.floor(totalCompletedHours)}h {Math.round((totalCompletedHours % 1) * 60)}m</span>
                 </div>
-                <div className="border-l border-neutral-100 h-8"></div>
+                <div className="border-l border-border h-8"></div>
                 <div className="flex-1">
-                  <span className="text-[10px] font-bold text-neutral-400 block uppercase">Km rodados</span>
-                  <span className="text-[16px] font-extrabold text-neutral-800 mt-0.5 block">{totalCompletedDistance.toFixed(1).replace('.', ',')} km</span>
+                  <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
+                  <span className="text-[16px] font-extrabold text-foreground mt-0.5 block">{totalCompletedDistance.toFixed(1).replace('.', ',')} km</span>
                 </div>
               </section>
 
               {/* List of past journeys */}
               <section className="space-y-3">
                 {historicalJourneys.length === 0 ? (
-                  <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center">
-                    <p className="text-[14px] text-neutral-400">Nenhuma jornada registrada.</p>
+                  <div className="bg-card border border-border rounded-3xl p-8 text-center">
+                    <p className="text-[14px] text-muted">Nenhuma jornada registrada.</p>
                   </div>
                 ) : (
                   historicalJourneys.map((journey) => {
@@ -371,15 +371,15 @@ export default function Jornada() {
                       <div 
                         key={journey.id}
                         onClick={() => router.push(`/jornada/detalhes?id=${journey.id}`)}
-                        className="bg-white border border-neutral-100/80 hover:border-[#EA1D2C]/20 hover:shadow-[0_8px_24px_rgba(234,29,44,0.03)] rounded-[28px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)] flex flex-col space-y-4 cursor-pointer transition-all active:scale-[0.99]"
+                        className="bg-card border border-border hover:border-[#EA1D2C]/20 hover:shadow-[0_8px_24px_rgba(234,29,44,0.03)] rounded-[28px] p-5 shadow-premium flex flex-col space-y-4 cursor-pointer transition-all active:scale-[0.99]"
                       >
                         {/* Top row */}
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className="text-[15px] font-extrabold text-neutral-800 block">
+                            <span className="text-[15px] font-extrabold text-foreground block">
                               {formatJourneyDate(journey.started_at)}
                             </span>
-                            <span className="text-[12px] font-semibold text-neutral-400 mt-0.5 block">
+                            <span className="text-[12px] font-semibold text-muted mt-0.5 block">
                               {formatJourneyTimeRange(journey.started_at, journey.ended_at)}
                             </span>
                           </div>
@@ -388,12 +388,12 @@ export default function Jornada() {
                             <span className="text-[16px] font-extrabold text-[#19A85B]">
                               R$ {stats.profit.toFixed(2).replace('.', ',')}
                             </span>
-                            <ChevronRight size={16} strokeWidth={2.5} className="text-neutral-400" />
+                            <ChevronRight size={16} strokeWidth={2.5} className="text-muted" />
                           </div>
                         </div>
 
                         {/* Bottom metrics */}
-                        <div className="border-t border-neutral-50/80 pt-3 flex justify-between items-center text-[12px] font-bold text-neutral-400">
+                        <div className="border-t border-border pt-3 flex justify-between items-center text-[12px] font-bold text-muted">
                           <div className="flex items-center space-x-1">
                             <Clock size={15} />
                             <span>{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
@@ -417,9 +417,9 @@ export default function Jornada() {
             </>
           ) : (
             /* Resumo Tab view */
-            <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center space-y-3">
-              <p className="text-[14px] font-bold text-neutral-700">Resumo financeiro detalhado</p>
-              <p className="text-[12px] text-neutral-400">Para ver os gráficos de faturamento diário e mensal detalhados, acesse a aba de Relatórios no painel.</p>
+            <div className="bg-card border border-border rounded-3xl p-8 text-center space-y-3">
+              <p className="text-[14px] font-bold text-foreground">Resumo financeiro detalhado</p>
+              <p className="text-[12px] text-muted">Para ver os gráficos de faturamento diário e mensal detalhados, acesse a aba de Relatórios no painel.</p>
               <button 
                 onClick={() => router.push('/relatorios')}
                 className="mt-2 bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-bold px-5 py-3 rounded-2xl text-[13px] active:scale-95 transition-all cursor-pointer"

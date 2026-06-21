@@ -112,26 +112,26 @@ function DetalhesJornadaConteudo() {
   return (
     <div className="space-y-6 pb-28 pt-2 animate-fade-in-up">
       {/* Header */}
-      <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+      <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
         <button 
           onClick={() => router.push('/jornada')}
-          className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
+          className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
         >
           <ArrowLeft size={24} strokeWidth={2.5} />
         </button>
-        <h1 className="text-[17px] font-extrabold text-neutral-800">Detalhes da jornada</h1>
-        <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
+        <h1 className="text-[17px] font-extrabold text-foreground">Detalhes da jornada</h1>
+        <button className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer">
           <Share2 size={24} strokeWidth={2.5} />
         </button>
       </header>
 
       {/* Date and Earnings Header Card */}
-      <section className="bg-white border border-neutral-100/80 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)] flex justify-between items-center">
+      <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium flex justify-between items-center">
         <div>
-          <span className="text-[15px] font-extrabold text-neutral-850 block">
+          <span className="text-[15px] font-extrabold text-foreground block">
             {formatJourneyDate(journey.started_at)}
           </span>
-          <span className="text-[12px] font-semibold text-neutral-400 mt-0.5 block">
+          <span className="text-[12px] font-semibold text-muted mt-0.5 block">
             Duração de {Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m
           </span>
         </div>
@@ -141,18 +141,18 @@ function DetalhesJornadaConteudo() {
       </section>
 
       {/* Stats list details */}
-      <section className="bg-white border border-neutral-100/80 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.015)] space-y-4">
+      <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium space-y-4">
         {/* Início / Término */}
-        <div className="grid grid-cols-2 gap-4 border-b border-neutral-50 pb-4">
+        <div className="grid grid-cols-2 gap-4 border-b border-border pb-4">
           <div>
-            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Início</span>
-            <span className="text-[15px] font-extrabold text-neutral-700 mt-0.5 block">
+            <span className="text-[10px] font-bold text-muted block uppercase">Início</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">
               {getHourTime(journey.started_at)}
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Término</span>
-            <span className="text-[15px] font-extrabold text-neutral-700 mt-0.5 block">
+            <span className="text-[10px] font-bold text-muted block uppercase">Término</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">
               {getHourTime(journey.ended_at)}
             </span>
           </div>
@@ -162,56 +162,56 @@ function DetalhesJornadaConteudo() {
         <div className="grid grid-cols-2 gap-y-4 gap-x-2">
           {/* Tempo Online */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
               <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
             </div>
             <div>
-              <span className="text-[10px] font-bold text-neutral-400 block uppercase">Tempo online</span>
-              <span className="text-[14px] font-extrabold text-neutral-700">{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
+              <span className="text-[10px] font-bold text-muted block uppercase">Tempo online</span>
+              <span className="text-[14px] font-extrabold text-foreground">{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
             </div>
           </div>
 
           {/* Km rodados */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center">
               <Map size={16} strokeWidth={2.5} className="text-rose-500" />
             </div>
             <div>
-              <span className="text-[10px] font-bold text-neutral-400 block uppercase">Km rodados</span>
-              <span className="text-[14px] font-extrabold text-neutral-700">{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
+              <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
+              <span className="text-[14px] font-extrabold text-foreground">{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
             </div>
           </div>
 
           {/* Entregas */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
               <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
             </div>
             <div>
-              <span className="text-[10px] font-bold text-neutral-400 block uppercase">Entregas</span>
-              <span className="text-[14px] font-extrabold text-neutral-700">{deliveries}</span>
+              <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
+              <span className="text-[14px] font-extrabold text-foreground">{deliveries}</span>
             </div>
           </div>
 
           {/* Média ganhos/h */}
           <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center">
                 <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
               </div>
             <div>
-              <span className="text-[10px] font-bold text-neutral-400 block uppercase">Média ganhos/h</span>
-              <span className="text-[14px] font-extrabold text-neutral-700">R$ {avgEarningsPerHour.toFixed(2).replace('.', ',')}</span>
+              <span className="text-[10px] font-bold text-muted block uppercase">Média ganhos/h</span>
+              <span className="text-[14px] font-extrabold text-foreground">R$ {avgEarningsPerHour.toFixed(2).replace('.', ',')}</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Map display or listings summary */}
-      <section className="bg-white border border-neutral-100/80 rounded-[32px] p-4 shadow-[0_4px_20px_rgba(17,17,17,0.015)] space-y-4">
+      <section className="bg-card border border-border rounded-[32px] p-4 shadow-premium space-y-4">
         {detailTab === 'mapa' ? (
           <>
-            <h3 className="text-[14px] font-bold text-neutral-800 flex items-center space-x-2">
-              <MapPin size={18} className="text-neutral-400" />
+            <h3 className="text-[14px] font-bold text-foreground flex items-center space-x-2">
+              <MapPin size={18} className="text-muted" />
               <span>Caminho percorrido</span>
             </h3>
             <div className="w-full relative overflow-hidden rounded-[24px]">
@@ -221,19 +221,19 @@ function DetalhesJornadaConteudo() {
         ) : (
           /* Resumo/Lista de transacoes da jornada */
           <div className="space-y-3">
-            <h3 className="text-[14px] font-bold text-neutral-800 flex items-center space-x-2">
-              <List size={18} className="text-neutral-400" />
+            <h3 className="text-[14px] font-bold text-foreground flex items-center space-x-2">
+              <List size={18} className="text-muted" />
               <span>Transações do percurso</span>
             </h3>
             {entries.length === 0 ? (
-              <p className="text-[13px] text-neutral-400 py-3 text-center">Nenhum lançamento vinculado a esta jornada.</p>
+              <p className="text-[13px] text-muted py-3 text-center">Nenhum lançamento vinculado a esta jornada.</p>
             ) : (
               <div className="space-y-2">
                 {entries.map(e => (
-                  <div key={e.id} className="flex justify-between items-center py-2.5 px-3 bg-neutral-50 rounded-xl">
+                  <div key={e.id} className="flex justify-between items-center py-2.5 px-3 bg-card-secondary rounded-xl">
                     <div>
-                      <span className="text-[13px] font-bold text-neutral-750 block">{e.description}</span>
-                      <span className="text-[11px] font-semibold text-neutral-400 block">{e.type === 'gain' ? 'Faturamento' : 'Despesa'}</span>
+                      <span className="text-[13px] font-bold text-foreground block">{e.description}</span>
+                      <span className="text-[11px] font-semibold text-muted block">{e.type === 'gain' ? 'Faturamento' : 'Despesa'}</span>
                     </div>
                     <span className={`text-[13px] font-extrabold ${e.type === 'gain' ? 'text-[#19A85B]' : 'text-[#EA1D2C]'}`}>
                       {e.type === 'gain' ? '+' : '-'} R$ {e.amount.toFixed(2).replace('.', ',')}
@@ -247,16 +247,16 @@ function DetalhesJornadaConteudo() {
       </section>
 
       {/* Bottom selector bar */}
-      <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+      <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
         <button 
           onClick={() => setDetailTab('mapa')} 
-          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${detailTab === 'mapa' ? 'bg-[#EA1D2C] text-white shadow-md' : 'text-neutral-500 hover:text-neutral-800'}`}
+          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${detailTab === 'mapa' ? 'bg-primary text-white shadow-md' : 'text-muted hover:text-foreground'}`}
         >
           Mapa
         </button>
         <button 
           onClick={() => setDetailTab('resumo')} 
-          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${detailTab === 'resumo' ? 'bg-[#EA1D2C] text-white shadow-md' : 'text-neutral-500 hover:text-neutral-800'}`}
+          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${detailTab === 'resumo' ? 'bg-primary text-white shadow-md' : 'text-muted hover:text-foreground'}`}
         >
           Resumo
         </button>

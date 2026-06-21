@@ -125,15 +125,13 @@ export default function Home() {
 
   return (
     <div className="space-y-6 pb-28 pt-2">
-      {/* Header Estilo Mockup */}
-      <header className="flex justify-center items-center mb-6 bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
-            <Motorbike size={18} strokeWidth={2.5} className="text-white" />
-          </div>
-          <span className="text-[18px] font-extrabold tracking-tight text-neutral-900 font-sans">MotoPilot</span>
+      {/* Logo */}
+      <div className="flex items-center justify-center space-x-2 mb-6">
+        <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
+          <Motorbike size={18} strokeWidth={2.5} className="text-white" />
         </div>
-      </header>
+        <span className="text-[18px] font-extrabold tracking-tight text-foreground font-sans">MotoPilot</span>
+      </div>
 
       {/* Cartão de Lucro Líquido Redesenhado */}
       <section 
@@ -194,46 +192,46 @@ export default function Home() {
       {/* Grid de Estatísticas Recalibradas */}
       <section className="grid grid-cols-2 gap-4">
         {/* Tempo Online */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 flex items-center justify-center mb-1">
+        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-1">
             <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-neutral-400">Tempo online</p>
-            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">{activeJourney ? elapsedTime : '0h 0m'}</p>
+            <p className="text-[11px] font-semibold text-muted">Tempo online</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5">{activeJourney ? elapsedTime : '0h 0m'}</p>
           </div>
         </div>
         
         {/* Km rodados */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/20 flex items-center justify-center mb-1">
+        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center mb-1">
             <Map size={16} strokeWidth={2.5} className="text-rose-500" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-neutral-400">Km rodados</p>
-            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
+            <p className="text-[11px] font-semibold text-muted">Km rodados</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
           </div>
         </div>
         
         {/* Entregas */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 flex items-center justify-center mb-1">
+        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-1">
             <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-neutral-400">Entregas</p>
-            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">{deliveriesCount}</p>
+            <p className="text-[11px] font-semibold text-muted">Entregas</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5">{deliveriesCount}</p>
           </div>
         </div>
         
         {/* Média por Hora */}
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center mb-1">
+        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center mb-1">
             <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-neutral-400">Média por hora</p>
-            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
+            <p className="text-[11px] font-semibold text-muted">Média por hora</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
           </div>
         </div>
       </section>
@@ -241,7 +239,7 @@ export default function Home() {
       {/* Seção da Jornada */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-neutral-800 dark:text-white">Jornada</h2>
+          <h2 className="text-[16px] font-extrabold text-foreground">Jornada</h2>
           <button 
             onClick={() => router.push('/jornada')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -250,33 +248,33 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] space-y-5 card-premium">
+        <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] space-y-5 card-premium">
           {activeJourney ? (
             <>
               {/* Cabeçalho da Jornada ativa */}
               <div className="flex justify-between items-center">
-                <span className="text-[15px] font-bold text-neutral-800 dark:text-white">Jornada atual</span>
+                <span className="text-[15px] font-bold text-foreground">Jornada atual</span>
                 <span className="delivery-pill text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   Em andamento
                 </span>
               </div>
               
               {/* Grid de detalhes da Jornada */}
-              <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-neutral-50 dark:border-[#232323] pt-4">
+              <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-border pt-4">
                 <div>
-                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Início</span>
-                  <span className="text-[14px] font-bold text-neutral-700 dark:text-white">{activeStartTime}</span>
+                  <span className="text-[11px] font-semibold text-muted block uppercase">Início</span>
+                  <span className="text-[14px] font-bold text-foreground">{activeStartTime}</span>
                 </div>
                 <div>
-                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Tempo online</span>
-                  <span className="text-[14px] font-bold text-neutral-700 dark:text-white">{elapsedTime}</span>
+                  <span className="text-[11px] font-semibold text-muted block uppercase">Tempo online</span>
+                  <span className="text-[14px] font-bold text-foreground">{elapsedTime}</span>
                 </div>
                 <div>
-                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Km rodados</span>
-                  <span className="text-[14px] font-bold text-neutral-700 dark:text-white">{liveDistance.toFixed(1).replace('.', ',')} km</span>
+                  <span className="text-[11px] font-semibold text-muted block uppercase">Km rodados</span>
+                  <span className="text-[14px] font-bold text-foreground">{liveDistance.toFixed(1).replace('.', ',')} km</span>
                 </div>
                 <div>
-                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Lucro</span>
+                  <span className="text-[11px] font-semibold text-muted block uppercase">Lucro</span>
                   <span className="text-[14px] font-extrabold text-[#19A85B]">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
                 </div>
               </div>
@@ -298,8 +296,8 @@ export default function Home() {
           ) : (
             <div className="text-center py-3 space-y-4">
               <div className="space-y-1">
-                <p className="text-[15px] font-bold text-neutral-800 dark:text-white">Nenhuma jornada ativa</p>
-                <p className="text-[12px] text-neutral-400 max-w-[280px] mx-auto">Inicie sua jornada para começar a registrar seus km e faturamento em tempo real.</p>
+                <p className="text-[15px] font-bold text-foreground">Nenhuma jornada ativa</p>
+                <p className="text-[12px] text-muted max-w-[280px] mx-auto">Inicie sua jornada para começar a registrar seus km e faturamento em tempo real.</p>
               </div>
               <button
                 onClick={async () => {
@@ -321,7 +319,7 @@ export default function Home() {
       {/* Nova Seção de Metas */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-neutral-800 dark:text-white">Metas</h2>
+          <h2 className="text-[16px] font-extrabold text-foreground">Metas</h2>
           <button 
             onClick={() => router.push('/perfil')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -330,20 +328,20 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-4 card-premium">
+        <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-4 card-premium">
           {/* Meta Diária */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[12px] font-bold text-neutral-700 dark:text-neutral-200">
+            <div className="flex justify-between text-[12px] font-bold text-foreground">
               <span>Meta diária</span>
               <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
             </div>
-            <div className="w-full h-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden flex items-center">
+            <div className="w-full h-2.5 bg-card-secondary rounded-full overflow-hidden flex items-center">
               <div 
                 className="h-full bg-[#EA1D2C] rounded-full transition-all duration-500"
                 style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
               />
             </div>
-            <div className="flex justify-between text-[10px] text-neutral-400 font-semibold">
+            <div className="flex justify-between text-[10px] text-muted font-semibold">
               <span>R$ {netProfit.toFixed(2).replace('.', ',')}</span>
               <span>R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
             </div>
@@ -352,34 +350,34 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4 pt-1">
             {/* Meta Semanal */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
+              <div className="flex justify-between text-[11px] font-bold text-foreground">
                 <span>Meta semanal</span>
                 <span>{dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100).toFixed(0) : 0}%</span>
               </div>
-              <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-card-secondary rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                   style={{ width: `${dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100) : 0}%` }}
                 />
               </div>
-              <div className="text-[9px] text-neutral-400 font-semibold">
+              <div className="text-[9px] text-muted font-semibold">
                 R$ {weekNetProfit.toFixed(2).replace('.', ',')} / R$ {(dailyGoal * 7).toFixed(2).replace('.', ',')}
               </div>
             </div>
 
             {/* Meta Mensal */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
+              <div className="flex justify-between text-[11px] font-bold text-foreground">
                 <span>Meta mensal</span>
                 <span>{dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100).toFixed(0) : 0}%</span>
               </div>
-              <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-card-secondary rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-indigo-500 rounded-full transition-all duration-500"
                   style={{ width: `${dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100) : 0}%` }}
                 />
               </div>
-              <div className="text-[9px] text-neutral-400 font-semibold">
+              <div className="text-[9px] text-muted font-semibold">
                 R$ {monthNetProfit.toFixed(2).replace('.', ',')} / R$ {(dailyGoal * 28).toFixed(2).replace('.', ',')}
               </div>
             </div>
@@ -390,7 +388,7 @@ export default function Home() {
       {/* Seção Resumo da Semana */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-neutral-800 dark:text-white">Resumo da semana</h2>
+          <h2 className="text-[16px] font-extrabold text-foreground">Resumo da semana</h2>
           <button 
             onClick={() => router.push('/relatorios')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -399,20 +397,20 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
+        <div className="bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
           <div className="flex-1">
-            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Ganhos</span>
-            <span className="text-[15px] font-extrabold text-neutral-800 dark:text-white mt-0.5 block">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
+            <span className="text-[10px] font-bold text-muted block uppercase">Ganhos</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
           </div>
-          <div className="h-6 border-l border-neutral-100 dark:border-[#232323]" />
+          <div className="h-6 border-l border-border" />
           <div className="flex-1">
-            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Km rodados</span>
-            <span className="text-[15px] font-extrabold text-neutral-800 dark:text-white mt-0.5 block">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
+            <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
           </div>
-          <div className="h-6 border-l border-neutral-100 dark:border-[#232323]" />
+          <div className="h-6 border-l border-border" />
           <div className="flex-1">
-            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Entregas</span>
-            <span className="text-[15px] font-extrabold text-neutral-800 dark:text-white mt-0.5 block">{displayDeliveriesSemana}</span>
+            <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">{displayDeliveriesSemana}</span>
           </div>
         </div>
       </section>
@@ -423,19 +421,19 @@ export default function Home() {
           {/* Backdrop */}
           <div 
             onClick={() => setIsMenuOpen(false)}
-            className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm transition-opacity duration-300"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
           />
           
           {/* Drawer Body */}
-          <div className="relative w-72 max-w-xs bg-white h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
-            <div className="flex justify-between items-center border-b border-neutral-100 pb-4">
+          <div className="relative w-72 max-w-xs bg-card border-r border-border h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
+            <div className="flex justify-between items-center border-b border-border pb-4">
               <div className="flex items-center space-x-2">
                 <Motorbike size={22} strokeWidth={2.5} className="text-[#EA1D2C]" />
-                <span className="text-[16px] font-extrabold text-neutral-800">MotoPilot Menu</span>
+                <span className="text-[16px] font-extrabold text-foreground">MotoPilot Menu</span>
               </div>
               <button 
                 onClick={() => setIsMenuOpen(false)}
-                className="text-neutral-500 hover:text-neutral-800 cursor-pointer"
+                className="text-muted hover:text-foreground cursor-pointer"
               >
                 <X size={24} strokeWidth={2.5} />
               </button>
@@ -446,24 +444,24 @@ export default function Home() {
               <div className="space-y-1">
                 <button 
                   onClick={() => { setIsMenuOpen(false); router.push('/perfil'); }}
-                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-neutral-700 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-left cursor-pointer"
+                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
                 >
-                  <User size={20} strokeWidth={2.5} className="text-neutral-500" />
+                  <User size={20} strokeWidth={2.5} className="text-muted" />
                   <span>Meu Perfil</span>
                 </button>
                 
                 <button 
                   onClick={() => { setIsMenuOpen(false); router.push('/relatorios'); }}
-                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-neutral-700 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-left cursor-pointer"
+                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
                 >
-                  <Settings size={20} strokeWidth={2.5} className="text-neutral-500" />
+                  <Settings size={20} strokeWidth={2.5} className="text-muted" />
                   <span>Configurações</span>
                 </button>
               </div>
 
               <button 
                 onClick={() => { setIsMenuOpen(false); handleLogout(); }}
-                className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors text-left cursor-pointer border border-red-100 bg-red-50/10"
+                className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500 rounded-xl hover:bg-red-500/10 hover:text-red-600 transition-colors text-left cursor-pointer border border-red-500/20 bg-red-500/5"
               >
                 <LogOut size={20} strokeWidth={2.5} />
                 <span>Sair da conta</span>

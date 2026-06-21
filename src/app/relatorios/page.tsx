@@ -71,28 +71,28 @@ export default function Relatorios() {
   return (
     <div className="space-y-6 pb-28 pt-2">
       {/* Header */}
-      <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+      <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
         <button 
           onClick={() => router.push('/')}
-          className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
+          className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
         >
           <ArrowLeft size={24} strokeWidth={2.5} />
         </button>
-        <h1 className="text-[18px] font-extrabold text-neutral-800">Relatórios</h1>
+        <h1 className="text-[18px] font-extrabold text-foreground">Relatórios</h1>
         <div className="w-10 h-10" /> {/* Spacer */}
       </header>
 
       {/* Tabs */}
-      <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+      <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
         <button 
           onClick={() => setActiveTab('geral')} 
-          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'geral' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'geral' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
         >
           Geral
         </button>
         <button 
           onClick={() => setActiveTab('comparativos')} 
-          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'comparativos' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+          className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${activeTab === 'comparativos' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
         >
           Comparativos
         </button>
@@ -102,16 +102,16 @@ export default function Relatorios() {
         <>
           {/* Period Dropdown */}
           <div className="flex justify-center">
-            <div className="bg-white border border-neutral-150 rounded-2xl px-4 py-2 text-[13px] font-bold text-neutral-700 flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-neutral-50">
+            <div className="bg-card border border-border rounded-2xl px-4 py-2 text-[13px] font-bold text-foreground flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-card-secondary">
               <span>Maio/2025</span>
-              <ChevronDown size={16} className="text-neutral-400" />
+              <ChevronDown size={16} className="text-muted" />
             </div>
           </div>
 
           {/* Lucro líquido Card */}
-          <section className="bg-white border border-neutral-100/80 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)] space-y-4">
+          <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-[12px] font-bold text-neutral-400 block uppercase">Lucro líquido</span>
+              <span className="text-[12px] font-bold text-muted block uppercase">Lucro líquido</span>
               
               {/* Badge Comparativo */}
               <span className="flex items-center text-[11px] font-extrabold px-3 py-1 rounded-full text-[#19A85B] bg-[#19A85B]/10 uppercase tracking-wider">
@@ -128,40 +128,40 @@ export default function Relatorios() {
           {/* Stats Grid (2x2) */}
           <section className="grid grid-cols-2 gap-4">
             {/* Faturamento */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-[0_4px_16px_rgba(17,17,17,0.005)]">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase">Faturamento</p>
-              <p className="text-[18px] font-extrabold text-neutral-800 mt-2">R$ {totalGains.toFixed(2).replace('.', ',')}</p>
+            <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
+              <p className="text-[11px] font-bold text-muted uppercase">Faturamento</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2">R$ {totalGains.toFixed(2).replace('.', ',')}</p>
             </div>
 
             {/* Gastos */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-[0_4px_16px_rgba(17,17,17,0.005)]">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase">Gastos</p>
-              <p className="text-[18px] font-extrabold text-neutral-800 mt-2">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
+            <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
+              <p className="text-[11px] font-bold text-muted uppercase">Gastos</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
             </div>
 
             {/* Tempo online */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-[0_4px_16px_rgba(17,17,17,0.005)]">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase">Tempo online</p>
-              <p className="text-[18px] font-extrabold text-neutral-800 mt-2">{Math.floor(totalHours)}h {Math.round((totalHours % 1) * 60)}m</p>
+            <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
+              <p className="text-[11px] font-bold text-muted uppercase">Tempo online</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2">{Math.floor(totalHours)}h {Math.round((totalHours % 1) * 60)}m</p>
             </div>
 
             {/* Km rodados */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-[0_4px_16px_rgba(17,17,17,0.005)]">
-              <p className="text-[11px] font-bold text-neutral-400 uppercase">Km rodados</p>
-              <p className="text-[18px] font-extrabold text-neutral-800 mt-2">{totalDistance.toFixed(1).replace('.', ',')} km</p>
+            <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
+              <p className="text-[11px] font-bold text-muted uppercase">Km rodados</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2">{totalDistance.toFixed(1).replace('.', ',')} km</p>
             </div>
           </section>
 
           {/* Bar Chart Daily Profit */}
-          <section className="bg-white border border-neutral-100/80 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)] space-y-4">
-            <h3 className="text-[14px] font-bold text-neutral-800">Lucro líquido por dia</h3>
+          <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium space-y-4">
+            <h3 className="text-[14px] font-bold text-foreground">Lucro líquido por dia</h3>
             
             <div className="h-56 w-full pt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
                   <XAxis 
                     dataKey="name" 
-                    stroke="#A3A3A3" 
+                    stroke="var(--text-muted)" 
                     fontSize={11} 
                     tickLine={false} 
                     axisLine={false} 
@@ -170,11 +170,11 @@ export default function Relatorios() {
                   <Tooltip 
                     cursor={{ fill: 'rgba(25, 168, 91, 0.04)' }}
                     contentStyle={{ 
-                      backgroundColor: '#FFFFFF', 
-                      border: '1px solid #F4F4F5', 
+                      backgroundColor: 'var(--card-color)', 
+                      border: '1px solid var(--border-color)', 
                       borderRadius: '16px', 
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
-                      color: '#171717',
+                      boxShadow: 'var(--shadow-premium)',
+                      color: 'var(--text-color)',
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}
@@ -192,9 +192,9 @@ export default function Relatorios() {
         </>
       ) : (
         /* Comparativos Tab view */
-        <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center space-y-3">
-          <p className="text-[14px] font-bold text-neutral-700">Comparativos detalhados</p>
-          <p className="text-[12px] text-neutral-400">Na próxima atualização você poderá comparar seu rendimento diário, faturamento por app e lucro em relação ao mês anterior.</p>
+        <div className="bg-card border border-border rounded-3xl p-8 text-center space-y-3 shadow-sm">
+          <p className="text-[14px] font-bold text-foreground">Comparativos detalhados</p>
+          <p className="text-[12px] text-muted">Na próxima atualização você poderá comparar seu rendimento diário, faturamento por app e lucro em relação ao mês anterior.</p>
         </div>
       )}
     </div>

@@ -37,7 +37,7 @@ export default function Lancamentos() {
   const { entries, loading: entriesLoading, fetched, fetchRecentEntries, addEntry, deleteEntry } = useEntries();
 
   // Screen 4 (Form) States
-  const [expenseTab, setExpenseTab] = useState<'gasto' | 'abastecimento' | 'importar'>('gasto');
+  const [expenseTab, setExpenseTab] = useState<'gasto' | 'ganhos' | 'importar'>('gasto');
   const [category, setCategory] = useState('Alimentação');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
@@ -69,9 +69,7 @@ export default function Lancamentos() {
 
   // Sync category with tab
   useEffect(() => {
-    if (expenseTab === 'abastecimento') {
-      setCategory('Combustível');
-    } else if (expenseTab === 'gasto' && category === 'Combustível') {
+    if (expenseTab === 'gasto' && category === 'Combustível') {
       setCategory('Alimentação');
     }
   }, [expenseTab, category]);
@@ -104,12 +102,25 @@ export default function Lancamentos() {
     if (isNaN(parsedAmount) || parsedAmount <= 0) return;
 
     setLoading(true);
-    // Para despesas salvamos com tipo 'expense'
     const desc = notes ? `${category} - ${notes}` : category;
     await addEntry('expense', parsedAmount, desc, activeJourneyId);
     setLoading(false);
 
-    // Reset and redirect
+    setAmount('');
+    setNotes('');
+    router.push('/lancamentos');
+  };
+
+  const handleSaveGain = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) return;
+
+    setLoading(true);
+    const desc = notes ? `Ganho - ${notes}` : 'Ganho';
+    await addEntry('gain', parsedAmount, desc, activeJourneyId);
+    setLoading(false);
+
     setAmount('');
     setNotes('');
     router.push('/lancamentos');
@@ -235,7 +246,7 @@ export default function Lancamentos() {
             >
               <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-foreground">Novo gasto</h1>
+            <h1 className="text-[18px] font-extrabold text-foreground">Novo lançamento</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
           </header>
 
@@ -248,10 +259,10 @@ export default function Lancamentos() {
               Gasto
             </button>
             <button 
-              onClick={() => setExpenseTab('abastecimento')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'abastecimento' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
+              onClick={() => setExpenseTab('ganhos')} 
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'ganhos' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
-              Abastecimento
+              Ganhos
             </button>
             <button 
               onClick={() => setExpenseTab('importar')} 
@@ -262,7 +273,76 @@ export default function Lancamentos() {
           </div>
 
           {/* Form */}
-          {expenseTab !== 'importar' ? (
+          {expenseTab === 'ganhos' ? (
+            /* Ganhos Form */
+            <form onSubmit={handleSaveGain} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
+              <div className="flex flex-col items-center justify-center py-5 bg-emerald-50 rounded-[28px] border border-emerald-200 mb-3">
+                <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2">Valor do ganho</span>
+                <div className="flex items-center justify-center space-x-1">
+                  <span className="text-xl font-bold text-emerald-500">R$</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    required
+                    autoFocus
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-emerald-600 w-[220px]"
+                    placeholder="0,00"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Data</label>
+                <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setDate(todayStr)}
+                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                  >
+                    Hoje
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDate(yesterdayStr)}
+                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                  >
+                    Ontem
+                  </button>
+                  <div className="flex-1 relative">
+                    <input
+                      type="date"
+                      required
+                      value={date}
+                      onChange={e => setDate(e.target.value)}
+                      className="w-full py-3.5 px-3 bg-card border border-border rounded-2xl text-[13px] font-extrabold text-foreground focus:outline-none focus:border-emerald-500 cursor-pointer text-center"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
+                <input
+                  type="text"
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-emerald-500 text-[14px] font-bold text-foreground placeholder:text-muted/65"
+                  placeholder="Ex: corrida 99, iFood, etc."
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-4.5 rounded-[24px] transition-all active:scale-[0.98] text-[15px] shadow-lg cursor-pointer disabled:opacity-50 mt-4"
+              >
+                {loading ? 'Salvando...' : 'Salvar Ganho'}
+              </button>
+            </form>
+          ) : expenseTab !== 'importar' ? (
             <form onSubmit={handleSave} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
               {/* Category Grid (for general gasto) */}
               {expenseTab === 'gasto' && (
