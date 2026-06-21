@@ -38,6 +38,7 @@ export default function Jornada() {
     isTracking, 
     gpsAccuracy, 
     gpsStatus, 
+    speed,
     trackerError 
   } = useJourneys();
 
@@ -95,6 +96,25 @@ export default function Jornada() {
 
   if (loading) return null;
 
+  // GPS Accuracy styling helper
+  let accuracyLabel = "Buscando GPS...";
+  let accuracyColor = "bg-amber-500";
+  if (gpsStatus === 'active' && gpsAccuracy !== null) {
+    if (gpsAccuracy <= 15) {
+      accuracyLabel = "GPS Alta Precisão";
+      accuracyColor = "bg-emerald-500";
+    } else if (gpsAccuracy <= 40) {
+      accuracyLabel = "GPS Média Precisão";
+      accuracyColor = "bg-amber-500";
+    } else {
+      accuracyLabel = "GPS Baixa Precisão";
+      accuracyColor = "bg-red-500";
+    }
+  } else if (gpsStatus === 'inactive') {
+    accuracyLabel = "GPS Inativo";
+    accuracyColor = "bg-neutral-500";
+  }
+
   // Estatísticas específicas da jornada ativa
   const activeEntries = entries.filter(e => e.journey_id === activeJourney?.id);
   const activeGains = activeEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
@@ -143,18 +163,119 @@ export default function Jornada() {
         /* SCREEN 2: JORNADA ATIVA */
         <div className="space-y-6">
           {/* Header da Jornada ativa */}
-          <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
-            <div className="flex items-center space-x-3">
+          <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
+            <div className="flex items-center space-x-3 pl-4">
               <span className="flex h-3.5 w-3.5 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#19A85B] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#19A85B]"></span>
               </span>
               <div>
-                <h1 className="text-[16px] font-extrabold text-neutral-800">Jornada ativa</h1>
-                <p className="text-[12px] text-neutral-400 mt-0.5">Iniciada às {activeStartTime}</p>
+                <h1 className="text-[16px] font-extrabold text-foreground">Jornada ativa</h1>
+                <p className="text-[12px] text-muted mt-0.5">Iniciada às {activeStartTime}</p>
               </div>
             </div>
             
+            <div className="flex items-center pr-4">
+              <button 
+                onClick={toggleShowAmount}
+                className="w-9 h-9 rounded-full bg-card-secondary hover:bg-card-secondary/80 flex items-center justify-center border border-border transition-transform active:scale-95 cursor-pointer"
+              >
+                {showAmount ? <Eye size={18} className="text-foreground" /> : <EyeOff size={18} className="text-foreground" />}
+              </button>
+            </div>
+          </header>
+
+          {/* Erros e Alertas */}
+          {(trackerError || journeyError) && (
+            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-[20px] flex items-start space-x-3 mx-1">
+              <AlertTriangle size={22} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-[13px] text-red-500 font-medium">{trackerError || journeyError}</p>
+            </div>
+          )}
+
+          {/* Rota em tempo real com mapa maior */}
+          <section className="relative w-full rounded-[32px] overflow-hidden border border-border shadow-premium bg-card">
+            {/* GPS Status Indicator Overlay */}
+            <div className="absolute top-4 left-4 bg-card/90 backdrop-blur-md border border-border rounded-full px-3 py-1.5 shadow-sm flex items-center space-x-2 z-[400] text-[11px] font-bold">
+              <span className={`w-2 h-2 rounded-full ${accuracyColor} ${gpsStatus === 'active' ? 'animate-pulse' : ''}`}></span>
+              <span className="text-foreground">{accuracyLabel} {gpsAccuracy !== null ? `(${gpsAccuracy}m)` : ''}</span>
+            </div>
+
+            {/* Connection Status Overlay */}
+            <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-md border border-border rounded-full px-3 py-1.5 shadow-sm flex items-center space-x-1.5 z-[400] text-[11px] font-bold text-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Atualizado agora</span>
+            </div>
+
+            <div className="w-full h-[360px] relative">
+              <MiniMap isTracking={isTracking} className="h-full w-full" />
+            </div>
+          </section>
+
+          {/* Floating Details Overlay Card with negative margin */}
+          <section className="relative z-10 -mt-14 mx-4 bg-card border border-border shadow-premium rounded-[28px] p-5">
+            {/* Uber Driver Style Odometer & Speed */}
+            <div className="flex justify-between items-end">
+              <div className="space-y-1">
+                <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Odômetro</span>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-3xl font-black text-foreground tracking-tight">
+                    {liveDistance.toFixed(1).replace('.', ',')}
+                  </span>
+                  <span className="text-sm font-bold text-muted">km</span>
+                </div>
+              </div>
+
+              <div className="space-y-1 text-right">
+                <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Velocidade</span>
+                <div className="flex items-baseline justify-end space-x-1">
+                  <span className="text-3xl font-black text-primary tracking-tight">
+                    {speed !== null ? speed : '0'}
+                  </span>
+                  <span className="text-sm font-bold text-muted">km/h</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-border my-4"></div>
+
+            {/* Grid of secondary statistics */}
+            <div className="grid grid-cols-3 gap-2 text-center">
+              {/* Tempo Online */}
+              <div className="space-y-1">
+                <div className="flex justify-center mb-0.5">
+                  <Clock size={16} className="text-[#3B82F6]" />
+                </div>
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Tempo</span>
+                <span className="text-[14px] font-extrabold text-foreground block mt-0.5">{elapsedTime.slice(0, 5)}h</span>
+              </div>
+
+              {/* Faturamento */}
+              <div className="space-y-1 border-l border-border">
+                <div className="flex justify-center mb-0.5">
+                  <ShoppingBag size={16} className="text-[#10B981]" />
+                </div>
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
+                <span className="text-[14px] font-extrabold text-[#10B981] block mt-0.5">
+                  {showAmount ? `R$ ${activeGains.toFixed(2).replace('.', ',')}` : 'R$ •••'}
+                </span>
+              </div>
+
+              {/* Gastos */}
+              <div className="space-y-1 border-l border-border">
+                <div className="flex justify-center mb-0.5">
+                  <TrendingUp size={16} className="text-[#EA1D2C]" />
+                </div>
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">Gastos</span>
+                <span className="text-[14px] font-extrabold text-[#EA1D2C] block mt-0.5">
+                  {showAmount ? `R$ ${activeExpenses.toFixed(2).replace('.', ',')}` : 'R$ •••'}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* Action button - Finalizar Jornada */}
+          <div className="px-4 pt-2">
             <button
               onClick={async () => {
                 setIsFinishing(true);
@@ -168,120 +289,18 @@ export default function Jornada() {
                 router.push('/');
               }}
               disabled={isFinishing}
-              className="px-4 py-2 text-[13px] font-extrabold text-[#EA1D2C] border border-[#EA1D2C]/20 hover:bg-[#EA1D2C]/5 rounded-xl transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-4 bg-primary text-white font-extrabold text-[15px] rounded-[24px] flex items-center justify-center space-x-2 shadow-lg hover:bg-primary/95 transition-all active:scale-[0.97] cursor-pointer disabled:opacity-50"
             >
-              {isFinishing ? 'Salvando...' : 'Encerrar'}
+              {isFinishing ? (
+                <span>Salvando jornada...</span>
+              ) : (
+                <>
+                  <Square size={16} fill="white" className="mr-1" />
+                  <span>Finalizar Jornada</span>
+                </>
+              )}
             </button>
-          </header>
-
-          {/* Erros e Alertas */}
-          {(trackerError || journeyError) && (
-            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-[20px] flex items-start space-x-3">
-              <AlertTriangle size={22} className="text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-[13px] text-red-500 font-medium">{trackerError || journeyError}</p>
-            </div>
-          )}
-
-          {/* Red card banner */}
-          <section className="delivery-hero rounded-[32px] p-6 relative overflow-hidden flex flex-col justify-between min-h-[170px] shadow-lg">
-            <div className="flex justify-between items-center">
-              <span className="text-[13px] font-bold uppercase tracking-wide opacity-90 text-white/90">Lucro líquido</span>
-              <button 
-                onClick={toggleShowAmount}
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
-              >
-                {showAmount ? <Eye size={18} className="text-white" /> : <EyeOff size={18} className="text-white" />}
-              </button>
-            </div>
-
-            <div className="my-2">
-              <span className="text-[38px] leading-none font-extrabold tracking-tight select-none">
-                {showAmount ? `R$ ${activeNetProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
-              </span>
-            </div>
-
-            <div className="flex justify-start items-center space-x-6 pt-3 border-t border-white/10 text-white/95 text-[14px]">
-              <div>
-                <span className="opacity-80 block text-[10px] uppercase font-semibold">Faturamento</span>
-                <span className="font-extrabold">R$ {activeGains.toFixed(2).replace('.', ',')}</span>
-              </div>
-              <div className="border-l border-white/10 h-8"></div>
-              <div>
-                <span className="opacity-80 block text-[10px] uppercase font-semibold">Gastos</span>
-                <span className="font-extrabold">R$ {activeExpenses.toFixed(2).replace('.', ',')}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Grid de status (2x2) */}
-          <section className="grid grid-cols-2 gap-4">
-            {/* Tempo Online */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
-              <div className="w-9 h-9 rounded-2xl bg-indigo-50 flex items-center justify-center mb-2">
-                <Clock size={18} strokeWidth={2.5} className="text-indigo-500 animate-pulse" />
-              </div>
-              <div>
-                <p className="text-[12px] font-semibold text-neutral-400">Tempo online</p>
-                <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{elapsedTime.slice(0, 5)}h</p>
-              </div>
-            </div>
-
-            {/* Km Rodados */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
-              <div className="w-9 h-9 rounded-2xl bg-rose-50 flex items-center justify-center mb-2">
-                <Map size={18} strokeWidth={2.5} className="text-rose-500" />
-              </div>
-              <div>
-                <p className="text-[12px] font-semibold text-neutral-400">Km rodados</p>
-                <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{liveDistance.toFixed(1).replace('.', ',')} km</p>
-              </div>
-            </div>
-
-            {/* Entregas */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
-              <div className="w-9 h-9 rounded-2xl bg-emerald-50 flex items-center justify-center mb-2">
-                <ShoppingBag size={18} strokeWidth={2.5} className="text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-[12px] font-semibold text-neutral-400">Entregas</p>
-                <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{activeDeliveriesCount}</p>
-              </div>
-            </div>
-
-            {/* Média de ganhos/h */}
-            <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
-              <div className="w-9 h-9 rounded-2xl bg-amber-50 flex items-center justify-center mb-2">
-                <TrendingUp size={18} strokeWidth={2.5} className="text-amber-500" />
-              </div>
-              <div>
-                <p className="text-[12px] font-semibold text-neutral-400">Média ganhos/h</p>
-                <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">R$ {activeAvgGanhosPerHr.toFixed(2).replace('.', ',')}</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Map display */}
-          <section className="bg-white border border-neutral-100/80 rounded-[32px] p-4 shadow-[0_4px_20px_rgba(17,17,17,0.015)] relative">
-            <h3 className="text-[14px] font-bold text-neutral-800 flex items-center space-x-2 mb-3">
-              <Map size={18} className="text-neutral-400" />
-              <span>Rota em tempo real</span>
-            </h3>
-            
-            <div className="w-full relative overflow-hidden rounded-[24px]">
-              <MiniMap isTracking={isTracking} />
-              
-              {/* Odômetro overlay no rodapé do mapa */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-neutral-100 shadow-lg flex items-center justify-between z-[400] transition-all">
-                <div className="space-y-0.5">
-                  <span className="text-[10px] font-bold text-neutral-400 block uppercase">Odômetro</span>
-                  <span className="text-[20px] font-extrabold text-neutral-800">{liveDistance.toFixed(1).replace('.', ',')} km</span>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-[#EA1D2C]/10 flex items-center justify-center">
-                  <LineChart size={20} className="text-[#EA1D2C]" />
-                </div>
-              </div>
-            </div>
-          </section>
+          </div>
         </div>
       ) : (
         /* SCREEN 3: HISTÓRICO */

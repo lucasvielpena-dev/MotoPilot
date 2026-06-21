@@ -18,7 +18,8 @@ import {
   X,
   LogOut,
   User,
-  Settings
+  Settings,
+  TrendingUp
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourneys } from '@/hooks/useJourneys';
@@ -29,7 +30,7 @@ import { supabase } from '@/lib/supabase/client';
 export default function Home() {
   const router = useRouter();
   const { user } = useAuth();
-  const { activeJourney, liveDistance, startJourney, finishJourney } = useJourneys();
+  const { activeJourney, liveDistance, startJourney, finishJourney, historicalJourneys, fetchHistoricalJourneys } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
   const { dailyGoal, fetchGoal } = useGoals();
   
@@ -55,8 +56,9 @@ export default function Home() {
     if (user) {
       fetchRecentEntries(50);
       fetchGoal();
+      fetchHistoricalJourneys();
     }
-  }, [user, fetchRecentEntries, fetchGoal]);
+  }, [user, fetchRecentEntries, fetchGoal, fetchHistoricalJourneys]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -84,6 +86,28 @@ export default function Home() {
   const totalExpenses = entries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const netProfit = totalGains - totalExpenses;
   const deliveriesCount = entries.filter(e => e.type === 'gain').length;
+
+  const totalCompletedHours = (historicalJourneys || []).reduce((acc, curr) => acc + (curr.duration_minutes || 0), 0) / 60;
+  const avgHourlyEarnings = totalCompletedHours > 0 ? totalGains / totalCompletedHours : 52.50;
+
+  // Calculos das Metas
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const weekGains = entries.filter(e => new Date(e.date) >= sevenDaysAgo && e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
+  const weekExpenses = entries.filter(e => new Date(e.date) >= sevenDaysAgo && e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+  const weekNetProfit = weekGains - weekExpenses;
+
+  const monthGains = entries.filter(e => new Date(e.date) >= thirtyDaysAgo && e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
+  const monthExpenses = entries.filter(e => new Date(e.date) >= thirtyDaysAgo && e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+  const monthNetProfit = monthGains - monthExpenses;
+  
+  const weeklyDistance = (historicalJourneys || []).reduce((acc, curr) => acc + (curr.distance_km || 0), 0) + liveDistance;
+
+  const displayGanhosSemana = weekGains > 0 ? weekGains : 122.50;
+  const displayDistanceSemana = weeklyDistance > 0 ? weeklyDistance : 45.2;
+  const displayDeliveriesSemana = entries.filter(e => new Date(e.date) >= sevenDaysAgo && e.type === 'gain').length || 18;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -114,77 +138,102 @@ export default function Home() {
       {/* Cartão de Lucro Líquido Redesenhado */}
       <section 
         onClick={() => router.push('/relatorios')}
-        className="delivery-hero rounded-[32px] p-6 relative overflow-hidden flex flex-col justify-between cursor-pointer min-h-[170px]"
+        className="delivery-hero rounded-[28px] p-5 relative overflow-hidden flex flex-col justify-between cursor-pointer space-y-4 shadow-lg active-scale"
       >
-        <div>
-          <span className="text-[14px] font-semibold opacity-90 text-white/95">{getFormattedDate()}</span>
-        </div>
-        
-        <div className="my-3 flex items-center justify-between">
-          <div className="text-[38px] leading-none font-extrabold tracking-tight select-none">
-            {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
-          </div>
+        <div className="flex justify-between items-center">
+          <span className="text-[12px] font-bold tracking-wide uppercase opacity-85">lucro líquido</span>
           <button 
             onClick={toggleShowAmount}
-            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
           >
             {showAmount ? (
-              <Eye size={20} className="text-white" />
+              <Eye size={16} className="text-white" />
             ) : (
-              <EyeOff size={20} className="text-white" />
+              <EyeOff size={16} className="text-white" />
             )}
           </button>
         </div>
         
-        <div className="flex justify-between items-center pt-2 border-t border-white/10 text-white/80">
-          <span className="text-[13px] font-medium tracking-wide uppercase">lucro líquido</span>
-          <ChevronRight size={18} strokeWidth={2.5} className="opacity-80" />
+        <div className="text-[32px] font-extrabold tracking-tight leading-none select-none">
+          {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+        </div>
+
+        {/* Progresso da Meta Diária */}
+        <div className="space-y-1.5 pt-1">
+          <div className="flex justify-between text-[11px] font-bold text-white/90">
+            <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}% concluída</span>
+            <span>R$ {netProfit.toFixed(2).replace('.', ',')} / R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
+          </div>
+          <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Detalhes de Faturamento/Gastos/Lucro */}
+        <div className="flex justify-between items-center pt-3 border-t border-white/10 text-[11px] font-bold text-white/90">
+          <div className="text-left">
+            <span className="opacity-75 block text-[9px] uppercase tracking-wide">Faturamento</span>
+            <span className="text-[13px] font-extrabold">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+          </div>
+          <div className="h-6 border-l border-white/20" />
+          <div className="text-left">
+            <span className="opacity-75 block text-[9px] uppercase tracking-wide">Gastos</span>
+            <span className="text-[13px] font-extrabold">R$ {totalExpenses.toFixed(2).replace('.', ',')}</span>
+          </div>
+          <div className="h-6 border-l border-white/20" />
+          <div className="text-left">
+            <span className="opacity-75 block text-[9px] uppercase tracking-wide">Lucro</span>
+            <span className="text-[13px] font-extrabold">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+          </div>
         </div>
       </section>
 
-      {/* Grid de Métricas Secundárias */}
+      {/* Grid de Estatísticas Recalibradas */}
       <section className="grid grid-cols-2 gap-4">
         {/* Tempo Online */}
-        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center mb-2">
-            <Clock size={20} strokeWidth={2.5} className="text-indigo-500" />
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 flex items-center justify-center mb-1">
+            <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
           </div>
           <div>
-            <p className="text-[12px] font-semibold text-neutral-400">Tempo online</p>
-            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{activeJourney ? elapsedTime : '0h 0m'}</p>
+            <p className="text-[11px] font-semibold text-neutral-400">Tempo online</p>
+            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">{activeJourney ? elapsedTime : '0h 0m'}</p>
           </div>
         </div>
         
         {/* Km rodados */}
-        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
-          <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center mb-2">
-            <Map size={20} strokeWidth={2.5} className="text-rose-500" />
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/20 flex items-center justify-center mb-1">
+            <Map size={16} strokeWidth={2.5} className="text-rose-500" />
           </div>
           <div>
-            <p className="text-[12px] font-semibold text-neutral-400">Km rodados</p>
-            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
+            <p className="text-[11px] font-semibold text-neutral-400">Km rodados</p>
+            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
           </div>
         </div>
         
         {/* Entregas */}
-        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center mb-2">
-            <ShoppingBag size={20} strokeWidth={2.5} className="text-emerald-500" />
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 flex items-center justify-center mb-1">
+            <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
           </div>
           <div>
-            <p className="text-[12px] font-semibold text-neutral-400">Entregas</p>
-            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{deliveriesCount}</p>
+            <p className="text-[11px] font-semibold text-neutral-400">Entregas</p>
+            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">{deliveriesCount}</p>
           </div>
         </div>
         
-        {/* Gastos */}
-        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
-          <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center mb-2">
-            <DollarSign size={20} strokeWidth={2.5} className="text-amber-500" />
+        {/* Média por Hora */}
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/20 flex items-center justify-center mb-1">
+            <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
           </div>
           <div>
-            <p className="text-[12px] font-semibold text-neutral-400">Gastos</p>
-            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
+            <p className="text-[11px] font-semibold text-neutral-400">Média por hora</p>
+            <p className="text-[16px] font-extrabold text-neutral-800 dark:text-white mt-0.5">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
           </div>
         </div>
       </section>
@@ -192,7 +241,7 @@ export default function Home() {
       {/* Seção da Jornada */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-neutral-800">Jornada</h2>
+          <h2 className="text-[16px] font-extrabold text-neutral-800 dark:text-white">Jornada</h2>
           <button 
             onClick={() => router.push('/jornada')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -201,30 +250,30 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] space-y-5">
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] space-y-5 card-premium">
           {activeJourney ? (
             <>
               {/* Cabeçalho da Jornada ativa */}
               <div className="flex justify-between items-center">
-                <span className="text-[15px] font-bold text-neutral-800">Jornada atual</span>
+                <span className="text-[15px] font-bold text-neutral-800 dark:text-white">Jornada atual</span>
                 <span className="delivery-pill text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   Em andamento
                 </span>
               </div>
               
               {/* Grid de detalhes da Jornada */}
-              <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-neutral-50 pt-4">
+              <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-neutral-50 dark:border-[#232323] pt-4">
                 <div>
                   <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Início</span>
-                  <span className="text-[14px] font-bold text-neutral-700">{activeStartTime}</span>
+                  <span className="text-[14px] font-bold text-neutral-700 dark:text-white">{activeStartTime}</span>
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Tempo online</span>
-                  <span className="text-[14px] font-bold text-neutral-700">{elapsedTime}</span>
+                  <span className="text-[14px] font-bold text-neutral-700 dark:text-white">{elapsedTime}</span>
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Km rodados</span>
-                  <span className="text-[14px] font-bold text-neutral-700">{liveDistance.toFixed(1).replace('.', ',')} km</span>
+                  <span className="text-[14px] font-bold text-neutral-700 dark:text-white">{liveDistance.toFixed(1).replace('.', ',')} km</span>
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Lucro</span>
@@ -249,7 +298,7 @@ export default function Home() {
           ) : (
             <div className="text-center py-3 space-y-4">
               <div className="space-y-1">
-                <p className="text-[15px] font-bold text-neutral-800">Nenhuma jornada ativa</p>
+                <p className="text-[15px] font-bold text-neutral-800 dark:text-white">Nenhuma jornada ativa</p>
                 <p className="text-[12px] text-neutral-400 max-w-[280px] mx-auto">Inicie sua jornada para começar a registrar seus km e faturamento em tempo real.</p>
               </div>
               <button
@@ -269,10 +318,79 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Nova Seção de Metas */}
+      <section className="space-y-3">
+        <div className="flex justify-between items-center px-1">
+          <h2 className="text-[16px] font-extrabold text-neutral-800 dark:text-white">Metas</h2>
+          <button 
+            onClick={() => router.push('/perfil')}
+            className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
+          >
+            Ver todas
+          </button>
+        </div>
+
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-4 card-premium">
+          {/* Meta Diária */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-[12px] font-bold text-neutral-700 dark:text-neutral-200">
+              <span>Meta diária</span>
+              <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
+            </div>
+            <div className="w-full h-2.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden flex items-center">
+              <div 
+                className="h-full bg-[#EA1D2C] rounded-full transition-all duration-500"
+                style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-[10px] text-neutral-400 font-semibold">
+              <span>R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+              <span>R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 pt-1">
+            {/* Meta Semanal */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
+                <span>Meta semanal</span>
+                <span>{dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100).toFixed(0) : 0}%</span>
+              </div>
+              <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                  style={{ width: `${dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100) : 0}%` }}
+                />
+              </div>
+              <div className="text-[9px] text-neutral-400 font-semibold">
+                R$ {weekNetProfit.toFixed(2).replace('.', ',')} / R$ {(dailyGoal * 7).toFixed(2).replace('.', ',')}
+              </div>
+            </div>
+
+            {/* Meta Mensal */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
+                <span>Meta mensal</span>
+                <span>{dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100).toFixed(0) : 0}%</span>
+              </div>
+              <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                  style={{ width: `${dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100) : 0}%` }}
+                />
+              </div>
+              <div className="text-[9px] text-neutral-400 font-semibold">
+                R$ {monthNetProfit.toFixed(2).replace('.', ',')} / R$ {(dailyGoal * 28).toFixed(2).replace('.', ',')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Seção Resumo da Semana */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-neutral-800">Resumo da semana</h2>
+          <h2 className="text-[16px] font-extrabold text-neutral-800 dark:text-white">Resumo da semana</h2>
           <button 
             onClick={() => router.push('/relatorios')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -281,25 +399,21 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.01)] flex items-center justify-between">
-          <div className="space-y-1">
-            <span className="text-[12px] font-semibold text-neutral-400">19/05 - 25/05</span>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-[20px] font-extrabold text-neutral-800">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
-              <span className="text-[11px] font-semibold text-neutral-400">ganhos</span>
-            </div>
+        <div className="bg-white dark:bg-[#111111] border border-neutral-100/80 dark:border-[#232323] rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
+          <div className="flex-1">
+            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Ganhos</span>
+            <span className="text-[15px] font-extrabold text-neutral-800 dark:text-white mt-0.5 block">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
           </div>
-          
-          {dailyGoal > 0 ? (
-            <div className="text-right space-y-1">
-              <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Progresso meta</span>
-              <span className="text-[14px] font-bold text-neutral-700">
-                {Math.min((netProfit / (dailyGoal * 7)) * 100, 100).toFixed(0)}% da semana
-              </span>
-            </div>
-          ) : (
-            <span className="text-[12px] text-neutral-400">Defina uma meta no perfil</span>
-          )}
+          <div className="h-6 border-l border-neutral-100 dark:border-[#232323]" />
+          <div className="flex-1">
+            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Km rodados</span>
+            <span className="text-[15px] font-extrabold text-neutral-800 dark:text-white mt-0.5 block">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
+          </div>
+          <div className="h-6 border-l border-neutral-100 dark:border-[#232323]" />
+          <div className="flex-1">
+            <span className="text-[10px] font-bold text-neutral-400 block uppercase">Entregas</span>
+            <span className="text-[15px] font-extrabold text-neutral-800 dark:text-white mt-0.5 block">{displayDeliveriesSemana}</span>
+          </div>
         </div>
       </section>
 

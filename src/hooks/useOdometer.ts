@@ -87,6 +87,7 @@ export function useOdometer(journeyId: string | null) {
   const [isTracking, setIsTracking] = useState(false);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [gpsStatus, setGpsStatus] = useState<GpsStatus>('inactive');
+  const [speed, setSpeed] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const lastLocationRef = useRef<{ lat: number; lon: number } | null>(null);
@@ -128,9 +129,15 @@ export function useOdometer(journeyId: string | null) {
     saveDistance(distanceRef.current);
   }, []);
 
-  const handleLocation = useCallback((latitude: number, longitude: number, accuracy: number | null) => {
+  const handleLocation = useCallback((latitude: number, longitude: number, accuracy: number | null, speedMs?: number | null) => {
     setGpsAccuracy(accuracy !== null ? Math.round(accuracy) : null);
     setGpsStatus('active');
+
+    if (speedMs !== undefined && speedMs !== null && speedMs >= 0) {
+      setSpeed(Math.round(speedMs * 3.6));
+    } else {
+      setSpeed(null);
+    }
 
     if (accuracy !== null && accuracy > 100) return;
 
@@ -203,7 +210,8 @@ export function useOdometer(journeyId: string | null) {
           handleLocation(
             location.latitude,
             location.longitude,
-            location.accuracy ?? null
+            location.accuracy ?? null,
+            location.speed
           );
         }
       );
@@ -237,8 +245,8 @@ export function useOdometer(journeyId: string | null) {
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
-        const { latitude, longitude, accuracy } = position.coords;
-        handleLocation(latitude, longitude, accuracy);
+        const { latitude, longitude, accuracy, speed } = position.coords;
+        handleLocation(latitude, longitude, accuracy, speed);
       },
       (err) => {
         console.error('GPS Error:', err);
@@ -300,6 +308,7 @@ export function useOdometer(journeyId: string | null) {
     setIsTracking(false);
     setGpsStatus('inactive');
     setGpsAccuracy(null);
+    setSpeed(null);
   }, []);
 
   // Handle app lifecycle: background / foreground transitions
@@ -418,6 +427,7 @@ export function useOdometer(journeyId: string | null) {
     isTracking,
     gpsAccuracy,
     gpsStatus,
+    speed,
     error
   };
 }

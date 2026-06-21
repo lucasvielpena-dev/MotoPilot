@@ -18,6 +18,15 @@ import {
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  Cell 
+} from 'recharts';
 
 export default function Lancamentos() {
   const router = useRouter();
@@ -41,11 +50,21 @@ export default function Lancamentos() {
   const [listTab, setListTab] = useState<'lista' | 'resumo'>('lista');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<'Todos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
+  const [todayStr, setTodayStr] = useState('');
+  const [yesterdayStr, setYesterdayStr] = useState('');
 
-  // Set today's date as default in form
+  // Set today's date as default in form dynamically
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setDate(today);
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
+    setDate(todayISO);
+    setTodayStr(todayISO);
+
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayISO = yesterday.toISOString().split('T')[0];
+    setYesterdayStr(yesterdayISO);
   }, []);
 
   // Sync category with tab
@@ -124,6 +143,50 @@ export default function Lancamentos() {
   const expenseEntries = entries.filter(e => e.type === 'expense');
   const totalExpensesSum = expenseEntries.reduce((acc, curr) => acc + curr.amount, 0);
 
+  const filteredEntries = expenseEntries.filter(entry => {
+    if (activeFilter === 'Todos') return true;
+    const desc = (entry.description || '').toLowerCase();
+    if (activeFilter === 'Combustível') return desc.includes('combustível') || desc.includes('gasolina') || desc.includes('abastecer');
+    if (activeFilter === 'Alimentação') return desc.includes('alimentação') || desc.includes('almoço') || desc.includes('lanche') || desc.includes('comer');
+    if (activeFilter === 'Manutenção') return desc.includes('manutenção') || desc.includes('oficina') || desc.includes('óleo') || desc.includes('conserto');
+    if (activeFilter === 'Estacionamento') return desc.includes('estacionamento') || desc.includes('parar') || desc.includes('pedágio');
+    if (activeFilter === 'Outros') return !desc.includes('combustível') && !desc.includes('gasolina') && !desc.includes('abastecer') && !desc.includes('alimentação') && !desc.includes('almoço') && !desc.includes('lanche') && !desc.includes('comer') && !desc.includes('manutenção') && !desc.includes('oficina') && !desc.includes('óleo') && !desc.includes('conserto') && !desc.includes('estacionamento') && !desc.includes('parar') && !desc.includes('pedágio');
+    return true;
+  });
+
+  const totalFilteredSum = filteredEntries.reduce((acc, curr) => acc + curr.amount, 0);
+  const uniqueDays = new Set(expenseEntries.map(e => e.date)).size || 1;
+  const dailyAverage = totalExpensesSum / uniqueDays;
+  const maxExpense = expenseEntries.reduce((max, curr) => curr.amount > max ? curr.amount : max, 0);
+
+  // Category Bar Chart data aggregation
+  const categoryTotals = {
+    Alimentação: 0,
+    Combustível: 0,
+    Manutenção: 0,
+    Estacionamento: 0,
+    Outros: 0,
+  };
+  expenseEntries.forEach(entry => {
+    const desc = (entry.description || '').toLowerCase();
+    if (desc.includes('combustível') || desc.includes('gasolina') || desc.includes('abastecer')) {
+      categoryTotals.Combustível += entry.amount;
+    } else if (desc.includes('alimentação') || desc.includes('almoço') || desc.includes('lanche') || desc.includes('comer')) {
+      categoryTotals.Alimentação += entry.amount;
+    } else if (desc.includes('manutenção') || desc.includes('oficina') || desc.includes('óleo') || desc.includes('conserto')) {
+      categoryTotals.Manutenção += entry.amount;
+    } else if (desc.includes('estacionamento') || desc.includes('parar') || desc.includes('pedágio')) {
+      categoryTotals.Estacionamento += entry.amount;
+    } else {
+      categoryTotals.Outros += entry.amount;
+    }
+  });
+
+  const chartData = Object.entries(categoryTotals).map(([name, value]) => ({
+    name,
+    value: parseFloat(value.toFixed(2)),
+  })).filter(item => item.value > 0);
+
   const getCategoryIcon = (desc: string | null) => {
     const d = (desc || '').toLowerCase();
     if (d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer')) {
@@ -149,40 +212,50 @@ export default function Lancamentos() {
     return `${day}/${month}/${year}`;
   };
 
+  const categoriesList = [
+    { name: 'Alimentação', label: 'Alimentação', Icon: ForkKnife, color: 'rose' },
+    { name: 'Combustível', label: 'Combustível', Icon: Fuel, color: 'emerald' },
+    { name: 'Manutenção', label: 'Manutenção', Icon: Wrench, color: 'indigo' },
+    { name: 'Estacionamento', label: 'Estacionamento', Icon: MapPin, color: 'blue' },
+    { name: 'Outros', label: 'Outros', Icon: MoreHorizontal, color: 'amber' }
+  ];
+
+  const filterOptions = ['Todos', 'Combustível', 'Alimentação', 'Manutenção', 'Estacionamento', 'Outros'] as const;
+
   return (
     <div className="space-y-6 pb-28 pt-2">
       {isNew ? (
         /* SCREEN 4: NOVO GASTO */
         <div className="space-y-6">
           {/* Header */}
-          <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+          <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
             <button 
               onClick={() => router.push('/lancamentos')}
-              className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
             >
               <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-neutral-800">Novo gasto</h1>
+            <h1 className="text-[18px] font-extrabold text-foreground">Novo gasto</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
           </header>
 
           {/* Tabs */}
-          <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+          <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
             <button 
               onClick={() => setExpenseTab('gasto')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'gasto' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'gasto' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Gasto
             </button>
             <button 
               onClick={() => setExpenseTab('abastecimento')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'abastecimento' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'abastecimento' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Abastecimento
             </button>
             <button 
               onClick={() => setExpenseTab('importar')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'importar' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'importar' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Importar
             </button>
@@ -190,84 +263,116 @@ export default function Lancamentos() {
 
           {/* Form */}
           {expenseTab !== 'importar' ? (
-            <form onSubmit={handleSave} className="space-y-5 bg-white border border-neutral-100/60 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
-              {/* Tipo de gasto dropdown */}
-              {expenseTab !== 'abastecimento' && (
-                <div className="space-y-1.5">
-                  <label className="text-[12px] font-bold text-neutral-400 block uppercase">Tipo de gasto</label>
-                  <div className="relative">
-                    <select
-                      value={category}
-                      onChange={e => setCategory(e.target.value)}
-                      className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] appearance-none text-[15px] font-bold text-neutral-700 cursor-pointer"
-                    >
-                      <option value="Alimentação">Alimentação</option>
-                      <option value="Manutenção">Manutenção</option>
-                      <option value="Estacionamento">Estacionamento</option>
-                      <option value="Combustível">Combustível</option>
-                      <option value="Outros">Outros</option>
-                    </select>
-                    <ChevronDown size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+            <form onSubmit={handleSave} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
+              {/* Category Grid (for general gasto) */}
+              {expenseTab === 'gasto' && (
+                <div className="space-y-2">
+                  <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Categoria</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {categoriesList.map((cat) => {
+                      const CatIcon = cat.Icon;
+                      const isActive = category === cat.name;
+                      
+                      const borderStyles = isActive 
+                        ? cat.color === 'rose' ? 'border-[#EF4444] bg-[#EF4444]/5 text-[#EF4444]'
+                          : cat.color === 'emerald' ? 'border-[#10B981] bg-[#10B981]/5 text-[#10B981]'
+                          : cat.color === 'indigo' ? 'border-[#6366F1] bg-[#6366F1]/5 text-[#6366F1]'
+                          : cat.color === 'blue' ? 'border-[#3B82F6] bg-[#3B82F6]/5 text-[#3B82F6]'
+                          : 'border-[#F59E0B] bg-[#F59E0B]/5 text-[#F59E0B]'
+                        : 'border-border bg-card text-foreground hover:bg-card-secondary/80';
+
+                      return (
+                        <button
+                          key={cat.name}
+                          type="button"
+                          onClick={() => setCategory(cat.name)}
+                          className={`p-3.5 rounded-[20px] border flex flex-col items-center justify-center space-y-1.5 cursor-pointer transition-all active:scale-[0.95] ${borderStyles}`}
+                        >
+                          <CatIcon size={20} />
+                          <span className="text-[11px] font-bold tracking-tight">{cat.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* Valor Input */}
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Valor (R$)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  required
-                  value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                  className="w-full p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[20px] font-extrabold text-neutral-800"
-                  placeholder="50,00"
-                />
+              {/* Big amount field */}
+              <div className="flex flex-col items-center justify-center py-5 bg-card-secondary/40 rounded-[28px] border border-border/50 mb-3">
+                <span className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2">Valor do gasto</span>
+                <div className="flex items-center justify-center space-x-1">
+                  <span className="text-xl font-bold text-muted">R$</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    required
+                    autoFocus
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-foreground w-[220px]"
+                    placeholder="0,00"
+                  />
+                </div>
               </div>
 
-              {/* Data Input */}
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Data</label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    required
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                    className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[15px] font-bold text-neutral-700 cursor-pointer"
-                  />
-                  <Calendar size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+              {/* Date Input */}
+              <div className="space-y-2">
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Data</label>
+                <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setDate(todayStr)}
+                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                  >
+                    Hoje
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDate(yesterdayStr)}
+                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                  >
+                    Ontem
+                  </button>
+                  <div className="flex-1 relative">
+                    <input
+                      type="date"
+                      required
+                      value={date}
+                      onChange={e => setDate(e.target.value)}
+                      className="w-full py-3.5 px-3 bg-card border border-border rounded-2xl text-[13px] font-extrabold text-foreground focus:outline-none focus:border-primary cursor-pointer text-center"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Método de pagamento dropdown */}
               <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Método de pagamento</label>
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Método de pagamento</label>
                 <div className="relative">
                   <select
                     value={paymentMethod}
                     onChange={e => setPaymentMethod(e.target.value)}
-                    className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] appearance-none text-[15px] font-bold text-neutral-700 cursor-pointer"
+                    className="w-full p-4 pr-10 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary appearance-none text-[14px] font-bold text-foreground cursor-pointer"
                   >
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Cartão de Crédito">Cartão de Crédito</option>
                     <option value="Cartão de Débito">Cartão de Débito</option>
                     <option value="Pix">Pix</option>
                   </select>
-                  <ChevronDown size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  <ChevronDown size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
                 </div>
               </div>
 
               {/* Observação Input */}
               <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Observação (opcional)</label>
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
                 <input
                   type="text"
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
-                  className="w-full p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[15px] font-bold text-neutral-700"
-                  placeholder="Posto Ipiranga"
+                  className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-bold text-foreground placeholder:text-muted/65"
+                  placeholder="Posto Ipiranga, almoço, etc."
                 />
               </div>
 
@@ -275,16 +380,16 @@ export default function Lancamentos() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-md cursor-pointer disabled:opacity-50 mt-4"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4.5 rounded-[24px] transition-all active:scale-[0.98] text-[15px] shadow-lg cursor-pointer disabled:opacity-50 mt-4"
               >
-                {loading ? 'Salvando...' : 'Salvar gasto'}
+                {loading ? 'Salvando...' : 'Salvar Gasto'}
               </button>
             </form>
           ) : (
             /* Import Tab */
-            <form onSubmit={handleImport} className="space-y-5 bg-white border border-neutral-100/60 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
+            <form onSubmit={handleImport} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
               <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-neutral-400 block uppercase flex items-center space-x-1.5">
+                <label className="text-[12px] font-bold text-muted block uppercase flex items-center space-x-1.5">
                   <ClipboardList size={16} />
                   <span>Dados do comprovante/recibo</span>
                 </label>
@@ -293,7 +398,7 @@ export default function Lancamentos() {
                   required
                   value={pasteText}
                   onChange={e => setPasteText(e.target.value)}
-                  className="w-full p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[14px] font-medium text-neutral-700 resize-none"
+                  className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-medium text-foreground resize-none"
                   placeholder={`Cole o texto do comprovante aqui.\nExemplo:\nAbastecimento Posto BR\nValor: R$ 45,00`}
                 />
               </div>
@@ -301,39 +406,39 @@ export default function Lancamentos() {
               <button
                 type="submit"
                 disabled={loading || !pasteText.trim()}
-                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-md cursor-pointer disabled:opacity-50"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-lg cursor-pointer disabled:opacity-50"
               >
-                {loading ? 'Processando...' : 'Salvar gasto importado'}
+                {loading ? 'Processando...' : 'Salvar Gasto Importado'}
               </button>
             </form>
           )}
         </div>
       ) : (
         /* SCREEN 5: GASTOS (LIST VIEW) */
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in-up">
           {/* Header */}
-          <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+          <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
             <button 
               onClick={() => router.push('/')}
-              className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
             >
               <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-neutral-800">Gastos</h1>
+            <h1 className="text-[18px] font-extrabold text-foreground">Gastos</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
           </header>
 
           {/* Tabs */}
-          <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+          <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
             <button 
               onClick={() => setListTab('lista')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'lista' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'lista' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Lista
             </button>
             <button 
               onClick={() => setListTab('resumo')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'resumo' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'resumo' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Resumo
             </button>
@@ -341,62 +446,127 @@ export default function Lancamentos() {
 
           {listTab === 'lista' ? (
             <>
-              {/* Period Dropdown */}
-              <div className="flex justify-center">
-                <div className="bg-white border border-neutral-150 rounded-2xl px-4 py-2 text-[13px] font-bold text-neutral-700 flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-neutral-50">
-                  <span>Maio/2025</span>
-                  <ChevronDown size={16} className="text-neutral-400" />
+              {/* Category Spending Recharts Bar Chart */}
+              <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium">
+                <h3 className="text-[12px] font-bold text-muted uppercase tracking-wider mb-4">Divisão de despesas</h3>
+                {chartData.length === 0 ? (
+                  <div className="h-[120px] flex items-center justify-center text-muted text-[13px] font-semibold">
+                    Nenhum gasto registrado para gráfico.
+                  </div>
+                ) : (
+                  <div className="h-[140px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
+                        <XAxis type="number" hide />
+                        <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} width={80} />
+                        <Tooltip 
+                          formatter={(value: any) => [`R$ ${Number(value).toFixed(2)}`, 'Gasto']}
+                          contentStyle={{ background: 'var(--card-color)', borderColor: 'var(--border-color)', borderRadius: '12px', fontSize: '11px', color: 'var(--text-color)' }}
+                        />
+                        <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={12}>
+                          {chartData.map((entry, index) => {
+                            const colors = {
+                              Combustível: '#10B981',
+                              Alimentação: '#EF4444',
+                              Manutenção: '#6366F1',
+                              Estacionamento: '#3B82F6',
+                              Outros: '#F59E0B'
+                            };
+                            return <Cell key={`cell-${index}`} fill={colors[entry.name as keyof typeof colors] || '#71717A'} />;
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </section>
+
+              {/* Financial stats summary indicators */}
+              <div className="grid grid-cols-3 gap-2.5">
+                <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
+                  <span className="text-[15px] font-black text-foreground mt-1 block">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
+                </div>
+                <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
+                  <span className="text-[15px] font-black text-foreground mt-1 block">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
+                </div>
+                <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
+                  <span className="text-[15px] font-black text-foreground mt-1 block">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
                 </div>
               </div>
 
-              {/* Total display card */}
-              <div className="bg-[#FFF1EE] border border-[#EA1D2C]/10 rounded-[28px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] flex items-center justify-between">
-                <span className="text-[13px] font-extrabold text-neutral-500 tracking-wide uppercase">Total de gastos</span>
-                <span className="text-[22px] font-extrabold text-[#EA1D2C]">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+              {/* Filtration pills */}
+              <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar -mx-4 px-4">
+                {filterOptions.map((filter) => {
+                  const isActive = activeFilter === filter;
+                  return (
+                    <button
+                      key={filter}
+                      onClick={() => setActiveFilter(filter)}
+                      className={`px-4 py-2 text-[12px] font-extrabold rounded-full whitespace-nowrap border transition-all active:scale-95 cursor-pointer ${
+                        isActive
+                          ? 'bg-primary text-white border-primary shadow-sm'
+                          : 'bg-card text-muted border-border hover:bg-card-secondary/80'
+                      }`}
+                    >
+                      {filter}
+                    </button>
+                  );
+                })}
               </div>
+
+              {/* Total display card of the current filter */}
+              {activeFilter !== 'Todos' && (
+                <div className="bg-card border border-border rounded-[24px] p-4 shadow-sm flex items-center justify-between">
+                  <span className="text-[12px] font-bold text-muted uppercase tracking-wider">Total {activeFilter}</span>
+                  <span className="text-[16px] font-extrabold text-foreground">R$ {totalFilteredSum.toFixed(2).replace('.', ',')}</span>
+                </div>
+              )}
 
               {/* Scrollable list */}
               <section className="space-y-3">
                 {entriesLoading && !fetched ? (
-                  <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center">
-                    <div className="w-6 h-6 border-2 border-[#EA1D2C] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                    <p className="text-[14px] text-neutral-400">Buscando seus gastos...</p>
+                  <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-sm">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <p className="text-[14px] text-muted font-bold">Buscando seus gastos...</p>
                   </div>
-                ) : expenseEntries.length === 0 ? (
-                  <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center">
-                    <p className="text-[14px] text-neutral-400">Nenhum gasto registrado este mês.</p>
+                ) : filteredEntries.length === 0 ? (
+                  <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-sm">
+                    <p className="text-[14px] text-muted font-bold">Nenhum gasto encontrado.</p>
                   </div>
                 ) : (
-                  expenseEntries.map((entry) => {
+                  filteredEntries.map((entry) => {
                     const styling = getCategoryIcon(entry.description);
                     const CategoryIcon = styling.Icon;
                     return (
                       <div 
                         key={entry.id}
-                        className="bg-white border border-neutral-100/80 hover:border-neutral-200/50 rounded-[24px] p-4 flex justify-between items-center shadow-[0_2px_8px_rgba(0,0,0,0.005)]"
+                        className="bg-card border border-border hover:border-border/80 rounded-[24px] p-4 flex justify-between items-center shadow-sm active:scale-[0.99] transition-all"
                       >
                         <div className="flex items-center space-x-4">
                           <div className={`w-12 h-12 rounded-2xl ${styling.bg} flex items-center justify-center`}>
                             <CategoryIcon size={22} className={styling.color} />
                           </div>
                           <div>
-                            <span className="text-[15px] font-bold text-neutral-800 block">
+                            <span className="text-[15px] font-bold text-foreground block">
                               {entry.description?.split(' - ')[0] || 'Despesa'}
                             </span>
-                            <span className="text-[12px] font-semibold text-neutral-400 mt-0.5 block">
+                            <span className="text-[12px] font-semibold text-muted mt-0.5 block">
                               {formatDisplayDate(entry.date)} {entry.description?.split(' - ')[1] && `| ${entry.description?.split(' - ')[1]}`}
                             </span>
                           </div>
                         </div>
                         
                         <div className="flex items-center space-x-3">
-                          <span className="text-[16px] font-extrabold text-neutral-800">
+                          <span className="text-[16px] font-extrabold text-foreground">
                             R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
                           <button 
                             onClick={() => setDeleteId(entry.id)}
-                            className="p-1.5 text-neutral-400 hover:text-[#EA1D2C] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                            className="p-2 text-muted hover:text-primary hover:bg-primary-soft rounded-xl transition-colors cursor-pointer"
                             title="Apagar lançamento"
                           >
                             <Trash2 size={16} />
@@ -412,7 +582,7 @@ export default function Lancamentos() {
               <div className="pt-2">
                 <button
                   onClick={() => router.push('/lancamentos?new=true')}
-                  className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md"
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-lg"
                 >
                   <Plus size={18} strokeWidth={2.5} />
                   <span>Novo gasto</span>
@@ -421,12 +591,12 @@ export default function Lancamentos() {
             </>
           ) : (
             /* Resumo Tab content */
-            <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center space-y-3">
-              <p className="text-[14px] font-bold text-neutral-700">Resumo financeiro de gastos</p>
-              <p className="text-[12px] text-neutral-400">Consulte os relatórios para ver o detalhamento percentual das suas despesas e faturamento.</p>
+            <div className="bg-card border border-border rounded-3xl p-8 text-center space-y-4 shadow-sm">
+              <p className="text-[14px] font-extrabold text-foreground">Resumo financeiro de gastos</p>
+              <p className="text-[12px] text-muted leading-relaxed">Consulte os relatórios para ver o detalhamento percentual das suas despesas e faturamento.</p>
               <button 
                 onClick={() => router.push('/relatorios')}
-                className="mt-2 bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-bold px-5 py-3 rounded-2xl text-[13px] active:scale-95 transition-all cursor-pointer"
+                className="mt-2 bg-primary hover:bg-primary/95 text-white font-bold px-5 py-3 rounded-2xl text-[13px] active:scale-95 transition-all cursor-pointer w-full shadow-md"
               >
                 Abrir Relatórios
               </button>
@@ -437,18 +607,18 @@ export default function Lancamentos() {
 
       {/* Delete Confirmation Modal */}
       {deleteId && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-white w-full max-w-sm rounded-[32px] border border-neutral-100 overflow-hidden shadow-2xl p-6 space-y-6">
+        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+          <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl p-6 space-y-6 animate-fade-in-up">
             <div className="text-center space-y-2">
-              <h3 className="text-[18px] font-extrabold text-neutral-800">Apagar Lançamento?</h3>
-              <p className="text-[13px] text-neutral-400 font-semibold leading-relaxed">
+              <h3 className="text-[18px] font-extrabold text-foreground">Apagar Lançamento?</h3>
+              <p className="text-[13px] text-muted font-semibold leading-relaxed">
                 Esta ação removerá permanentemente este lançamento do seu histórico e relatórios.
               </p>
             </div>
             <div className="flex space-x-3">
               <button
                 onClick={() => setDeleteId(null)}
-                className="flex-1 py-3.5 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 font-bold rounded-2xl border border-neutral-200/50 active:scale-[0.98] transition-all text-[14px] cursor-pointer"
+                className="flex-1 py-3.5 bg-card-secondary hover:bg-card-secondary/80 text-foreground font-bold rounded-2xl border border-border active:scale-[0.98] transition-all text-[14px] cursor-pointer"
               >
                 Cancelar
               </button>
@@ -459,7 +629,7 @@ export default function Lancamentos() {
                     setDeleteId(null);
                   }
                 }}
-                className="flex-1 py-3.5 bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-bold rounded-2xl active:scale-[0.98] transition-all text-[14px] cursor-pointer shadow-sm"
+                className="flex-1 py-3.5 bg-primary hover:bg-primary/95 text-white font-bold rounded-2xl active:scale-[0.98] transition-all text-[14px] cursor-pointer shadow-sm"
               >
                 Apagar
               </button>

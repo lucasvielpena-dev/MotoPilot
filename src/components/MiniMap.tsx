@@ -20,7 +20,7 @@ function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }
   return null;
 }
 
-export default function MiniMap({ isTracking }: { isTracking: boolean }) {
+export default function MiniMap({ isTracking, className = "h-48" }: { isTracking: boolean; className?: string }) {
   const [position, setPosition] = useState<[number, number] | null>(null);
 
   useEffect(() => {
@@ -38,14 +38,14 @@ export default function MiniMap({ isTracking }: { isTracking: boolean }) {
 
   if (!position) {
     return (
-      <div className="w-full h-48 bg-[var(--color-card-secondary)] rounded-2xl flex flex-col items-center justify-center border border-[var(--color-border)] animate-pulse">
+      <div className={`w-full bg-[var(--color-card-secondary)] rounded-2xl flex flex-col items-center justify-center border border-[var(--color-border)] animate-pulse ${className}`}>
         <span className="text-[var(--color-muted)] text-[14px]">Buscando localização...</span>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-48 rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm relative z-0">
+    <div className={`w-full rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm relative z-0 ${className}`}>
       <MapContainer 
         center={position} 
         zoom={16} 

@@ -122,6 +122,7 @@ export function useJourneys() {
     isTracking: odometer.isTracking,
     gpsAccuracy: odometer.gpsAccuracy,
     gpsStatus: odometer.gpsStatus,
+    speed: odometer.speed,
     trackerError: odometer.error
   };
 }
