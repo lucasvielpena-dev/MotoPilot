@@ -3,47 +3,57 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  CurrencyDollar, 
-  MapTrifold, 
-  Clock, 
-  ChartPie, 
-  Play, 
-  Sun, 
-  Moon
+  List,
+  Bell,
+  Motorcycle,
+  Eye,
+  EyeSlash,
+  CaretRight,
+  Clock,
+  MapTrifold,
+  ShoppingBag,
+  CurrencyDollar,
+  Play,
+  Stop,
+  X,
+  SignOut,
+  User,
+  Gear
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
 import { useGoals } from '@/hooks/useGoals';
-import BrandLogo from '@/components/BrandLogo';
+import { supabase } from '@/lib/supabase/client';
 
 export default function Home() {
   const router = useRouter();
   const { user } = useAuth();
-  const { activeJourney, liveDistance } = useJourneys();
+  const { activeJourney, liveDistance, startJourney, finishJourney } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
   const { dailyGoal, fetchGoal } = useGoals();
+  
   const [elapsedTime, setElapsedTime] = useState('0h 0m');
-  const [durationHours, setDurationHours] = useState(0);
-
-  // Tema Claro / Escuro
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [activeStartTime, setActiveStartTime] = useState('--:--');
+  const [showAmount, setShowAmount] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
-    const saved = (localStorage.getItem('theme') || 'dark') as 'dark' | 'light';
-    setTheme(saved);
+    const saved = localStorage.getItem('motopilot_show_amount') !== 'false';
+    setShowAmount(saved);
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('theme', nextTheme);
+  const toggleShowAmount = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evita navegar para relatórios ao clicar no olho
+    const next = !showAmount;
+    setShowAmount(next);
+    localStorage.setItem('motopilot_show_amount', String(next));
   };
 
   useEffect(() => {
     if (user) {
-      fetchRecentEntries(5);
+      fetchRecentEntries(50);
       fetchGoal();
     }
   }, [user, fetchRecentEntries, fetchGoal]);
@@ -51,18 +61,21 @@ export default function Home() {
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (activeJourney) {
+      // Formata a hora de início
+      const startDate = new Date(activeJourney.started_at);
+      setActiveStartTime(startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
       interval = setInterval(() => {
-        const start = new Date(activeJourney.started_at).getTime();
+        const start = startDate.getTime();
         const now = new Date().getTime();
         const diff = now - start;
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
-        setDurationHours(diff / 3600000);
         setElapsedTime(`${h}h ${m}m`);
       }, 1000);
     } else {
       setElapsedTime('--h --m');
-      setDurationHours(0);
+      setActiveStartTime('--:--');
     }
     return () => clearInterval(interval);
   }, [activeJourney]);
@@ -70,177 +83,297 @@ export default function Home() {
   const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
   const totalExpenses = entries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const netProfit = totalGains - totalExpenses;
-  
-  const goalProgress = dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0;
+  const deliveriesCount = entries.filter(e => e.type === 'gain').length;
 
-  // Cálculos dinâmicos
-  const avgSpeed = durationHours > 0 ? (liveDistance / durationHours).toFixed(1) : '0.0';
-  const brlPerKm = liveDistance > 0 ? (totalGains / liveDistance).toFixed(2) : '0.00';
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
-  // Circular progress SVG variables
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (goalProgress / 100) * circumference;
+  const getFormattedDate = () => {
+    const date = new Date();
+    const day = date.getDate();
+    const months = [
+      'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+      'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    return `Hoje, ${day} de ${months[date.getMonth()]}`;
+  };
 
   return (
-    <div className="p-4 space-y-6 pb-24">
-      <header className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-[20px] font-semibold tracking-tight text-[var(--color-foreground)]">Visão Geral</h1>
-          <p className="text-[14px] text-[var(--color-muted)]">Bem-vindo(a), {user?.email?.split('@')[0] || 'Motorista'}</p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <button 
-            onClick={toggleTheme}
-            className="w-8 h-8 rounded-full bg-[var(--color-card)] flex items-center justify-center border border-[var(--color-border)] hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-            title={theme === 'dark' ? 'Alternar para Modo Claro' : 'Alternar para Modo Escuro'}
-          >
-            {theme === 'dark' ? (
-              <Sun size={18} weight="fill" className="text-amber-400" />
-            ) : (
-              <Moon size={18} weight="fill" className="text-indigo-500" />
-            )}
-          </button>
-          <div className="w-12 h-12 rounded-full bg-[var(--color-card)] flex items-center justify-center border border-[var(--color-border)] max-sm:hidden">
-            <span className="text-[16px] font-medium">{user?.email?.[0].toUpperCase() || 'M'}</span>
+    <div className="space-y-6 pb-28 pt-2">
+      {/* Header Estilo Mockup */}
+      <header className="flex justify-between items-center mb-6 bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+        <button 
+          onClick={() => setIsMenuOpen(true)}
+          className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
+        >
+          <List size={24} weight="bold" />
+        </button>
+        
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
+            <Motorcycle size={18} weight="fill" className="text-white" />
           </div>
+          <span className="text-[18px] font-extrabold tracking-tight text-neutral-900 font-sans">MotoPilot</span>
+        </div>
+
+        <div className="relative">
+          <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
+            <Bell size={24} weight="bold" />
+          </button>
+          <span className="absolute top-1.5 right-1.5 w-5 h-5 bg-[#EA1D2C] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+            2
+          </span>
         </div>
       </header>
 
-      {/* Cartão Principal Nubank Style */}
-      <section className="card-premium rounded-3xl p-6 relative overflow-hidden animate-fade-in-up">
-        <div className="flex justify-between items-start mb-2">
-          <span className="text-[16px] font-medium text-[var(--color-muted)]">Lucro Líquido Hoje</span>
+      {/* Cartão de Lucro Líquido Redesenhado */}
+      <section 
+        onClick={() => router.push('/relatorios')}
+        className="delivery-hero rounded-[32px] p-6 relative overflow-hidden flex flex-col justify-between cursor-pointer min-h-[170px]"
+      >
+        <div>
+          <span className="text-[14px] font-semibold opacity-90 text-white/95">{getFormattedDate()}</span>
         </div>
         
-        <div className="flex items-end justify-between">
-          <div className="text-[42px] leading-none font-bold tracking-tight text-[var(--color-foreground)]">
-            R$ {netProfit.toFixed(2).replace('.', ',')}
+        <div className="my-3 flex items-center justify-between">
+          <div className="text-[38px] leading-none font-extrabold tracking-tight select-none">
+            {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
           </div>
-          
-          {/* Gráfico Circular da Meta */}
-          <div className="relative flex items-center justify-center w-24 h-24">
-            <svg className="w-full h-full transform -rotate-90">
-              {/* Background circle */}
-              <circle
-                cx="48"
-                cy="48"
-                r={radius}
-                stroke="var(--color-border)"
-                strokeWidth="8"
-                fill="transparent"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="48"
-                cy="48"
-                r={radius}
-                stroke="var(--color-primary)"
-                strokeWidth="8"
-                fill="transparent"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                className="transition-all duration-1000 ease-out"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[14px] font-bold text-[var(--color-foreground)]">{goalProgress.toFixed(0)}%</span>
-              <span className="text-[8px] text-[var(--color-muted)] uppercase tracking-wider">Meta</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-2 text-[14px] font-medium text-[var(--color-muted)]">
-          Meta Diária: R$ {dailyGoal.toFixed(2).replace('.', ',')}
-        </div>
-      </section>
-
-      {/* Métricas Secundárias */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="card-premium rounded-3xl p-5 animate-fade-in-up delay-75">
-          <Clock size={24} weight="fill" className="text-[var(--color-muted)] mb-3" />
-          <p className="text-[14px] font-medium text-[var(--color-muted)]">Tempo Online</p>
-          <p className="text-[20px] font-semibold text-[var(--color-foreground)] mt-1">{elapsedTime}</p>
-        </div>
-        
-        <div className="card-premium rounded-3xl p-5 animate-fade-in-up delay-100">
-          <MapTrifold size={24} weight="fill" className="text-[var(--color-muted)] mb-3" />
-          <p className="text-[14px] font-medium text-[var(--color-muted)]">Quilometragem</p>
-          <p className="text-[20px] font-semibold text-[var(--color-foreground)] mt-1">{activeJourney ? liveDistance.toFixed(1) : '0.0'} km</p>
-        </div>
-        
-        <div className="card-premium rounded-3xl p-5 animate-fade-in-up delay-150">
-          <CurrencyDollar size={24} weight="fill" className="text-[var(--color-muted)] mb-3" />
-          <p className="text-[14px] font-medium text-[var(--color-muted)]">Faturamento</p>
-          <p className="text-[20px] font-semibold text-[var(--color-foreground)] mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</p>
-        </div>
-        
-        <div className="card-premium rounded-3xl p-5 animate-fade-in-up delay-200">
-          <ChartPie size={24} weight="fill" className="text-[var(--color-muted)] mb-3" />
-          <p className="text-[14px] font-medium text-[var(--color-muted)]">R$ / KM</p>
-          <p className="text-[20px] font-semibold text-[var(--color-foreground)] mt-1">R$ {brlPerKm.replace('.', ',')}</p>
-        </div>
-      </section>
-
-      {/* Grid Secundário Responsivo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-        <div className="md:col-span-1 flex flex-col justify-start">
-          {/* Botão Premium Jornada */}
           <button 
-            onClick={() => router.push('/jornada')}
-            className={`w-full py-8 px-6 rounded-3xl flex flex-col items-center justify-center space-y-2 transition-all active:scale-[0.98] h-full shadow-lg border hover:-translate-y-1 hover:shadow-xl ${
-              activeJourney 
-                ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] border border-[var(--color-border)]' 
-                : 'bg-[var(--color-primary)] hover:brightness-110 text-[#0A0A0A] border-[var(--color-primary)]'
-            }`}
+            onClick={toggleShowAmount}
+            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
           >
-            <div className="flex items-center space-x-2">
-              {activeJourney ? null : <Play size={24} weight="fill" />}
-              <span className="text-[20px] font-semibold">{activeJourney ? 'Encerrar Jornada' : 'Iniciar Jornada'}</span>
-            </div>
-            {!activeJourney && (
-              <span className="text-[13px] font-medium opacity-80 text-center">Monitoramento automático de quilometragem e tempo online.</span>
-            )}
-            {activeJourney && (
-              <span className="text-[13px] text-[var(--color-muted)] font-medium text-center">Jornada em andamento (Ver GPS)</span>
+            {showAmount ? (
+              <Eye size={20} className="text-white" />
+            ) : (
+              <EyeSlash size={20} className="text-white" />
             )}
           </button>
         </div>
+        
+        <div className="flex justify-between items-center pt-2 border-t border-white/10 text-white/80">
+          <span className="text-[13px] font-medium tracking-wide uppercase">lucro líquido</span>
+          <CaretRight size={18} weight="bold" className="opacity-80" />
+        </div>
+      </section>
 
-        <section className="md:col-span-2 space-y-4 animate-fade-in-up delay-250">
-          <div className="flex justify-between items-center px-1">
-            <h2 className="text-[20px] font-semibold text-[var(--color-foreground)]">Últimos Lançamentos</h2>
+      {/* Grid de Métricas Secundárias */}
+      <section className="grid grid-cols-2 gap-4">
+        {/* Tempo Online */}
+        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
+          <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center mb-2">
+            <Clock size={20} weight="fill" className="text-indigo-500" />
+          </div>
+          <div>
+            <p className="text-[12px] font-semibold text-neutral-400">Tempo online</p>
+            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{activeJourney ? elapsedTime : '0h 0m'}</p>
+          </div>
+        </div>
+        
+        {/* Km rodados */}
+        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
+          <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center mb-2">
+            <MapTrifold size={20} weight="fill" className="text-rose-500" />
+          </div>
+          <div>
+            <p className="text-[12px] font-semibold text-neutral-400">Km rodados</p>
+            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
+          </div>
+        </div>
+        
+        {/* Entregas */}
+        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center mb-2">
+            <ShoppingBag size={20} weight="fill" className="text-emerald-500" />
+          </div>
+          <div>
+            <p className="text-[12px] font-semibold text-neutral-400">Entregas</p>
+            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">{deliveriesCount}</p>
+          </div>
+        </div>
+        
+        {/* Gastos */}
+        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-4 flex flex-col justify-between min-h-[110px] shadow-[0_4px_16px_rgba(17,17,17,0.015)]">
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center mb-2">
+            <CurrencyDollar size={20} weight="fill" className="text-amber-500" />
+          </div>
+          <div>
+            <p className="text-[12px] font-semibold text-neutral-400">Gastos</p>
+            <p className="text-[18px] font-extrabold text-neutral-800 mt-0.5">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção da Jornada */}
+      <section className="space-y-3">
+        <div className="flex justify-between items-center px-1">
+          <h2 className="text-[16px] font-extrabold text-neutral-800">Jornada</h2>
+          <button 
+            onClick={() => router.push('/jornada')}
+            className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
+          >
+            Ver todas
+          </button>
+        </div>
+        
+        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] space-y-5">
+          {activeJourney ? (
+            <>
+              {/* Cabeçalho da Jornada ativa */}
+              <div className="flex justify-between items-center">
+                <span className="text-[15px] font-bold text-neutral-800">Jornada atual</span>
+                <span className="delivery-pill text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                  Em andamento
+                </span>
+              </div>
+              
+              {/* Grid de detalhes da Jornada */}
+              <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-neutral-50 pt-4">
+                <div>
+                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Início</span>
+                  <span className="text-[14px] font-bold text-neutral-700">{activeStartTime}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Tempo online</span>
+                  <span className="text-[14px] font-bold text-neutral-700">{elapsedTime}</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Km rodados</span>
+                  <span className="text-[14px] font-bold text-neutral-700">{liveDistance.toFixed(1).replace('.', ',')} km</span>
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Lucro</span>
+                  <span className="text-[14px] font-extrabold text-[#19A85B]">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                </div>
+              </div>
+
+              {/* Botão de Encerrar */}
+              <button
+                onClick={async () => {
+                  setIsTransitioning(true);
+                  await finishJourney();
+                  setIsTransitioning(false);
+                }}
+                disabled={isTransitioning}
+                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
+              >
+                <Stop size={18} weight="fill" />
+                <span>{isTransitioning ? 'Encerrando...' : 'Encerrar jornada'}</span>
+              </button>
+            </>
+          ) : (
+            <div className="text-center py-3 space-y-4">
+              <div className="space-y-1">
+                <p className="text-[15px] font-bold text-neutral-800">Nenhuma jornada ativa</p>
+                <p className="text-[12px] text-neutral-400 max-w-[280px] mx-auto">Inicie sua jornada para começar a registrar seus km e faturamento em tempo real.</p>
+              </div>
+              <button
+                onClick={async () => {
+                  setIsTransitioning(true);
+                  await startJourney();
+                  setIsTransitioning(false);
+                }}
+                disabled={isTransitioning}
+                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
+              >
+                <Play size={18} weight="fill" />
+                <span>{isTransitioning ? 'Iniciando...' : 'Iniciar jornada'}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Seção Resumo da Semana */}
+      <section className="space-y-3">
+        <div className="flex justify-between items-center px-1">
+          <h2 className="text-[16px] font-extrabold text-neutral-800">Resumo da semana</h2>
+          <button 
+            onClick={() => router.push('/relatorios')}
+            className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
+          >
+            Ver relatório
+          </button>
+        </div>
+        
+        <div className="bg-white border border-neutral-100/80 rounded-[28px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.01)] flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-[12px] font-semibold text-neutral-400">19/05 - 25/05</span>
+            <div className="flex items-baseline space-x-2">
+              <span className="text-[20px] font-extrabold text-neutral-800">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+              <span className="text-[11px] font-semibold text-neutral-400">ganhos</span>
+            </div>
           </div>
           
-          <div className="space-y-3">
-            {entries.length === 0 ? (
-              <div className="card-premium rounded-3xl p-6 text-center">
-                <p className="text-[14px] text-[var(--color-muted)]">Nenhum lançamento hoje.</p>
+          {dailyGoal > 0 ? (
+            <div className="text-right space-y-1">
+              <span className="text-[11px] font-semibold text-neutral-400 block uppercase">Progresso meta</span>
+              <span className="text-[14px] font-bold text-neutral-700">
+                {Math.min((netProfit / (dailyGoal * 7)) * 100, 100).toFixed(0)}% da semana
+              </span>
+            </div>
+          ) : (
+            <span className="text-[12px] text-neutral-400">Defina uma meta no perfil</span>
+          )}
+        </div>
+      </section>
+
+      {/* Side Menu Drawer Estilo Premium */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-[100] flex">
+          {/* Backdrop */}
+          <div 
+            onClick={() => setIsMenuOpen(false)}
+            className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm transition-opacity duration-300"
+          />
+          
+          {/* Drawer Body */}
+          <div className="relative w-72 max-w-xs bg-white h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
+            <div className="flex justify-between items-center border-b border-neutral-100 pb-4">
+              <div className="flex items-center space-x-2">
+                <Motorcycle size={22} weight="fill" className="text-[#EA1D2C]" />
+                <span className="text-[16px] font-extrabold text-neutral-800">MotoPilot Menu</span>
               </div>
-            ) : (
-              entries.slice(0, 5).map((entry, index) => (
-                <div 
-                  key={entry.id} 
-                  className={`flex justify-between items-center p-5 card-premium rounded-3xl animate-fade-in-up`}
-                  style={{ animationDelay: `${300 + index * 50}ms` }}
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="text-neutral-500 hover:text-neutral-800 cursor-pointer"
+              >
+                <X size={24} weight="bold" />
+              </button>
+            </div>
+
+            {/* Menu Items */}
+            <div className="flex-1 flex flex-col justify-between py-4">
+              <div className="space-y-1">
+                <button 
+                  onClick={() => { setIsMenuOpen(false); router.push('/perfil'); }}
+                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-neutral-700 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-left cursor-pointer"
                 >
-                  <div className="flex items-center space-x-4">
-                    <BrandLogo name={entry.description} type={entry.type} className="w-12 h-12 flex-shrink-0" />
-                    <div>
-                      <p className="text-[16px] font-medium text-[var(--color-foreground)]">{entry.description || (entry.type === 'gain' ? 'Ganho' : 'Despesa')}</p>
-                      <p className="text-[14px] text-[var(--color-muted)] mt-1">{new Date(entry.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                    </div>
-                  </div>
-                  <div className={`text-[16px] font-semibold ${entry.type === 'gain' ? 'text-[var(--color-gain)]' : 'text-[var(--color-expense)]'}`}>
-                    {entry.type === 'gain' ? '+ ' : '- '}R$ {entry.amount.toFixed(2).replace('.', ',')}
-                  </div>
-                </div>
-              ))
-            )}
+                  <User size={20} weight="bold" className="text-neutral-500" />
+                  <span>Meu Perfil</span>
+                </button>
+                
+                <button 
+                  onClick={() => { setIsMenuOpen(false); router.push('/relatorios'); }}
+                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-neutral-700 rounded-xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-left cursor-pointer"
+                >
+                  <Gear size={20} weight="bold" className="text-neutral-500" />
+                  <span>Configurações</span>
+                </button>
+              </div>
+
+              <button 
+                onClick={() => { setIsMenuOpen(false); handleLogout(); }}
+                className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors text-left cursor-pointer border border-red-100 bg-red-50/10"
+              >
+                <SignOut size={20} weight="bold" />
+                <span>Sair da conta</span>
+              </button>
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

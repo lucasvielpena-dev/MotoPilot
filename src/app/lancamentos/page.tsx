@@ -1,128 +1,61 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { ArrowDownRight, ArrowUpRight, Trash, CheckCircle, Lightning, ClipboardText } from '@phosphor-icons/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { 
+  ArrowLeft,
+  CaretDown,
+  Calendar,
+  GasPump,
+  ForkKnife,
+  Wrench,
+  MapPin,
+  DotsThree,
+  Trash,
+  Plus,
+  ClipboardText
+} from '@phosphor-icons/react';
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
-import BrandLogo from '@/components/BrandLogo';
-
-interface ParsedRide {
-  description: string;
-  netAmount: number;
-  grossAmount: number;
-  amount: number;
-  distance: number;
-  duration: number;
-}
-
-function parseCopiedRide(text: string): ParsedRide | null {
-  if (!text || !text.trim()) return null;
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const headerRegex = /corrida registrada|corrida finalizada|resumo da corrida/i;
-  
-  let description = '';
-  for (const line of lines) {
-    if (headerRegex.test(line)) continue;
-    if (/R\$/i.test(line)) continue;
-    if (/[0-9]+(?:,[0-9]+)?\s*(?:km|min|metro|hora|h|m)/i.test(line)) continue;
-    if (/lucro|estimado|ganho|valor|total/i.test(line)) continue;
-    description = line;
-    break;
-  }
-  if (!description) {
-    description = 'Uber Moto';
-  }
-
-  const moneyRegex = /R\$\s*([0-9]+(?:,[0-9]{2})?)/gi;
-  const monetaryValues: number[] = [];
-  let match;
-  while ((match = moneyRegex.exec(text)) !== null) {
-    const val = parseFloat(match[1].replace(',', '.'));
-    if (!isNaN(val)) {
-      monetaryValues.push(val);
-    }
-  }
-
-  let netAmount = 0;
-  let grossAmount = 0;
-
-  if (monetaryValues.length >= 2) {
-    const lucroIdx = lines.findIndex(l => /lucro|estimado|líquido/i.test(l));
-    if (lucroIdx !== -1) {
-      const remainingText = lines.slice(lucroIdx).join('\n');
-      const netMatch = /R\$\s*([0-9]+(?:,[0-9]{2})?)/i.exec(remainingText);
-      if (netMatch) {
-        netAmount = parseFloat(netMatch[1].replace(',', '.'));
-      }
-    }
-    
-    if (!netAmount) {
-      netAmount = Math.min(...monetaryValues);
-      grossAmount = Math.max(...monetaryValues);
-    } else {
-      grossAmount = monetaryValues.find(v => v !== netAmount) || monetaryValues[0];
-    }
-  } else if (monetaryValues.length === 1) {
-    netAmount = monetaryValues[0];
-    grossAmount = monetaryValues[0];
-  }
-
-  const kmMatch = /([0-9]+(?:,[0-9]+)?)\s*km/i.exec(text);
-  const distance = kmMatch ? parseFloat(kmMatch[1].replace(',', '.')) : 0;
-
-  const minMatch = /([0-9]+)\s*min/i.exec(text);
-  const duration = minMatch ? parseInt(minMatch[1], 10) : 0;
-
-  return {
-    description,
-    netAmount,
-    grossAmount,
-    amount: netAmount || grossAmount,
-    distance,
-    duration
-  };
-}
 
 export default function Lancamentos() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isNew = searchParams.get('new') === 'true';
+
   const { user } = useAuth();
   const { entries, loading: entriesLoading, fetched, fetchRecentEntries, addEntry, deleteEntry } = useEntries();
-  const [type, setType] = useState<'gain' | 'expense'>('gain');
+
+  // Screen 4 (Form) States
+  const [expenseTab, setExpenseTab] = useState<'gasto' | 'abastecimento' | 'importar'>('gasto');
+  const [category, setCategory] = useState('Alimentação');
   const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Dinheiro');
+  const [notes, setNotes] = useState('');
+  const [pasteText, setPasteText] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Screen 5 (List) States
+  const [listTab, setListTab] = useState<'lista' | 'resumo'>('lista');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
 
-  // Estados do Modo de Importação Rápida
-  const [inputMode, setInputMode] = useState<'manual' | 'fast_paste'>('manual');
-  const [pasteText, setPasteText] = useState('');
-  const [parsedRide, setParsedRide] = useState<ParsedRide | null>(null);
-  const [selectedAmountType, setSelectedAmountType] = useState<'net' | 'gross'>('net');
+  // Set today's date as default in form
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    setDate(today);
+  }, []);
 
-  const handlePasteChange = (text: string) => {
-    setPasteText(text);
-    const parsed = parseCopiedRide(text);
-    if (parsed && (parsed.netAmount > 0 || parsed.grossAmount > 0)) {
-      setParsedRide(parsed);
-      setSelectedAmountType('net');
-    } else {
-      setParsedRide(null);
+  // Sync category with tab
+  useEffect(() => {
+    if (expenseTab === 'abastecimento') {
+      setCategory('Combustível');
+    } else if (expenseTab === 'gasto' && category === 'Combustível') {
+      setCategory('Alimentação');
     }
-  };
-
-  const handleFastSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!parsedRide) return;
-    const amountToSave = selectedAmountType === 'net' ? parsedRide.netAmount : parsedRide.grossAmount;
-    if (amountToSave <= 0) return;
-
-    setLoading(true);
-    await addEntry('gain', amountToSave, parsedRide.description, activeJourneyId);
-    setLoading(false);
-    setPasteText('');
-    setParsedRide(null);
-  };
+  }, [expenseTab, category]);
 
   useEffect(() => {
     if (!fetched) {
@@ -146,323 +79,376 @@ export default function Lancamentos() {
     fetchActiveJourneyId();
   }, [fetchActiveJourneyId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !description) return;
-    const parsed = parseFloat(amount);
-    if (isNaN(parsed) || parsed <= 0) return;
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) return;
+
     setLoading(true);
-    await addEntry(type, parsed, description, activeJourneyId);
+    // Para despesas salvamos com tipo 'expense'
+    const desc = notes ? `${category} - ${notes}` : category;
+    await addEntry('expense', parsedAmount, desc, activeJourneyId);
     setLoading(false);
+
+    // Reset and redirect
     setAmount('');
-    setDescription('');
+    setNotes('');
+    router.push('/lancamentos');
   };
 
-  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalExpenses = entries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+  const handleImport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pasteText.trim()) return;
+
+    // Parseador simples
+    const lines = pasteText.split('\n');
+    let value = 0.0;
+    for (const line of lines) {
+      const match = /R\$\s*([0-9]+(?:,[0-9]{2})?)/i.exec(line);
+      if (match) {
+        value = parseFloat(match[1].replace(',', '.'));
+        break;
+      }
+    }
+
+    if (value > 0) {
+      setLoading(true);
+      await addEntry('expense', value, 'Gasto Importado', activeJourneyId);
+      setLoading(false);
+      setPasteText('');
+      router.push('/lancamentos');
+    }
+  };
+
+  // Filtragem e cálculos para Screen 5 (Gastos)
+  const expenseEntries = entries.filter(e => e.type === 'expense');
+  const totalExpensesSum = expenseEntries.reduce((acc, curr) => acc + curr.amount, 0);
+
+  const getCategoryIcon = (desc: string | null) => {
+    const d = (desc || '').toLowerCase();
+    if (d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer')) {
+      return { Icon: GasPump, bg: 'bg-emerald-50', color: 'text-emerald-500' };
+    }
+    if (d.includes('alimentação') || d.includes('almoço') || d.includes('lanche') || d.includes('comer')) {
+      return { Icon: ForkKnife, bg: 'bg-rose-50', color: 'text-rose-500' };
+    }
+    if (d.includes('manutenção') || d.includes('oficina') || d.includes('óleo') || d.includes('conserto')) {
+      return { Icon: Wrench, bg: 'bg-indigo-50', color: 'text-indigo-500' };
+    }
+    if (d.includes('estacionamento') || d.includes('parar') || d.includes('pedágio')) {
+      return { Icon: MapPin, bg: 'bg-blue-50', color: 'text-blue-500' };
+    }
+    return { Icon: DotsThree, bg: 'bg-amber-50', color: 'text-amber-500' };
+  };
+
+  const formatDisplayDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
-    <div className="p-4 space-y-6 pb-24">
-      <header className="mb-6">
-        <h1 className="text-[20px] font-semibold tracking-tight text-[var(--color-foreground)]">Lançamentos</h1>
-        <p className="text-[14px] text-[var(--color-muted)] mt-1">Gerencie seus ganhos e gastos</p>
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-        {/* Coluna Esquerda: Formulário e Tabs */}
-        <div className="md:col-span-1 space-y-6">
-          {/* Alternar Modo: Manual vs Importação Rápida */}
-          <div className="flex bg-[var(--color-card)] p-1 rounded-xl border border-[var(--color-border)]">
-            <button
-              type="button"
-              onClick={() => setInputMode('manual')}
-              className={`flex-1 py-2 text-[14px] font-semibold rounded-lg transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
-                inputMode === 'manual'
-                  ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] border border-[var(--color-border)] shadow-sm'
-                  : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'
-              }`}
+    <div className="space-y-6 pb-28 pt-2">
+      {isNew ? (
+        /* SCREEN 4: NOVO GASTO */
+        <div className="space-y-6">
+          {/* Header */}
+          <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+            <button 
+              onClick={() => router.push('/lancamentos')}
+              className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
             >
-              <span>Manual</span>
+              <ArrowLeft size={24} weight="bold" />
             </button>
-            <button
-              type="button"
-              onClick={() => setInputMode('fast_paste')}
-              className={`flex-1 py-2 text-[14px] font-semibold rounded-lg transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
-                inputMode === 'fast_paste'
-                  ? 'bg-[var(--color-card-secondary)] text-[var(--color-foreground)] border border-[var(--color-border)] shadow-sm'
-                  : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'
-              }`}
+            <h1 className="text-[18px] font-extrabold text-neutral-800">Novo gasto</h1>
+            <div className="w-10 h-10" /> {/* Spacer */}
+          </header>
+
+          {/* Tabs */}
+          <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+            <button 
+              onClick={() => setExpenseTab('gasto')} 
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'gasto' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
             >
-              <Lightning size={16} weight="fill" className="text-[var(--color-primary)]" />
-              <span>Colar Corrida</span>
+              Gasto
+            </button>
+            <button 
+              onClick={() => setExpenseTab('abastecimento')} 
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'abastecimento' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+            >
+              Abastecimento
+            </button>
+            <button 
+              onClick={() => setExpenseTab('importar')} 
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'importar' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+            >
+              Importar
             </button>
           </div>
 
-          {inputMode === 'manual' ? (
-            <>
-              {/* Tabs Nubank Style */}
-              <div className="flex bg-[var(--color-card)] p-1.5 rounded-[20px] border border-[var(--color-border)]">
-                <button 
-                  type="button"
-                  onClick={() => setType('gain')}
-                  className={`flex-1 py-3 text-[16px] font-medium rounded-[14px] transition-colors flex items-center justify-center space-x-2 cursor-pointer ${
-                    type === 'gain' 
-                      ? 'bg-[var(--color-primary)] text-[#0A0A0A] shadow-md' 
-                      : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'
-                  }`}
-                >
-                  <ArrowUpRight size={20} weight="bold" />
-                  <span>Ganhos</span>
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setType('expense')}
-                  className={`flex-1 py-3 text-[16px] font-medium rounded-[14px] transition-colors flex items-center justify-center space-x-2 cursor-pointer ${
-                    type === 'expense' 
-                      ? 'bg-red-500 text-white shadow-md' 
-                      : 'text-[var(--color-muted)] hover:text-[var(--color-foreground)]'
-                  }`}
-                >
-                  <ArrowDownRight size={20} weight="bold" />
-                  <span>Despesas</span>
-                </button>
+          {/* Form */}
+          {expenseTab !== 'importar' ? (
+            <form onSubmit={handleSave} className="space-y-5 bg-white border border-neutral-100/60 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
+              {/* Tipo de gasto dropdown */}
+              {expenseTab !== 'abastecimento' && (
+                <div className="space-y-1.5">
+                  <label className="text-[12px] font-bold text-neutral-400 block uppercase">Tipo de gasto</label>
+                  <div className="relative">
+                    <select
+                      value={category}
+                      onChange={e => setCategory(e.target.value)}
+                      className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] appearance-none text-[15px] font-bold text-neutral-700 cursor-pointer"
+                    >
+                      <option value="Alimentação">Alimentação</option>
+                      <option value="Manutenção">Manutenção</option>
+                      <option value="Estacionamento">Estacionamento</option>
+                      <option value="Combustível">Combustível</option>
+                      <option value="Outros">Outros</option>
+                    </select>
+                    <CaretDown size={18} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  </div>
+                </div>
+              )}
+
+              {/* Valor Input */}
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Valor (R$)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  required
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  className="w-full p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[20px] font-extrabold text-neutral-800"
+                  placeholder="50,00"
+                />
               </div>
 
-              {/* Formulário Novo Design */}
-              <section className="card-premium p-5 rounded-3xl animate-fade-in-up">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-[14px] font-medium text-[var(--color-muted)] mb-2">Valor (R$)</label>
-                    <input 
-                      type="number" 
-                      step="0.01"
-                      required
-                      value={amount}
-                      onChange={e => setAmount(e.target.value)}
-                      className="w-full p-5 bg-[var(--color-card-secondary)] border border-[var(--color-border)] rounded-2xl focus:outline-none focus:border-[var(--color-primary)] transition-colors text-[24px] font-semibold text-[var(--color-foreground)]"
-                      placeholder="0.00"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[14px] font-medium text-[var(--color-muted)] mb-2">Descrição</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={description}
-                      onChange={e => setDescription(e.target.value)}
-                      className="w-full p-5 bg-[var(--color-card-secondary)] border border-[var(--color-border)] rounded-2xl focus:outline-none focus:border-[var(--color-primary)] transition-colors text-[16px] text-[var(--color-foreground)] mb-3"
-                      placeholder={type === 'gain' ? "Ex: Uber, 99, Particular" : "Ex: Gasolina, Almoço"}
-                    />
-                    
-                    {/* Chips de Categoria */}
-                    <div className="flex overflow-x-auto pb-2 space-x-2 hide-scrollbar">
-                      {(type === 'gain' 
-                        ? ['Uber', '99', 'iFood', 'Particular', 'Indrive', 'aiqfome', 'Maxim'] 
-                        : ['Combustível', 'Alimentação', 'Manutenção', 'Óleo', 'Plataforma', 'Multa']
-                      ).map((chip) => (
-                        <button
-                          key={chip}
-                          type="button"
-                          onClick={() => setDescription(chip)}
-                          className="whitespace-nowrap px-4 py-2 bg-[var(--color-background)] border border-[var(--color-border)] rounded-full text-[14px] font-medium text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:border-[var(--color-primary)] transition-colors active:scale-95 cursor-pointer"
-                        >
-                          {chip}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button 
-                    type="submit" 
-                    disabled={loading}
-                    className={`w-full py-5 mt-2 text-[16px] font-bold rounded-2xl active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer ${
-                      type === 'gain' 
-                        ? 'bg-[var(--color-primary)] text-[#0A0A0A] hover:bg-[#1ea850]' 
-                        : 'bg-red-500 text-white hover:bg-red-600'
-                    }`}
-                  >
-                    {loading ? 'Processando...' : 'Adicionar Lançamento'}
-                  </button>
-                </form>
-              </section>
-            </>
-          ) : (
-            <section className="card-premium p-5 rounded-3xl animate-fade-in-up space-y-4">
-              <form onSubmit={handleFastSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-[14px] font-medium text-[var(--color-muted)] mb-2 flex items-center space-x-1">
-                    <ClipboardText size={16} />
-                    <span>Cole os dados da corrida registrada</span>
-                  </label>
-                  <textarea
-                    rows={6}
+              {/* Data Input */}
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Data</label>
+                <div className="relative">
+                  <input
+                    type="date"
                     required
-                    value={pasteText}
-                    onChange={e => handlePasteChange(e.target.value)}
-                    className="w-full p-4 bg-[var(--color-card-secondary)] border border-[var(--color-border)] rounded-2xl focus:outline-none focus:border-[var(--color-primary)] transition-colors text-[14px] text-[var(--color-foreground)] resize-none"
-                    placeholder={`Exemplo:\nCorrida registrada\nUber Moto\nR$ 24,50\n7,4 km\n18 min\nLucro estimado:\nR$ 21,80`}
+                    value={date}
+                    onChange={e => setDate(e.target.value)}
+                    className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[15px] font-bold text-neutral-700 cursor-pointer"
                   />
+                  <Calendar size={18} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
                 </div>
+              </div>
 
-                {parsedRide && (
-                  <div className="bg-[var(--color-card-secondary)] border border-[var(--color-border)] rounded-2xl p-4 space-y-4 animate-fade-in-up">
-                    <div className="flex items-center space-x-3">
-                      <BrandLogo name={parsedRide.description} type="gain" className="w-12 h-12 flex-shrink-0" />
-                      <div>
-                        <p className="text-[16px] font-semibold text-[var(--color-foreground)]">{parsedRide.description}</p>
-                        <p className="text-[12px] text-[var(--color-muted)]">Corrida detectada</p>
-                      </div>
-                    </div>
+              {/* Método de pagamento dropdown */}
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Método de pagamento</label>
+                <div className="relative">
+                  <select
+                    value={paymentMethod}
+                    onChange={e => setPaymentMethod(e.target.value)}
+                    className="w-full p-4 pr-10 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] appearance-none text-[15px] font-bold text-neutral-700 cursor-pointer"
+                  >
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
+                    <option value="Pix">Pix</option>
+                  </select>
+                  <CaretDown size={18} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                </div>
+              </div>
 
-                    {(parsedRide.distance > 0 || parsedRide.duration > 0) && (
-                      <div className="grid grid-cols-2 gap-3 bg-[var(--color-background)] p-3 rounded-xl border border-[var(--color-border)]">
-                        {parsedRide.distance > 0 && (
-                          <div>
-                            <span className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider block font-semibold">Distância</span>
-                            <span className="text-[15px] font-bold text-[var(--color-foreground)]">{parsedRide.distance.toFixed(1).replace('.', ',')} km</span>
-                          </div>
-                        )}
-                        {parsedRide.duration > 0 && (
-                          <div>
-                            <span className="text-[10px] text-[var(--color-muted)] uppercase tracking-wider block font-semibold">Duração</span>
-                            <span className="text-[15px] font-bold text-[var(--color-foreground)]">{parsedRide.duration} min</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+              {/* Observação Input */}
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-neutral-400 block uppercase">Observação (opcional)</label>
+                <input
+                  type="text"
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  className="w-full p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[15px] font-bold text-neutral-700"
+                  placeholder="Posto Ipiranga"
+                />
+              </div>
 
-                    <div className="space-y-2">
-                      <span className="text-[12px] font-medium text-[var(--color-muted)] block">Valor para registrar:</span>
-                      <div className="grid grid-cols-1 gap-2">
-                        {parsedRide.netAmount > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setSelectedAmountType('net')}
-                            className={`flex justify-between items-center p-3 rounded-xl border transition-all text-left cursor-pointer ${
-                              selectedAmountType === 'net'
-                                ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-foreground)]'
-                                : 'border-[var(--color-border)] hover:bg-[var(--color-background)] text-[var(--color-muted)]'
-                            }`}
-                          >
-                            <div>
-                              <span className="text-[12px] font-medium block opacity-70">Lucro Estimado (Recomendado)</span>
-                              <span className="text-[15px] font-bold text-[var(--color-foreground)]">R$ {parsedRide.netAmount.toFixed(2).replace('.', ',')}</span>
-                            </div>
-                            {selectedAmountType === 'net' && <CheckCircle size={20} weight="fill" className="text-[var(--color-primary)]" />}
-                          </button>
-                        )}
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-md cursor-pointer disabled:opacity-50 mt-4"
+              >
+                {loading ? 'Salvando...' : 'Salvar gasto'}
+              </button>
+            </form>
+          ) : (
+            /* Import Tab */
+            <form onSubmit={handleImport} className="space-y-5 bg-white border border-neutral-100/60 rounded-[32px] p-5 shadow-[0_4px_16px_rgba(17,17,17,0.01)]">
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-neutral-400 block uppercase flex items-center space-x-1.5">
+                  <ClipboardText size={16} />
+                  <span>Dados do comprovante/recibo</span>
+                </label>
+                <textarea
+                  rows={6}
+                  required
+                  value={pasteText}
+                  onChange={e => setPasteText(e.target.value)}
+                  className="w-full p-4 bg-neutral-50 border border-neutral-200/50 rounded-2xl focus:outline-none focus:border-[#EA1D2C] text-[14px] font-medium text-neutral-700 resize-none"
+                  placeholder={`Cole o texto do comprovante aqui.\nExemplo:\nAbastecimento Posto BR\nValor: R$ 45,00`}
+                />
+              </div>
 
-                        {parsedRide.grossAmount > 0 && parsedRide.grossAmount !== parsedRide.netAmount && (
-                          <button
-                            type="button"
-                            onClick={() => setSelectedAmountType('gross')}
-                            className={`flex justify-between items-center p-3 rounded-xl border transition-all text-left cursor-pointer ${
-                              selectedAmountType === 'gross'
-                                ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-foreground)]'
-                                : 'border-[var(--color-border)] hover:bg-[var(--color-background)] text-[var(--color-muted)]'
-                            }`}
-                          >
-                            <div>
-                              <span className="text-[12px] font-medium block opacity-70">Valor Bruto Total</span>
-                              <span className="text-[15px] font-bold text-[var(--color-foreground)]">R$ {parsedRide.grossAmount.toFixed(2).replace('.', ',')}</span>
-                            </div>
-                            {selectedAmountType === 'gross' && <CheckCircle size={20} weight="fill" className="text-[var(--color-primary)]" />}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <button 
-                  type="submit" 
-                  disabled={loading || !parsedRide}
-                  className={`w-full py-5 text-[16px] font-bold rounded-2xl active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer bg-[var(--color-primary)] text-[#0A0A0A] hover:bg-[#1ea850]`}
-                >
-                  {loading ? 'Processando...' : 'Importar Corrida ⚡'}
-                </button>
-              </form>
-            </section>
+              <button
+                type="submit"
+                disabled={loading || !pasteText.trim()}
+                className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-md cursor-pointer disabled:opacity-50"
+              >
+                {loading ? 'Processando...' : 'Salvar gasto importado'}
+              </button>
+            </form>
           )}
         </div>
+      ) : (
+        /* SCREEN 5: GASTOS (LIST VIEW) */
+        <div className="space-y-6">
+          {/* Header */}
+          <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
+            <button 
+              onClick={() => router.push('/')}
+              className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
+            >
+              <ArrowLeft size={24} weight="bold" />
+            </button>
+            <h1 className="text-[18px] font-extrabold text-neutral-800">Gastos</h1>
+            <div className="w-10 h-10" /> {/* Spacer */}
+          </header>
 
-        {/* Coluna Direita: Resumos e Histórico */}
-        <div className="md:col-span-2 space-y-6">
-          {/* Resumo */}
-          <section className="grid grid-cols-2 gap-4 animate-fade-in-up delay-100">
-            <div className="card-premium rounded-3xl p-5">
-              <p className="text-[14px] font-medium text-[var(--color-muted)] mb-1">Total de Ganhos</p>
-              <p className="text-[20px] font-semibold text-[var(--color-gain)]">R$ {totalGains.toFixed(2).replace('.', ',')}</p>
-            </div>
-            <div className="card-premium rounded-3xl p-5">
-              <p className="text-[14px] font-medium text-[var(--color-muted)] mb-1">Total de Despesas</p>
-              <p className="text-[20px] font-semibold text-[var(--color-expense)]">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
-            </div>
-          </section>
+          {/* Tabs */}
+          <div className="flex bg-neutral-100/80 p-1 rounded-2xl border border-neutral-200/40">
+            <button 
+              onClick={() => setListTab('lista')} 
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'lista' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+            >
+              Lista
+            </button>
+            <button 
+              onClick={() => setListTab('resumo')} 
+              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'resumo' ? 'bg-white text-neutral-900 border border-neutral-200/30 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'}`}
+            >
+              Resumo
+            </button>
+          </div>
 
-          {/* Lista de Transações */}
-          <section className="space-y-4">
-            <h2 className="text-[20px] font-semibold text-[var(--color-foreground)] px-1">Histórico</h2>
-            
-            <div className="space-y-3">
-              {entriesLoading && !fetched ? (
-                <div className="card-premium rounded-3xl p-6 text-center">
-                  <div className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                  <p className="text-[14px] text-[var(--color-muted)]">Carregando lançamentos...</p>
+          {listTab === 'lista' ? (
+            <>
+              {/* Period Dropdown */}
+              <div className="flex justify-center">
+                <div className="bg-white border border-neutral-150 rounded-2xl px-4 py-2 text-[13px] font-bold text-neutral-700 flex items-center space-x-2 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:bg-neutral-50">
+                  <span>Maio/2025</span>
+                  <CaretDown size={16} className="text-neutral-400" />
                 </div>
-              ) : entries.length === 0 ? (
-                <div className="card-premium rounded-3xl p-6 text-center">
-                  <p className="text-[14px] text-[var(--color-muted)]">Nenhum lançamento encontrado.</p>
-                </div>
-              ) : (
-                entries.map((entry, index) => (
-                <div 
-                  key={entry.id} 
-                  className="flex justify-between items-center p-5 card-premium rounded-3xl group animate-fade-in-up"
-                  style={{ animationDelay: `${200 + index * 50}ms` }}
-                >
-                    <div className="flex items-center space-x-4">
-                      <BrandLogo name={entry.description} type={entry.type} className="w-12 h-12 flex-shrink-0" />
-                      <div>
-                        <p className="text-[16px] font-medium text-[var(--color-foreground)]">{entry.description}</p>
-                        <p className="text-[14px] text-[var(--color-muted)] mt-1">{new Date(entry.date).toLocaleDateString()} {new Date(entry.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className={`text-[16px] font-semibold ${entry.type === 'gain' ? 'text-[var(--color-gain)]' : 'text-[var(--color-expense)]'}`}>
-                        {entry.type === 'gain' ? '+ ' : '- '}R$ {entry.amount.toFixed(2).replace('.', ',')}
-                      </div>
-                      <button 
-                        onClick={() => setDeleteId(entry.id)}
-                        className="p-2 text-neutral-500 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 max-md:opacity-100 cursor-pointer"
-                        title="Apagar lançamento"
-                      >
-                        <Trash size={20} />
-                      </button>
-                    </div>
+              </div>
+
+              {/* Total display card */}
+              <div className="bg-[#FFF1EE] border border-[#EA1D2C]/10 rounded-[28px] p-5 shadow-[0_4px_16px_rgba(234,29,44,0.02)] flex items-center justify-between">
+                <span className="text-[13px] font-extrabold text-neutral-500 tracking-wide uppercase">Total de gastos</span>
+                <span className="text-[22px] font-extrabold text-[#EA1D2C]">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+              </div>
+
+              {/* Scrollable list */}
+              <section className="space-y-3">
+                {entriesLoading && !fetched ? (
+                  <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center">
+                    <div className="w-6 h-6 border-2 border-[#EA1D2C] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <p className="text-[14px] text-neutral-400">Buscando seus gastos...</p>
                   </div>
-                ))
-              )}
-            </div>
-          </section>
-        </div>
-      </div>
+                ) : expenseEntries.length === 0 ? (
+                  <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center">
+                    <p className="text-[14px] text-neutral-400">Nenhum gasto registrado este mês.</p>
+                  </div>
+                ) : (
+                  expenseEntries.map((entry) => {
+                    const styling = getCategoryIcon(entry.description);
+                    const CategoryIcon = styling.Icon;
+                    return (
+                      <div 
+                        key={entry.id}
+                        className="bg-white border border-neutral-100/80 hover:border-neutral-200/50 rounded-[24px] p-4 flex justify-between items-center shadow-[0_2px_8px_rgba(0,0,0,0.005)]"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-12 h-12 rounded-2xl ${styling.bg} flex items-center justify-center`}>
+                            <CategoryIcon size={22} className={styling.color} />
+                          </div>
+                          <div>
+                            <span className="text-[15px] font-bold text-neutral-800 block">
+                              {entry.description?.split(' - ')[0] || 'Despesa'}
+                            </span>
+                            <span className="text-[12px] font-semibold text-neutral-400 mt-0.5 block">
+                              {formatDisplayDate(entry.date)} {entry.description?.split(' - ')[1] && `| ${entry.description?.split(' - ')[1]}`}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-3">
+                          <span className="text-[16px] font-extrabold text-neutral-800">
+                            R$ {entry.amount.toFixed(2).replace('.', ',')}
+                          </span>
+                          
+                          <button 
+                            onClick={() => setDeleteId(entry.id)}
+                            className="p-1.5 text-neutral-400 hover:text-[#EA1D2C] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                            title="Apagar lançamento"
+                          >
+                            <Trash size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </section>
 
-      {/* Modal de Confirmação de Exclusão */}
+              {/* Bottom New Expense Trigger button */}
+              <div className="pt-2">
+                <button
+                  onClick={() => router.push('/lancamentos?new=true')}
+                  className="w-full bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md"
+                >
+                  <Plus size={18} weight="bold" />
+                  <span>Novo gasto</span>
+                </button>
+              </div>
+            </>
+          ) : (
+            /* Resumo Tab content */
+            <div className="bg-white border border-neutral-100/85 rounded-3xl p-8 text-center space-y-3">
+              <p className="text-[14px] font-bold text-neutral-700">Resumo financeiro de gastos</p>
+              <p className="text-[12px] text-neutral-400">Consulte os relatórios para ver o detalhamento percentual das suas despesas e faturamento.</p>
+              <button 
+                onClick={() => router.push('/relatorios')}
+                className="mt-2 bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-bold px-5 py-3 rounded-2xl text-[13px] active:scale-95 transition-all cursor-pointer"
+              >
+                Abrir Relatórios
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
       {deleteId && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-[var(--color-background)] w-full max-w-sm rounded-[32px] border border-[var(--color-border)] overflow-hidden shadow-2xl animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 sm:fade-in-100 sm:zoom-in-95 p-6 space-y-6">
+          <div className="bg-white w-full max-w-sm rounded-[32px] border border-neutral-100 overflow-hidden shadow-2xl p-6 space-y-6">
             <div className="text-center space-y-2">
-              <h3 className="text-[20px] font-semibold text-[var(--color-foreground)]">Apagar Lançamento?</h3>
-              <p className="text-[14px] text-[var(--color-muted)]">
-                Esta ação não pode ser desfeita. O lançamento será removido permanentemente.
+              <h3 className="text-[18px] font-extrabold text-neutral-800">Apagar Lançamento?</h3>
+              <p className="text-[13px] text-neutral-400 font-semibold leading-relaxed">
+                Esta ação removerá permanentemente este lançamento do seu histórico e relatórios.
               </p>
             </div>
             <div className="flex space-x-3">
               <button
                 onClick={() => setDeleteId(null)}
-                className="flex-1 py-4 bg-[var(--color-card-secondary)] hover:bg-[var(--color-border)] text-[var(--color-foreground)] font-semibold rounded-2xl border border-[var(--color-border)] active:scale-[0.98] transition-all text-[15px] cursor-pointer"
+                className="flex-1 py-3.5 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 font-bold rounded-2xl border border-neutral-200/50 active:scale-[0.98] transition-all text-[14px] cursor-pointer"
               >
                 Cancelar
               </button>
@@ -473,7 +459,7 @@ export default function Lancamentos() {
                     setDeleteId(null);
                   }
                 }}
-                className="flex-1 py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-2xl active:scale-[0.98] transition-all text-[15px] cursor-pointer"
+                className="flex-1 py-3.5 bg-[#EA1D2C] hover:bg-[#ff3b4b] text-white font-bold rounded-2xl active:scale-[0.98] transition-all text-[14px] cursor-pointer shadow-sm"
               >
                 Apagar
               </button>
