@@ -33,13 +33,15 @@ export default function Home() {
   const { user } = useAuth();
   const { activeJourney, liveDistance, startJourney, finishJourney, historicalJourneys, fetchHistoricalJourneys } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
-  const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal } = useGoals();
+  const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal, updateGoalDirect } = useGoals();
   
   const [elapsedTime, setElapsedTime] = useState('0h 0m');
   const [activeStartTime, setActiveStartTime] = useState('--:--');
   const [showAmount, setShowAmount] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<'daily' | 'weekly' | 'monthly' | null>(null);
+  const [goalInput, setGoalInput] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('motopilot_show_amount') !== 'false';
@@ -114,6 +116,20 @@ export default function Home() {
     await supabase.auth.signOut();
   };
 
+  const handleSaveGoal = async (field: 'daily' | 'weekly' | 'monthly') => {
+    const value = parseFloat(goalInput.replace(',', '.'));
+    if (!isNaN(value) && value >= 0) {
+      await updateGoalDirect(field, value);
+    }
+    setEditingGoal(null);
+    setGoalInput('');
+  };
+
+  const startEditGoal = (field: 'daily' | 'weekly' | 'monthly', currentValue: number) => {
+    setEditingGoal(field);
+    setGoalInput(currentValue.toFixed(0));
+  };
+
   const getFormattedDate = () => {
     const date = new Date();
     const day = date.getDate();
@@ -135,7 +151,17 @@ export default function Home() {
       </div>
 
       {/* Cartão de Lucro Líquido */}
-      <section className="delivery-hero rounded-[28px] p-5 relative overflow-hidden flex flex-col justify-between space-y-4 shadow-lg">
+      <section 
+        className="rounded-[28px] p-5 relative overflow-hidden flex flex-col justify-between space-y-4 shadow-lg text-white border-0"
+        style={{
+          background: netProfit >= 0
+            ? `radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 22%), linear-gradient(135deg, #059669 0%, #34D399 ${Math.min(50 + (netProfit / (dailyGoal || 1)) * 50, 100)}%)`
+            : `radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 22%), linear-gradient(135deg, #DC2626 0%, #F87171 ${Math.min(50 + (Math.abs(netProfit) / (dailyGoal || 1)) * 50, 100)}%)`,
+          boxShadow: netProfit >= 0
+            ? `0 22px 48px -24px rgba(5, 150, 105, ${Math.min(0.3 + (netProfit / (dailyGoal || 1)) * 0.35, 0.65)})`
+            : `0 22px 48px -24px rgba(220, 38, 38, ${Math.min(0.3 + (Math.abs(netProfit) / (dailyGoal || 1)) * 0.35, 0.65)})`
+        }}
+      >
         <div className="flex justify-between items-center">
           <span className="text-[12px] font-bold tracking-wide uppercase opacity-85">lucro líquido</span>
           <button 
@@ -339,11 +365,32 @@ export default function Home() {
         <h2 className="text-[16px] font-extrabold text-foreground font-heading px-1">Metas</h2>
 
         <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-4 card-premium">
-          {/* Meta Diária - Barra grossa */}
+          {/* Meta Diária */}
           <div className="space-y-2">
-            <div className="flex justify-between text-[12px] font-bold text-foreground">
+            <div className="flex justify-between text-[12px] font-bold text-foreground items-center">
               <span>Meta diária</span>
-              <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
+              <div className="flex items-center space-x-2">
+                <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                {editingGoal === 'daily' ? (
+                  <div className="flex items-center space-x-1">
+                    <input
+                      type="number"
+                      value={goalInput}
+                      onChange={e => setGoalInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('daily'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
+                      className="w-20 px-2 py-1 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                      autoFocus
+                    />
+                    <button onClick={() => handleSaveGoal('daily')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => startEditGoal('daily', dailyGoal)} className="w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                  </button>
+                )}
+              </div>
             </div>
             <div className="goal-bar w-full bg-card-secondary">
               <div 
@@ -360,9 +407,30 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4 pt-1">
             {/* Meta Semanal */}
             <div className="space-y-2">
-              <div className="flex justify-between text-[11px] font-bold text-foreground">
+              <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
                 <span>Meta semanal</span>
-                <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                <div className="flex items-center space-x-1">
+                  <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                  {editingGoal === 'weekly' ? (
+                    <div className="flex items-center space-x-1">
+                      <input
+                        type="number"
+                        value={goalInput}
+                        onChange={e => setGoalInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('weekly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
+                        className="w-16 px-1 py-0.5 bg-card-secondary border border-primary rounded-lg text-[10px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                        autoFocus
+                      />
+                      <button onClick={() => handleSaveGoal('weekly')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => startEditGoal('weekly', weeklyGoal)} className="w-5 h-5 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="goal-bar w-full bg-card-secondary">
                 <div 
@@ -377,9 +445,30 @@ export default function Home() {
 
             {/* Meta Mensal */}
             <div className="space-y-2">
-              <div className="flex justify-between text-[11px] font-bold text-foreground">
+              <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
                 <span>Meta mensal</span>
-                <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                <div className="flex items-center space-x-1">
+                  <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                  {editingGoal === 'monthly' ? (
+                    <div className="flex items-center space-x-1">
+                      <input
+                        type="number"
+                        value={goalInput}
+                        onChange={e => setGoalInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('monthly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
+                        className="w-16 px-1 py-0.5 bg-card-secondary border border-primary rounded-lg text-[10px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                        autoFocus
+                      />
+                      <button onClick={() => handleSaveGoal('monthly')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => startEditGoal('monthly', monthlyGoal)} className="w-5 h-5 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="goal-bar w-full bg-card-secondary">
                 <div 

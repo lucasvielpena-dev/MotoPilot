@@ -84,12 +84,12 @@ export default function Lancamentos() {
     setYesterdayStr(yesterdayISO);
   }, []);
 
-  // Sync category with tab
+  // Sync category when switching away from gasto tab
   useEffect(() => {
-    if (expenseTab === 'gasto' && category === 'Combustível') {
+    if (expenseTab !== 'gasto' && category === 'Combustível') {
       setCategory('Alimentação');
     }
-  }, [expenseTab, category]);
+  }, [expenseTab]);
 
   useEffect(() => {
     if (!fetched) {
@@ -865,14 +865,115 @@ export default function Lancamentos() {
             </>
           ) : (
             /* Resumo Tab content */
-            <div className="bg-card border border-border rounded-3xl p-8 text-center space-y-4 shadow-sm">
-              <p className="text-[14px] font-extrabold text-foreground">Resumo financeiro de gastos</p>
-              <p className="text-[12px] text-muted leading-relaxed">Consulte os relatórios para ver o detalhamento percentual das suas despesas e faturamento.</p>
+            <div className="space-y-5 animate-fade-in-up">
+              {/* Resumo Geral */}
+              <div className="bg-card border border-border rounded-[24px] p-5 space-y-4 shadow-sm">
+                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Resumo Geral</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-3 bg-emerald-500/10 rounded-xl">
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase block">Entradas</span>
+                    <span className="text-[16px] font-black text-emerald-600 font-heading block mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                  <div className="text-center p-3 bg-primary/10 rounded-xl">
+                    <span className="text-[10px] font-bold text-primary uppercase block">Saídas</span>
+                    <span className="text-[16px] font-black text-primary font-heading block mt-1">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                  <div className={`text-center p-3 rounded-xl ${netProfit >= 0 ? 'bg-emerald-500/10' : 'bg-primary/10'}`}>
+                    <span className={`text-[10px] font-bold uppercase block ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>Lucro</span>
+                    <span className={`text-[16px] font-black font-heading block mt-1 ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Estatísticas */}
+              <div className="bg-card border border-border rounded-[24px] p-5 space-y-3 shadow-sm">
+                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Estatísticas</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] font-bold text-muted">Média diária de gastos</span>
+                    <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {dailyAverage.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] font-bold text-muted">Maior gasto</span>
+                    <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {maxExpense.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] font-bold text-muted">Dias com gastos</span>
+                    <span className="text-[14px] font-extrabold text-foreground font-heading">{uniqueDays} dias</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Gráfico de Divisão por Categoria */}
+              <div className="bg-card border border-border rounded-[24px] p-5 shadow-sm">
+                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider mb-4">Divisão por Categoria</h3>
+                {chartData.length === 0 ? (
+                  <div className="h-[120px] flex items-center justify-center text-muted text-[13px] font-semibold">
+                    Nenhum gasto registrado.
+                  </div>
+                ) : (
+                  <div className="h-[160px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
+                        <XAxis type="number" hide />
+                        <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} width={90} />
+                        <Tooltip 
+                          formatter={(value: any) => [`R$ ${Number(value).toFixed(2)}`, 'Gasto']}
+                          contentStyle={{ background: 'var(--card-color)', borderColor: 'var(--border-color)', borderRadius: '12px', fontSize: '11px', color: 'var(--text-color)' }}
+                        />
+                        <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={14}>
+                          {chartData.map((entry, index) => {
+                            const colors: Record<string, string> = {
+                              Combustível: '#10B981',
+                              Alimentação: '#EF4444',
+                              Manutenção: '#6366F1',
+                              Estacionamento: '#3B82F6',
+                              Outros: '#F59E0B'
+                            };
+                            return <Cell key={`cell-${index}`} fill={colors[entry.name] || '#71717A'} />;
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </div>
+
+              {/* Detalhamento por Categoria */}
+              <div className="bg-card border border-border rounded-[24px] p-5 space-y-3 shadow-sm">
+                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Detalhamento</h3>
+                {Object.entries(categoryTotals).filter(([, v]) => v > 0).length === 0 ? (
+                  <p className="text-[12px] text-muted font-semibold text-center py-4">Nenhum gasto registrado no período.</p>
+                ) : (
+                  Object.entries(categoryTotals).filter(([, v]) => v > 0).map(([cat, total]) => {
+                    const styling = getCategoryIcon(cat);
+                    const CategoryIcon = styling.Icon;
+                    const percentage = totalExpensesSum > 0 ? ((total / totalExpensesSum) * 100).toFixed(1) : '0';
+                    return (
+                      <div key={cat} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-9 h-9 rounded-xl ${styling.bg} flex items-center justify-center`}>
+                            <CategoryIcon size={18} className={styling.color} />
+                          </div>
+                          <div>
+                            <span className="text-[13px] font-bold text-foreground block">{cat}</span>
+                            <span className="text-[10px] text-muted font-semibold">{percentage}% do total</span>
+                          </div>
+                        </div>
+                        <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {total.toFixed(2).replace('.', ',')}</span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Link para relatórios */}
               <button 
                 onClick={() => router.push('/relatorios')}
-                className="mt-2 bg-primary hover:bg-primary/95 text-white font-bold px-5 py-3 rounded-2xl text-[13px] active:scale-95 transition-all cursor-pointer w-full shadow-md"
+                className="w-full bg-card border border-border hover:bg-card-secondary/50 text-foreground font-bold px-5 py-3.5 rounded-2xl text-[13px] active:scale-[0.98] transition-all cursor-pointer shadow-sm flex items-center justify-center space-x-2"
               >
-                Abrir Relatórios
+                <span>Abrir Relatórios Completos</span>
+                <ChevronDown size={14} className="rotate-[-90deg]" />
               </button>
             </div>
           )}

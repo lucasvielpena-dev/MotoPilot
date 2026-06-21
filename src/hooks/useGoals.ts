@@ -73,13 +73,29 @@ export function useGoals() {
     return { error };
   };
 
-  const updateGoalDirect = (field: 'daily' | 'weekly' | 'monthly', value: number) => {
+  const updateGoalDirect = async (field: 'daily' | 'weekly' | 'monthly', value: number) => {
+    if (!user) return { error: { message: 'Usuário não logado' } };
+
     const goals = { daily: dailyGoal, weekly: weeklyGoal, monthly: monthlyGoal };
     goals[field] = value;
-    setDailyGoal(goals.daily);
-    setWeeklyGoal(goals.weekly);
-    setMonthlyGoal(goals.monthly);
-    saveToLocalStorage(goals);
+
+    const { error } = await supabase
+      .from('goals')
+      .upsert({ 
+        user_id: user.id, 
+        daily_goal: goals.daily, 
+        weekly_goal: goals.weekly, 
+        monthly_goal: goals.monthly, 
+        updated_at: new Date().toISOString() 
+      }, { onConflict: 'user_id' });
+
+    if (!error) {
+      setDailyGoal(goals.daily);
+      setWeeklyGoal(goals.weekly);
+      setMonthlyGoal(goals.monthly);
+      saveToLocalStorage(goals);
+    }
+    return { error };
   };
 
   return {
