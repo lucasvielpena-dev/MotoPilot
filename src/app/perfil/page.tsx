@@ -8,7 +8,8 @@ import {
   Flag, 
   X, 
   Sun, 
-  Moon 
+  Moon,
+  Wrench
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoals } from '@/hooks/useGoals';
@@ -54,14 +55,32 @@ export default function Perfil() {
   const [tempPlate, setTempPlate] = useState('');
   const [tempType, setTempType] = useState('moto');
 
-  // Carrega o veículo salvo no localStorage
+  // Estados de Revisão
+  const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
+  const [maintenance, setMaintenance] = useState({
+    currentOdometer: 0,
+    intervalKm: 3000,
+    lastServiceKm: 0
+  });
+  const [tempOdometer, setTempOdometer] = useState('');
+  const [tempInterval, setTempInterval] = useState('');
+
+  // Carrega dados do veículo e manutenção do localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('active_vehicle');
-    if (saved) {
+    const savedVehicle = localStorage.getItem('active_vehicle');
+    if (savedVehicle) {
       try {
-        setVehicle(JSON.parse(saved));
+        setVehicle(JSON.parse(savedVehicle));
       } catch (e) {
         console.error('Erro ao ler veículo:', e);
+      }
+    }
+    const savedMaintenance = localStorage.getItem('vehicle_maintenance');
+    if (savedMaintenance) {
+      try {
+        setMaintenance(JSON.parse(savedMaintenance));
+      } catch (e) {
+        console.error('Erro ao ler manutenção:', e);
       }
     }
   }, []);
@@ -94,7 +113,35 @@ export default function Perfil() {
     setIsVehicleModalOpen(false);
   };
 
-  // Retorna o emoji adequado para o tipo de veículo
+  const handleOpenMaintenanceModal = () => {
+    setTempOdometer(String(maintenance.currentOdometer || totalKm.toFixed(0)));
+    setTempInterval(String(maintenance.intervalKm));
+    setIsMaintenanceModalOpen(true);
+  };
+
+  const handleSaveMaintenance = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newMaintenance = {
+      currentOdometer: parseFloat(tempOdometer) || 0,
+      intervalKm: parseFloat(tempInterval) || 3000,
+      lastServiceKm: maintenance.lastServiceKm
+    };
+    setMaintenance(newMaintenance);
+    localStorage.setItem('vehicle_maintenance', JSON.stringify(newMaintenance));
+    setIsMaintenanceModalOpen(false);
+  };
+
+  // Cumulative driver stats
+  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
+  const totalDeliveries = entries.filter(e => e.type === 'gain').length;
+  const totalKm = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
+
+  // Calcula km até próxima revisão
+  const effectiveOdometer = maintenance.currentOdometer > 0 ? maintenance.currentOdometer : totalKm;
+  const nextServiceKm = maintenance.lastServiceKm + maintenance.intervalKm;
+  const kmUntilService = Math.max(0, nextServiceKm - effectiveOdometer);
+  const serviceUrgency = kmUntilService <= 200 ? 'urgent' : kmUntilService <= 500 ? 'warning' : 'ok';
+
   const getVehicleEmoji = (type: string) => {
     switch (type) {
       case 'moto': return '🏍️';
@@ -103,11 +150,6 @@ export default function Perfil() {
       default: return '📦';
     }
   };
-
-  // Cumulative driver stats
-  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalDeliveries = entries.filter(e => e.type === 'gain').length;
-  const totalKm = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
 
   return (
     <div className="p-4 space-y-6 pb-28">
@@ -188,14 +230,28 @@ export default function Perfil() {
 
         <div className="border-t border-border pt-4 grid grid-cols-2 gap-3 text-[12px]">
           <div className="space-y-0.5">
-            <span className="text-muted block font-semibold">Abastecimento</span>
-            <span className="text-foreground font-extrabold">2 dias atrás (Posto Ipiranga)</span>
+            <span className="text-muted block font-semibold">Odômetro atual</span>
+            <span className="text-foreground font-extrabold font-heading">{effectiveOdometer.toFixed(0).replace('.', ',')} km</span>
           </div>
           <div className="space-y-0.5 border-l border-border pl-3">
-            <span className="text-muted block font-semibold">Próxima Revisão</span>
-            <span className="text-[#F59E0B] font-extrabold">Em 1.250 km (Óleo)</span>
+            <span className="text-muted block font-semibold">Próxima revisão</span>
+            <span className={`font-extrabold font-heading ${
+              serviceUrgency === 'urgent' ? 'text-red-500' :
+              serviceUrgency === 'warning' ? 'text-[#F59E0B]' :
+              'text-success-muted'
+            }`}>
+              Em {kmUntilService.toFixed(0).replace('.', ',')} km
+            </span>
           </div>
         </div>
+
+        <button
+          onClick={handleOpenMaintenanceModal}
+          className="w-full mt-4 py-3 bg-card-secondary hover:bg-card-secondary/80 border border-border rounded-xl text-[13px] font-bold text-foreground flex items-center justify-center space-x-2 transition-all active:scale-[0.98] cursor-pointer"
+        >
+          <Wrench size={16} className="text-muted" />
+          <span>Configurar Revisão</span>
+        </button>
       </section>
 
       {/* Ajustes e Preferências */}
@@ -371,6 +427,61 @@ export default function Perfil() {
                 className="w-full py-4 mt-2 font-bold text-white bg-primary rounded-2xl hover:bg-primary/95 active:scale-[0.98] transition-transform text-[14px] cursor-pointer shadow-md"
               >
                 Salvar Veículo
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Configurar Revisão */}
+      {isMaintenanceModalOpen && (
+        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+          <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
+            <div className="flex justify-between items-center p-5 border-b border-border">
+              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Configurar Revisão</h3>
+              <button onClick={() => setIsMaintenanceModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveMaintenance} className="p-5 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Odômetro Atual (km)</label>
+                <input 
+                  type="number" 
+                  required
+                  value={tempOdometer}
+                  onChange={e => setTempOdometer(e.target.value)}
+                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[16px] font-black text-foreground"
+                  placeholder="Ex: 45000"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Intervalo para Revisão (km)</label>
+                <input 
+                  type="number" 
+                  required
+                  value={tempInterval}
+                  onChange={e => setTempInterval(e.target.value)}
+                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[16px] font-black text-foreground"
+                  placeholder="Ex: 3000"
+                />
+              </div>
+
+              {kmUntilService <= 500 && (
+                <div className="p-3 bg-[#F59E0B]/10 border border-[#F59E0B]/20 rounded-xl">
+                  <span className="text-[12px] font-bold text-[#F59E0B]">
+                    ⚠️ Sua próxima revisão está agendada para {kmUntilService.toFixed(0).replace('.', ',')} km!
+                  </span>
+                </div>
+              )}
+
+              <button 
+                type="submit" 
+                className="w-full py-4 mt-2 font-bold text-white bg-primary rounded-2xl hover:bg-primary/95 active:scale-[0.98] transition-transform text-[14px] cursor-pointer shadow-md"
+              >
+                Salvar Configuração
               </button>
             </form>
           </div>

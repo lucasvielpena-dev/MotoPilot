@@ -51,6 +51,9 @@ export default function Lancamentos() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<'Todos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
+  const [periodFilter, setPeriodFilter] = useState<'semanal' | 'mensal' | 'personalizado'>('mensal');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
   const [todayStr, setTodayStr] = useState('');
   const [yesterdayStr, setYesterdayStr] = useState('');
 
@@ -151,7 +154,25 @@ export default function Lancamentos() {
   };
 
   // Filtragem e cálculos para Screen 5 (Gastos)
-  const expenseEntries = entries.filter(e => e.type === 'expense');
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const periodFilteredEntries = entries.filter(e => {
+    if (e.type !== 'expense') return false;
+    const entryDate = new Date(e.date);
+    if (periodFilter === 'semanal') return entryDate >= sevenDaysAgo;
+    if (periodFilter === 'mensal') return entryDate >= thirtyDaysAgo;
+    if (periodFilter === 'personalizado' && customStartDate && customEndDate) {
+      const start = new Date(customStartDate);
+      const end = new Date(customEndDate);
+      end.setHours(23, 59, 59, 999);
+      return entryDate >= start && entryDate <= end;
+    }
+    return true;
+  });
+
+  const expenseEntries = periodFilteredEntries;
   const totalExpensesSum = expenseEntries.reduce((acc, curr) => acc + curr.amount, 0);
 
   const filteredEntries = expenseEntries.filter(entry => {
@@ -577,7 +598,48 @@ export default function Lancamentos() {
                 </div>
               </div>
 
-              {/* Filtration pills */}
+              {/* Filtro de Período */}
+              <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
+                {(['semanal', 'mensal', 'personalizado'] as const).map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setPeriodFilter(period)}
+                    className={`flex-1 py-2.5 text-[13px] font-bold rounded-xl transition-all cursor-pointer capitalize ${
+                      periodFilter === period
+                        ? 'bg-card text-foreground border border-border shadow-sm'
+                        : 'text-muted hover:text-foreground'
+                    }`}
+                  >
+                    {period === 'semanal' ? '7 dias' : period === 'mensal' ? '30 dias' : 'Personalizado'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Filtro de Data Personalizado */}
+              {periodFilter === 'personalizado' && (
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="text-[10px] font-bold text-muted block uppercase mb-1">De</label>
+                    <input
+                      type="date"
+                      value={customStartDate}
+                      onChange={e => setCustomStartDate(e.target.value)}
+                      className="w-full py-2.5 px-3 bg-card border border-border rounded-xl text-[13px] font-bold text-foreground focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-[10px] font-bold text-muted block uppercase mb-1">Até</label>
+                    <input
+                      type="date"
+                      value={customEndDate}
+                      onChange={e => setCustomEndDate(e.target.value)}
+                      className="w-full py-2.5 px-3 bg-card border border-border rounded-xl text-[13px] font-bold text-foreground focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Filtration pills - Categorias */}
               <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar -mx-4 px-4">
                 {filterOptions.map((filter) => {
                   const isActive = activeFilter === filter;
