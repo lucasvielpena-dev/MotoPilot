@@ -106,9 +106,9 @@ export default function Home() {
   
   const weeklyDistance = (historicalJourneys || []).reduce((acc, curr) => acc + (curr.distance_km || 0), 0) + liveDistance;
 
-  const displayGanhosSemana = weekGains > 0 ? weekGains : 122.50;
-  const displayDistanceSemana = weeklyDistance > 0 ? weeklyDistance : 45.2;
-  const displayDeliveriesSemana = entries.filter(e => new Date(e.date) >= sevenDaysAgo && e.type === 'gain').length || 18;
+  const displayGanhosSemana = weekGains;
+  const displayDistanceSemana = weeklyDistance;
+  const displayDeliveriesSemana = entries.filter(e => new Date(e.date) >= sevenDaysAgo && e.type === 'gain').length;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

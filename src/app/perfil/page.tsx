@@ -50,8 +50,8 @@ export default function Perfil() {
   // Estados do Veículo
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [vehicle, setVehicle] = useState({
-    name: 'Honda CG 160 Titan',
-    plate: 'ABC-1234',
+    name: '',
+    plate: '',
     type: 'moto'
   });
   const [tempName, setTempName] = useState('');
