@@ -102,28 +102,12 @@ export default function Home() {
   return (
     <div className="space-y-6 pb-28 pt-2">
       {/* Header Estilo Mockup */}
-      <header className="flex justify-between items-center mb-6 bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
-        <button 
-          onClick={() => setIsMenuOpen(true)}
-          className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer"
-        >
-          <Menu size={24} strokeWidth={2.5} />
-        </button>
-        
+      <header className="flex justify-center items-center mb-6 bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
             <Motorbike size={18} strokeWidth={2.5} className="text-white" />
           </div>
           <span className="text-[18px] font-extrabold tracking-tight text-neutral-900 font-sans">MotoPilot</span>
-        </div>
-
-        <div className="relative">
-          <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
-            <Bell size={24} strokeWidth={2.5} />
-          </button>
-          <span className="absolute top-1.5 right-1.5 w-5 h-5 bg-[#EA1D2C] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-            2
-          </span>
         </div>
       </header>
 

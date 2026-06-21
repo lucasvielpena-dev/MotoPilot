@@ -288,9 +288,7 @@ export default function Jornada() {
         <div className="space-y-6">
           {/* Header do Histórico */}
           <header className="flex justify-between items-center bg-white px-2 py-3 border-b border-neutral-100/50 -mx-4">
-            <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
-              <Menu size={24} strokeWidth={2.5} />
-            </button>
+            <div className="w-10 h-10" />
             <h1 className="text-[18px] font-extrabold text-neutral-800">Histórico</h1>
             <button className="w-10 h-10 flex items-center justify-center text-neutral-800 hover:bg-neutral-50 rounded-xl transition-colors cursor-pointer">
               <Calendar size={24} strokeWidth={2.5} />
