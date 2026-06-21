@@ -361,7 +361,19 @@ export default function Perfil() {
       </section>
 
       {/* Ações */}
-      <section className="pt-2 animate-fade-in-up delay-200">
+      <section className="space-y-3 pt-2 animate-fade-in-up delay-200">
+        <button 
+          onClick={() => {
+            localStorage.removeItem('active_vehicle');
+            localStorage.removeItem('vehicle_maintenance');
+            localStorage.removeItem('motopilot_goals');
+            localStorage.removeItem('motopilot_show_amount');
+            window.location.reload();
+          }}
+          className="w-full flex items-center justify-center space-x-2 bg-card hover:bg-card-secondary text-amber-500 font-extrabold py-4.5 rounded-[24px] border border-border transition-colors active:scale-[0.98] text-[15px] shadow-sm cursor-pointer"
+        >
+          <span>Resetar Dados Locais</span>
+        </button>
         <button 
           onClick={handleLogout}
           className="w-full flex items-center justify-center space-x-2 bg-card hover:bg-card-secondary text-red-500 font-extrabold py-4.5 rounded-[24px] border border-border transition-colors active:scale-[0.98] text-[15px] shadow-sm cursor-pointer"
