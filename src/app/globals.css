@@ -25,10 +25,10 @@
   --text-color: #09090B;
   --text-muted: #71717A;
   --primary-color: #EA1D2C;
-  --primary-soft: rgba(234, 29, 44, 0.08);
-  --primary-muted: rgba(234, 29, 44, 0.6);
+  --primary-soft: rgba(234, 29, 44, 0.12);
+  --primary-muted: #E8475A;
   --success-color: #10B981;
-  --success-muted: rgba(16, 185, 129, 0.6);
+  --success-muted: #34D399;
   --warning-color: #F59E0B;
   --shadow-premium: 0 10px 30px -15px rgba(0, 0, 0, 0.06), 0 4px 12px -8px rgba(0, 0, 0, 0.03);
   --gain-color: var(--success-color);
@@ -44,10 +44,10 @@
   --text-color: #09090B;
   --text-muted: #71717A;
   --primary-color: #EA1D2C;
-  --primary-soft: rgba(234, 29, 44, 0.08);
-  --primary-muted: rgba(234, 29, 44, 0.6);
+  --primary-soft: rgba(234, 29, 44, 0.12);
+  --primary-muted: #E8475A;
   --success-color: #10B981;
-  --success-muted: rgba(16, 185, 129, 0.6);
+  --success-muted: #34D399;
   --warning-color: #F59E0B;
   --shadow-premium: 0 10px 30px -15px rgba(0, 0, 0, 0.06), 0 4px 12px -8px rgba(0, 0, 0, 0.03);
   --gain-color: var(--success-color);
@@ -62,10 +62,10 @@
   --text-color: #3F1A15;
   --text-muted: #8F6F6A;
   --primary-color: #EA1D2C;
-  --primary-soft: rgba(234, 29, 44, 0.1);
-  --primary-muted: rgba(234, 29, 44, 0.6);
+  --primary-soft: rgba(234, 29, 44, 0.15);
+  --primary-muted: #E8475A;
   --success-color: #10B981;
-  --success-muted: rgba(16, 185, 129, 0.6);
+  --success-muted: #34D399;
   --warning-color: #F59E0B;
   --shadow-premium: 0 10px 30px -15px rgba(234, 29, 44, 0.04), 0 4px 12px -8px rgba(234, 29, 44, 0.02);
   --gain-color: var(--success-color);
@@ -80,10 +80,10 @@
   --text-color: #F4F4F5;
   --text-muted: #A1A1AA;
   --primary-color: #EA1D2C;
-  --primary-soft: rgba(234, 29, 44, 0.15);
-  --primary-muted: rgba(234, 29, 44, 0.6);
+  --primary-soft: rgba(234, 29, 44, 0.2);
+  --primary-muted: #E8475A;
   --success-color: #10B981;
-  --success-muted: rgba(16, 185, 129, 0.6);
+  --success-muted: #34D399;
   --warning-color: #F59E0B;
   --shadow-premium: 0 15px 40px -20px rgba(0, 0, 0, 0.8);
   --gain-color: var(--success-color);
@@ -182,15 +182,22 @@ path:focus {
 
 .delivery-hero {
   background:
-    radial-gradient(circle at 85% 18%, rgba(255,255,255,0.18), transparent 22%),
-    linear-gradient(135deg, rgba(234, 29, 44, 0.85) 0%, rgba(255, 77, 52, 0.85) 100%);
+    radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 22%),
+    linear-gradient(135deg, #EA1D2C 0%, #FF4D34 100%);
   color: #FFFFFF;
   border: 0;
-  box-shadow: 0 22px 48px -24px rgba(234, 29, 44, 0.60);
+  box-shadow: 0 22px 48px -24px rgba(234, 29, 44, 0.65);
 }
 
 .delivery-pill {
   background: var(--primary-soft);
   color: var(--primary-color);
-  border: 1px solid rgba(234, 29, 44, 0.14);
+  border: 1px solid rgba(234, 29, 44, 0.18);
+}
+
+.goal-bar {
+  height: 16px;
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

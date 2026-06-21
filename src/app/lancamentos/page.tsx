@@ -13,7 +13,11 @@ import {
   MoreHorizontal,
   Trash2,
   Plus,
-  ClipboardList
+  ClipboardList,
+  Upload,
+  FileSpreadsheet,
+  ChevronUp,
+  DollarSign
 } from 'lucide-react';
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
@@ -56,6 +60,16 @@ export default function Lancamentos() {
   const [customEndDate, setCustomEndDate] = useState('');
   const [todayStr, setTodayStr] = useState('');
   const [yesterdayStr, setYesterdayStr] = useState('');
+  const [showFinancialSummary, setShowFinancialSummary] = useState(false);
+
+  // Handle quick action fuel category
+  useEffect(() => {
+    const cat = searchParams.get('cat');
+    if (cat === 'Combustivel') {
+      setCategory('Combustível');
+      setExpenseTab('gasto');
+    }
+  }, [searchParams]);
 
   // Set today's date as default in form dynamically
   useEffect(() => {
@@ -133,20 +147,59 @@ export default function Lancamentos() {
     e.preventDefault();
     if (!pasteText.trim()) return;
 
-    // Parseador simples
-    const lines = pasteText.split('\n');
-    let value = 0.0;
-    for (const line of lines) {
-      const match = /R\$\s*([0-9]+(?:,[0-9]{2})?)/i.exec(line);
-      if (match) {
-        value = parseFloat(match[1].replace(',', '.'));
-        break;
+    const lines = pasteText.split('\n').filter(l => l.trim());
+    let entries: { type: 'gain' | 'expense'; amount: number; desc: string }[] = [];
+
+    // Try CSV format: Data,Tipo,Valor
+    const csvHeader = lines[0]?.toLowerCase() || '';
+    if (csvHeader.includes(',') && (csvHeader.includes('data') || csvHeader.includes('tipo') || csvHeader.includes('valor'))) {
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(',').map(p => p.trim());
+        if (parts.length >= 3) {
+          const type = parts[1].toLowerCase().includes('ganho') || parts[1].toLowerCase().includes('corrida') ? 'gain' : 'expense';
+          const amount = parseFloat(parts[2].replace('R$', '').replace('.', '').replace(',', '.').trim());
+          if (!isNaN(amount) && amount > 0) {
+            entries.push({ type, amount, desc: parts[1].trim() || (type === 'gain' ? 'Ganho Importado' : 'Gasto Importado') });
+          }
+        }
       }
     }
 
-    if (value > 0) {
+    // Try JSON format
+    if (entries.length === 0) {
+      try {
+        const jsonData = JSON.parse(pasteText);
+        const items = Array.isArray(jsonData) ? jsonData : [jsonData];
+        for (const item of items) {
+          const type = (item.tipo || item.type || '').toLowerCase().includes('ganho') || (item.tipo || item.type || '').toLowerCase().includes('corrida') ? 'gain' : 'expense';
+          const amount = parseFloat(String(item.valor || item.value || item.amount || 0).replace('R$', '').replace('.', '').replace(',', '.'));
+          if (!isNaN(amount) && amount > 0) {
+            entries.push({ type, amount, desc: item.descricao || item.desc || item.description || (type === 'gain' ? 'Ganho Importado' : 'Gasto Importado') });
+          }
+        }
+      } catch {
+        // Not JSON, try line-by-line
+      }
+    }
+
+    // Fallback: simple line-by-line R$ parsing
+    if (entries.length === 0) {
+      for (const line of lines) {
+        const match = /R\$\s*([0-9]+(?:,[0-9]{2})?)/i.exec(line);
+        if (match) {
+          const value = parseFloat(match[1].replace(',', '.'));
+          if (value > 0) {
+            entries.push({ type: 'expense', amount: value, desc: 'Gasto Importado' });
+          }
+        }
+      }
+    }
+
+    if (entries.length > 0) {
       setLoading(true);
-      await addEntry('expense', value, 'Gasto Importado', activeJourneyId);
+      for (const entry of entries) {
+        await addEntry(entry.type, entry.amount, entry.desc, activeJourneyId);
+      }
       setLoading(false);
       setPasteText('');
       router.push('/lancamentos');
@@ -174,6 +227,8 @@ export default function Lancamentos() {
 
   const expenseEntries = periodFilteredEntries;
   const totalExpensesSum = expenseEntries.reduce((acc, curr) => acc + curr.amount, 0);
+  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
+  const netProfit = totalGains - totalExpensesSum;
 
   const filteredEntries = expenseEntries.filter(entry => {
     if (activeFilter === 'Todos') return true;
@@ -500,8 +555,35 @@ export default function Lancamentos() {
                   value={pasteText}
                   onChange={e => setPasteText(e.target.value)}
                   className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-medium text-foreground resize-none"
-                  placeholder={`Cole o texto do comprovante aqui.\nExemplo:\nAbastecimento Posto BR\nValor: R$ 45,00`}
+                  placeholder={`Cole o texto ou cole um CSV/JSON.\n\nCSV: Data,Tipo,Valor\n2024-01-15,Ganho,45.00\n2024-01-15,Gasto,25.00\n\nJSON:\n[{"tipo":"Ganho","valor":45.00}]`}
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[12px] font-bold text-muted block uppercase">Ou importe arquivo</label>
+                <label className="flex items-center justify-center space-x-2 py-4 bg-card-secondary/50 border border-dashed border-border rounded-2xl cursor-pointer hover:bg-card-secondary transition-colors">
+                  <Upload size={18} className="text-muted" />
+                  <span className="text-[13px] font-bold text-muted">Selecionar CSV ou JSON</span>
+                  <input
+                    type="file"
+                    accept=".csv,.json"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        setPasteText(ev.target?.result as string);
+                      };
+                      reader.readAsText(file);
+                    }}
+                  />
+                </label>
+              </div>
+
+              <div className="flex items-center space-x-2 text-[11px] text-muted">
+                <FileSpreadsheet size={14} />
+                <span>Formatos aceitos: CSV (Data,Tipo,Valor) ou JSON array</span>
               </div>
 
               <button
@@ -509,7 +591,7 @@ export default function Lancamentos() {
                 disabled={loading || !pasteText.trim()}
                 className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-lg cursor-pointer disabled:opacity-50"
               >
-                {loading ? 'Processando...' : 'Salvar Gasto Importado'}
+                {loading ? 'Processando...' : 'Importar Lançamentos'}
               </button>
             </form>
           )}
@@ -544,6 +626,56 @@ export default function Lancamentos() {
               Resumo
             </button>
           </div>
+
+          {/* Financial Summary Accordion */}
+          <button
+            onClick={() => setShowFinancialSummary(!showFinancialSummary)}
+            className="w-full bg-card border border-border rounded-[20px] p-4 flex items-center justify-between hover:bg-card-secondary/50 transition-all active:scale-[0.99] cursor-pointer"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <DollarSign size={18} className="text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-[13px] font-extrabold text-foreground">Resumo Financeiro</p>
+                <p className="text-[11px] text-muted font-semibold">Entradas vs. Saídas</p>
+              </div>
+            </div>
+            {showFinancialSummary ? <ChevronUp size={18} className="text-muted" /> : <ChevronDown size={18} className="text-muted" />}
+          </button>
+
+          {showFinancialSummary && (
+            <div className="bg-card border border-border rounded-[24px] p-5 space-y-4 animate-fade-in-up">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center p-3 bg-emerald-500/10 rounded-xl">
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase block">Entradas</span>
+                  <span className="text-[16px] font-black text-emerald-600 font-heading block mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div className="text-center p-3 bg-primary/10 rounded-xl">
+                  <span className="text-[10px] font-bold text-primary uppercase block">Saídas</span>
+                  <span className="text-[16px] font-black text-primary font-heading block mt-1">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div className={`text-center p-3 rounded-xl ${netProfit >= 0 ? 'bg-emerald-500/10' : 'bg-primary/10'}`}>
+                  <span className={`text-[10px] font-bold uppercase block ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>Lucro</span>
+                  <span className={`text-[16px] font-black font-heading block mt-1 ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>R$ {(totalGains - totalExpensesSum).toFixed(2).replace('.', ',')}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-[11px] font-bold">
+                  <span className="text-muted">Total Entradas</span>
+                  <span className="text-emerald-600">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div className="flex justify-between text-[11px] font-bold">
+                  <span className="text-muted">Total Saídas</span>
+                  <span className="text-primary">- R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div className="border-t border-border pt-2 flex justify-between text-[13px] font-black">
+                  <span className="text-foreground">Lucro Líquido</span>
+                  <span className={netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}>R$ {(totalGains - totalExpensesSum).toFixed(2).replace('.', ',')}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {listTab === 'lista' ? (
             <>

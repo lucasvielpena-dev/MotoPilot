@@ -9,7 +9,9 @@ import {
   X, 
   Sun, 
   Moon,
-  Wrench
+  Wrench,
+  Calendar,
+  TrendingUp
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoals } from '@/hooks/useGoals';
@@ -19,10 +21,11 @@ import { supabase } from '@/lib/supabase/client';
 
 export default function Perfil() {
   const { user } = useAuth();
-  const { dailyGoal, updateGoal } = useGoals();
+  const { dailyGoal, weeklyGoal, monthlyGoal, updateGoal, updateGoalDirect } = useGoals();
   const { historicalJourneys } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [goalType, setGoalType] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [newGoal, setNewGoal] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -93,7 +96,12 @@ export default function Perfil() {
     e.preventDefault();
     if (!newGoal) return;
     setLoading(true);
-    await updateGoal(parseFloat(newGoal));
+    const value = parseFloat(newGoal);
+    if (goalType === 'daily') {
+      await updateGoal(value);
+    } else {
+      updateGoalDirect(goalType, value);
+    }
     setLoading(false);
     setIsGoalModalOpen(false);
   };
@@ -271,7 +279,45 @@ export default function Perfil() {
               </div>
             </div>
             <button 
-              onClick={() => setIsGoalModalOpen(true)} 
+              onClick={() => { setGoalType('daily'); setIsGoalModalOpen(true); }} 
+              className="text-[13px] font-extrabold text-primary hover:underline"
+            >
+              Editar
+            </button>
+          </div>
+
+          {/* Meta Semanal */}
+          <div className="flex justify-between items-center p-5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-card-secondary rounded-2xl">
+                <Calendar size={20} className="text-success-muted" />
+              </div>
+              <div>
+                <p className="text-[15px] font-extrabold text-foreground">Meta Semanal</p>
+                <p className="text-[12px] text-muted mt-0.5">Meta ativa: R$ {weeklyGoal.toFixed(2).replace('.', ',')}</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => { setGoalType('weekly'); setIsGoalModalOpen(true); }} 
+              className="text-[13px] font-extrabold text-primary hover:underline"
+            >
+              Editar
+            </button>
+          </div>
+
+          {/* Meta Mensal */}
+          <div className="flex justify-between items-center p-5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-card-secondary rounded-2xl">
+                <TrendingUp size={20} className="text-indigo-500" />
+              </div>
+              <div>
+                <p className="text-[15px] font-extrabold text-foreground">Meta Mensal</p>
+                <p className="text-[12px] text-muted mt-0.5">Meta ativa: R$ {monthlyGoal.toFixed(2).replace('.', ',')}</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => { setGoalType('monthly'); setIsGoalModalOpen(true); }} 
               className="text-[13px] font-extrabold text-primary hover:underline"
             >
               Editar
@@ -325,12 +371,14 @@ export default function Perfil() {
         </button>
       </section>
 
-      {/* Modal de Meta Diária */}
+      {/* Modal de Meta */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
           <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
             <div className="flex justify-between items-center p-5 border-b border-border">
-              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Meta Diária</h3>
+              <h3 className="text-[18px] font-extrabold text-foreground font-heading">
+                {goalType === 'daily' ? 'Meta Diária' : goalType === 'weekly' ? 'Meta Semanal' : 'Meta Mensal'}
+              </h3>
               <button onClick={() => setIsGoalModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
                 <X size={24} />
               </button>

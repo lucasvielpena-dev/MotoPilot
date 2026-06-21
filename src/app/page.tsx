@@ -19,7 +19,8 @@ import {
   LogOut,
   User,
   Settings,
-  TrendingUp
+  TrendingUp,
+  Fuel
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourneys } from '@/hooks/useJourneys';
@@ -32,7 +33,7 @@ export default function Home() {
   const { user } = useAuth();
   const { activeJourney, liveDistance, startJourney, finishJourney, historicalJourneys, fetchHistoricalJourneys } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
-  const { dailyGoal, fetchGoal } = useGoals();
+  const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal } = useGoals();
   
   const [elapsedTime, setElapsedTime] = useState('0h 0m');
   const [activeStartTime, setActiveStartTime] = useState('--:--');
@@ -159,7 +160,7 @@ export default function Home() {
             <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}% concluída</span>
             <span>R$ {netProfit.toFixed(2).replace('.', ',')} / R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
           </div>
-          <div className="w-full h-4 bg-white/20 rounded-full overflow-hidden">
+          <div className="goal-bar w-full bg-white/25">
             <div 
               className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
@@ -247,6 +248,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Ação Rápida - Combustível */}
+      <section>
+        <button
+          onClick={() => router.push('/lancamentos?new=true&cat=Combustivel')}
+          className="w-full bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.005)] flex items-center space-x-4 hover:bg-card-secondary/50 transition-all active:scale-[0.98] cursor-pointer card-premium"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+            <Fuel size={22} className="text-emerald-500" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-[14px] font-extrabold text-foreground">Registrar Combustível</p>
+            <p className="text-[11px] font-semibold text-muted mt-0.5">Atalho rápido para abastecimento</p>
+          </div>
+          <ChevronRight size={18} className="text-muted" />
+        </button>
+      </section>
+
       {/* Seção da Jornada */}
       <section className="space-y-3">
         <h2 className="text-[16px] font-extrabold text-foreground font-heading px-1">Jornada</h2>
@@ -327,7 +345,7 @@ export default function Home() {
               <span>Meta diária</span>
               <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
             </div>
-            <div className="w-full h-4 bg-card-secondary rounded-full overflow-hidden flex items-center">
+            <div className="goal-bar w-full bg-card-secondary">
               <div 
                 className="h-full bg-primary-muted rounded-full transition-all duration-500"
                 style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
@@ -344,16 +362,16 @@ export default function Home() {
             <div className="space-y-2">
               <div className="flex justify-between text-[11px] font-bold text-foreground">
                 <span>Meta semanal</span>
-                <span>{dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100).toFixed(0) : 0}%</span>
+                <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
               </div>
-              <div className="w-full h-3 bg-card-secondary rounded-full overflow-hidden">
+              <div className="goal-bar w-full bg-card-secondary">
                 <div 
                   className="h-full bg-success-muted rounded-full transition-all duration-500"
-                  style={{ width: `${dailyGoal > 0 ? Math.min((weekNetProfit / (dailyGoal * 7)) * 100, 100) : 0}%` }}
+                  style={{ width: `${weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100) : 0}%` }}
                 />
               </div>
               <div className="text-[9px] text-muted font-semibold">
-                R$ {weekNetProfit.toFixed(2).replace('.', ',')} / R$ {(dailyGoal * 7).toFixed(2).replace('.', ',')}
+                R$ {weekNetProfit.toFixed(2).replace('.', ',')} / R$ {weeklyGoal.toFixed(2).replace('.', ',')}
               </div>
             </div>
 
@@ -361,16 +379,16 @@ export default function Home() {
             <div className="space-y-2">
               <div className="flex justify-between text-[11px] font-bold text-foreground">
                 <span>Meta mensal</span>
-                <span>{dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100).toFixed(0) : 0}%</span>
+                <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
               </div>
-              <div className="w-full h-3 bg-card-secondary rounded-full overflow-hidden">
+              <div className="goal-bar w-full bg-card-secondary">
                 <div 
-                  className="h-full bg-indigo-500/60 rounded-full transition-all duration-500"
-                  style={{ width: `${dailyGoal > 0 ? Math.min((monthNetProfit / (dailyGoal * 28)) * 100, 100) : 0}%` }}
+                  className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                  style={{ width: `${monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100) : 0}%` }}
                 />
               </div>
               <div className="text-[9px] text-muted font-semibold">
-                R$ {monthNetProfit.toFixed(2).replace('.', ',')} / R$ {(dailyGoal * 28).toFixed(2).replace('.', ',')}
+                R$ {monthNetProfit.toFixed(2).replace('.', ',')} / R$ {monthlyGoal.toFixed(2).replace('.', ',')}
               </div>
             </div>
           </div>
