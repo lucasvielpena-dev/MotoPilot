@@ -78,7 +78,7 @@ export default function Relatorios() {
         >
           <ArrowLeft size={24} strokeWidth={2.5} />
         </button>
-        <h1 className="text-[18px] font-extrabold text-foreground">Relatórios</h1>
+        <h1 className="text-[18px] font-extrabold text-foreground font-heading">Relatórios</h1>
         <div className="w-10 h-10" /> {/* Spacer */}
       </header>
 
@@ -120,7 +120,7 @@ export default function Relatorios() {
               </span>
             </div>
             
-            <div className="text-[34px] font-extrabold text-[#19A85B] tracking-tight">
+            <div className="text-[34px] font-extrabold text-[#19A85B] tracking-tight font-heading">
               R$ {netProfit.toFixed(2).replace('.', ',')}
             </div>
           </section>
@@ -130,25 +130,25 @@ export default function Relatorios() {
             {/* Faturamento */}
             <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
               <p className="text-[11px] font-bold text-muted uppercase">Faturamento</p>
-              <p className="text-[18px] font-extrabold text-foreground mt-2">R$ {totalGains.toFixed(2).replace('.', ',')}</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2 font-heading">R$ {totalGains.toFixed(2).replace('.', ',')}</p>
             </div>
 
             {/* Gastos */}
             <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
               <p className="text-[11px] font-bold text-muted uppercase">Gastos</p>
-              <p className="text-[18px] font-extrabold text-foreground mt-2">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2 font-heading">R$ {totalExpenses.toFixed(2).replace('.', ',')}</p>
             </div>
 
             {/* Tempo online */}
             <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
               <p className="text-[11px] font-bold text-muted uppercase">Tempo online</p>
-              <p className="text-[18px] font-extrabold text-foreground mt-2">{Math.floor(totalHours)}h {Math.round((totalHours % 1) * 60)}m</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2 font-heading">{Math.floor(totalHours)}h {Math.round((totalHours % 1) * 60)}m</p>
             </div>
 
             {/* Km rodados */}
             <div className="bg-card border border-border rounded-[28px] p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
               <p className="text-[11px] font-bold text-muted uppercase">Km rodados</p>
-              <p className="text-[18px] font-extrabold text-foreground mt-2">{totalDistance.toFixed(1).replace('.', ',')} km</p>
+              <p className="text-[18px] font-extrabold text-foreground mt-2 font-heading">{totalDistance.toFixed(1).replace('.', ',')} km</p>
             </div>
           </section>
 

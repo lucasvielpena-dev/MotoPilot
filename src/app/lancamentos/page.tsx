@@ -246,7 +246,7 @@ export default function Lancamentos() {
             >
               <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-foreground">Novo lançamento</h1>
+            <h1 className="text-[18px] font-extrabold text-foreground font-heading">Novo lançamento</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
           </header>
 
@@ -288,7 +288,7 @@ export default function Lancamentos() {
                     autoFocus
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-emerald-600 w-[220px]"
+                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-emerald-600 w-[220px] font-heading"
                     placeholder="0,00"
                   />
                 </div>
@@ -390,7 +390,7 @@ export default function Lancamentos() {
                     autoFocus
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-foreground w-[220px]"
+                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-foreground w-[220px] font-heading"
                     placeholder="0,00"
                   />
                 </div>
@@ -504,7 +504,7 @@ export default function Lancamentos() {
             >
               <ArrowLeft size={24} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-foreground">Gastos</h1>
+            <h1 className="text-[18px] font-extrabold text-foreground font-heading">Gastos</h1>
             <div className="w-10 h-10" /> {/* Spacer */}
           </header>
 
@@ -565,15 +565,15 @@ export default function Lancamentos() {
               <div className="grid grid-cols-3 gap-2.5">
                 <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
                   <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
-                  <span className="text-[15px] font-black text-foreground mt-1 block">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
+                  <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
                 </div>
                 <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
                   <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
-                  <span className="text-[15px] font-black text-foreground mt-1 block">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
+                  <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
                 </div>
                 <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
                   <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
-                  <span className="text-[15px] font-black text-foreground mt-1 block">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
+                  <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
                 </div>
               </div>
 
@@ -601,7 +601,7 @@ export default function Lancamentos() {
               {activeFilter !== 'Todos' && (
                 <div className="bg-card border border-border rounded-[24px] p-4 shadow-sm flex items-center justify-between">
                   <span className="text-[12px] font-bold text-muted uppercase tracking-wider">Total {activeFilter}</span>
-                  <span className="text-[16px] font-extrabold text-foreground">R$ {totalFilteredSum.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-[16px] font-extrabold text-foreground font-heading">R$ {totalFilteredSum.toFixed(2).replace('.', ',')}</span>
                 </div>
               )}
 
@@ -640,7 +640,7 @@ export default function Lancamentos() {
                         </div>
                         
                         <div className="flex items-center space-x-3">
-                          <span className="text-[16px] font-extrabold text-foreground">
+                          <span className="text-[16px] font-extrabold text-foreground font-heading">
                             R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
@@ -690,7 +690,7 @@ export default function Lancamentos() {
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
           <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl p-6 space-y-6 animate-fade-in-up">
             <div className="text-center space-y-2">
-              <h3 className="text-[18px] font-extrabold text-foreground">Apagar Lançamento?</h3>
+              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Apagar Lançamento?</h3>
               <p className="text-[13px] text-muted font-semibold leading-relaxed">
                 Esta ação removerá permanentemente este lançamento do seu histórico e relatórios.
               </p>

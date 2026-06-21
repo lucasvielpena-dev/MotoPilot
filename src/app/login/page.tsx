@@ -99,7 +99,7 @@ export default function Login() {
         <div className="mx-auto w-16 h-16 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center mb-4">
           <span className="text-white font-black text-[28px]">M</span>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-[var(--color-foreground)]">
+        <h1 className="text-3xl font-bold tracking-tight text-[var(--color-foreground)] font-heading">
           {mode === 'login' ? 'Bem-vindo' : 'Criar Conta'}
         </h1>
         <p className="text-[var(--color-muted)]">

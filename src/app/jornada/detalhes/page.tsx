@@ -119,7 +119,7 @@ function DetalhesJornadaConteudo() {
         >
           <ArrowLeft size={24} strokeWidth={2.5} />
         </button>
-        <h1 className="text-[17px] font-extrabold text-foreground">Detalhes da jornada</h1>
+        <h1 className="text-[17px] font-extrabold text-foreground font-heading">Detalhes da jornada</h1>
         <button className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer">
           <Share2 size={24} strokeWidth={2.5} />
         </button>
@@ -135,7 +135,7 @@ function DetalhesJornadaConteudo() {
             Duração de {Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m
           </span>
         </div>
-        <span className="text-[20px] font-extrabold text-[#19A85B]">
+        <span className="text-[20px] font-extrabold text-[#19A85B] font-heading">
           R$ {profit.toFixed(2).replace('.', ',')}
         </span>
       </section>
@@ -167,7 +167,7 @@ function DetalhesJornadaConteudo() {
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Tempo online</span>
-              <span className="text-[14px] font-extrabold text-foreground">{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
+              <span className="text-[14px] font-extrabold text-foreground font-heading">{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
             </div>
           </div>
 
@@ -178,7 +178,7 @@ function DetalhesJornadaConteudo() {
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
-              <span className="text-[14px] font-extrabold text-foreground">{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
+              <span className="text-[14px] font-extrabold text-foreground font-heading">{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
             </div>
           </div>
 
@@ -189,7 +189,7 @@ function DetalhesJornadaConteudo() {
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
-              <span className="text-[14px] font-extrabold text-foreground">{deliveries}</span>
+              <span className="text-[14px] font-extrabold text-foreground font-heading">{deliveries}</span>
             </div>
           </div>
 
@@ -200,7 +200,7 @@ function DetalhesJornadaConteudo() {
               </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Média ganhos/h</span>
-              <span className="text-[14px] font-extrabold text-foreground">R$ {avgEarningsPerHour.toFixed(2).replace('.', ',')}</span>
+              <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {avgEarningsPerHour.toFixed(2).replace('.', ',')}</span>
             </div>
           </div>
         </div>

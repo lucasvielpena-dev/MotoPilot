@@ -5,7 +5,7 @@ import {
   UserCircle, 
   Settings, 
   LogOut, 
-  Bell, 
+  Flag, 
   X, 
   Sun, 
   Moon 
@@ -112,7 +112,7 @@ export default function Perfil() {
   return (
     <div className="p-4 space-y-6 pb-28">
       <header className="flex justify-between items-center mb-4">
-        <h1 className="text-[20px] font-black tracking-tight text-foreground">Perfil</h1>
+        <h1 className="text-[20px] font-black tracking-tight text-foreground font-heading">Perfil</h1>
         <button className="text-muted hover:text-foreground transition-colors">
           <Settings size={22} />
         </button>
@@ -126,7 +126,7 @@ export default function Perfil() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <h2 className="text-[18px] font-black text-foreground truncate">
+            <h2 className="text-[18px] font-black text-foreground truncate font-heading">
               {user?.email?.split('@')[0] || 'Piloto'}
             </h2>
             <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide bg-primary/10 text-primary rounded-md border border-primary/15">
@@ -145,19 +145,19 @@ export default function Perfil() {
       <section className="grid grid-cols-3 gap-2.5 animate-fade-in-up delay-75">
         <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-sm">
           <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Total Km</span>
-          <span className="text-[15px] font-black text-foreground block mt-1">
+          <span className="text-[15px] font-black text-foreground block mt-1 font-heading">
             {totalKm.toFixed(0).replace('.', ',')} km
           </span>
         </div>
         <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-sm">
           <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Entregas</span>
-          <span className="text-[15px] font-black text-foreground block mt-1">
+          <span className="text-[15px] font-black text-foreground block mt-1 font-heading">
             {totalDeliveries}
           </span>
         </div>
         <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-sm">
           <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
-          <span className="text-[15px] font-black text-emerald-500 block mt-1">
+          <span className="text-[15px] font-black text-emerald-500 block mt-1 font-heading">
             R$ {totalGains.toFixed(0)}
           </span>
         </div>
@@ -179,7 +179,7 @@ export default function Perfil() {
             <span className="text-[28px]">{getVehicleEmoji(vehicle.type)}</span>
           </div>
           <div>
-            <h4 className="text-[16px] font-extrabold text-foreground">{vehicle.name}</h4>
+            <h4 className="text-[16px] font-extrabold text-foreground font-heading">{vehicle.name}</h4>
             <span className="text-[11px] font-bold text-muted tracking-widest bg-card-secondary px-2 py-0.5 rounded-md border border-border uppercase inline-block mt-0.5">
               {vehicle.plate}
             </span>
@@ -207,7 +207,7 @@ export default function Perfil() {
           <div className="flex justify-between items-center p-5 border-b border-border hover:bg-card-secondary/30 transition-colors">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-card-secondary rounded-2xl">
-                <Bell size={20} className="text-primary animate-pulse" />
+                <Flag size={20} className="text-primary animate-pulse" />
               </div>
               <div>
                 <p className="text-[15px] font-extrabold text-foreground">Meta Diária</p>
@@ -274,7 +274,7 @@ export default function Perfil() {
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
           <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
             <div className="flex justify-between items-center p-5 border-b border-border">
-              <h3 className="text-[18px] font-extrabold text-foreground">Meta Diária</h3>
+              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Meta Diária</h3>
               <button onClick={() => setIsGoalModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
                 <X size={24} />
               </button>
@@ -311,7 +311,7 @@ export default function Perfil() {
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
           <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
             <div className="flex justify-between items-center p-5 border-b border-border">
-              <h3 className="text-[18px] font-extrabold text-foreground">Editar Veículo</h3>
+              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Editar Veículo</h3>
               <button onClick={() => setIsVehicleModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
                 <X size={24} />
               </button>

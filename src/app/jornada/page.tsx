@@ -170,7 +170,7 @@ export default function Jornada() {
                 <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#19A85B]"></span>
               </span>
               <div>
-                <h1 className="text-[16px] font-extrabold text-foreground">Jornada ativa</h1>
+                <h1 className="text-[16px] font-extrabold text-foreground font-heading">Jornada ativa</h1>
                 <p className="text-[12px] text-muted mt-0.5">Iniciada às {activeStartTime}</p>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function Jornada() {
               <div className="space-y-1">
                 <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Odômetro</span>
                 <div className="flex items-baseline space-x-1">
-                  <span className="text-3xl font-black text-foreground tracking-tight">
+                  <span className="text-3xl font-black text-foreground tracking-tight font-heading">
                     {liveDistance.toFixed(1).replace('.', ',')}
                   </span>
                   <span className="text-sm font-bold text-muted">km</span>
@@ -229,7 +229,7 @@ export default function Jornada() {
               <div className="space-y-1 text-right">
                 <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Velocidade</span>
                 <div className="flex items-baseline justify-end space-x-1">
-                  <span className="text-3xl font-black text-primary tracking-tight">
+                  <span className="text-3xl font-black text-primary tracking-tight font-heading">
                     {speed !== null ? speed : '0'}
                   </span>
                   <span className="text-sm font-bold text-muted">km/h</span>
@@ -308,7 +308,7 @@ export default function Jornada() {
           {/* Header do Histórico */}
           <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
             <div className="w-10 h-10" />
-            <h1 className="text-[18px] font-extrabold text-foreground">Histórico</h1>
+            <h1 className="text-[18px] font-extrabold text-foreground font-heading">Histórico</h1>
             <button className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer">
               <Calendar size={24} strokeWidth={2.5} />
             </button>
@@ -344,17 +344,17 @@ export default function Jornada() {
               <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium flex justify-between items-center text-center">
                 <div className="flex-1">
                   <span className="text-[10px] font-bold text-muted block uppercase">Lucro líquido</span>
-                  <span className="text-[16px] font-extrabold text-[#19A85B] mt-0.5 block">R$ {totalCompletedProfit.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-[16px] font-extrabold text-[#19A85B] mt-0.5 block font-heading">R$ {totalCompletedProfit.toFixed(2).replace('.', ',')}</span>
                 </div>
                 <div className="border-l border-border h-8"></div>
                 <div className="flex-1">
                   <span className="text-[10px] font-bold text-muted block uppercase">Tempo online</span>
-                  <span className="text-[16px] font-extrabold text-foreground mt-0.5 block">{Math.floor(totalCompletedHours)}h {Math.round((totalCompletedHours % 1) * 60)}m</span>
+                  <span className="text-[16px] font-extrabold text-foreground mt-0.5 block font-heading">{Math.floor(totalCompletedHours)}h {Math.round((totalCompletedHours % 1) * 60)}m</span>
                 </div>
                 <div className="border-l border-border h-8"></div>
                 <div className="flex-1">
                   <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
-                  <span className="text-[16px] font-extrabold text-foreground mt-0.5 block">{totalCompletedDistance.toFixed(1).replace('.', ',')} km</span>
+                  <span className="text-[16px] font-extrabold text-foreground mt-0.5 block font-heading">{totalCompletedDistance.toFixed(1).replace('.', ',')} km</span>
                 </div>
               </section>
 
@@ -385,7 +385,7 @@ export default function Jornada() {
                           </div>
                           
                           <div className="flex items-center space-x-1.5">
-                            <span className="text-[16px] font-extrabold text-[#19A85B]">
+                            <span className="text-[16px] font-extrabold text-[#19A85B] font-heading">
                               R$ {stats.profit.toFixed(2).replace('.', ',')}
                             </span>
                             <ChevronRight size={16} strokeWidth={2.5} className="text-muted" />

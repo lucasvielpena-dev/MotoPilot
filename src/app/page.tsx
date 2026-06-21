@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Menu,
-  Bell,
+  Wallet,
   Motorbike,
   Eye,
   EyeOff,
@@ -130,7 +130,7 @@ export default function Home() {
         <div className="w-8 h-8 rounded-full bg-[#EA1D2C] flex items-center justify-center">
           <Motorbike size={18} strokeWidth={2.5} className="text-white" />
         </div>
-        <span className="text-[18px] font-extrabold tracking-tight text-foreground font-sans">MotoPilot</span>
+        <span className="text-[18px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 
       {/* Cartão de Lucro Líquido Redesenhado */}
@@ -152,7 +152,7 @@ export default function Home() {
           </button>
         </div>
         
-        <div className="text-[32px] font-extrabold tracking-tight leading-none select-none">
+        <div className="text-[32px] font-extrabold tracking-tight leading-none select-none font-heading">
           {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
         </div>
 
@@ -198,7 +198,7 @@ export default function Home() {
           </div>
           <div>
             <p className="text-[11px] font-semibold text-muted">Tempo online</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5">{activeJourney ? elapsedTime : '0h 0m'}</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{activeJourney ? elapsedTime : '0h 0m'}</p>
           </div>
         </div>
         
@@ -209,7 +209,7 @@ export default function Home() {
           </div>
           <div>
             <p className="text-[11px] font-semibold text-muted">Km rodados</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
           </div>
         </div>
         
@@ -220,7 +220,7 @@ export default function Home() {
           </div>
           <div>
             <p className="text-[11px] font-semibold text-muted">Entregas</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5">{deliveriesCount}</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{deliveriesCount}</p>
           </div>
         </div>
         
@@ -231,7 +231,7 @@ export default function Home() {
           </div>
           <div>
             <p className="text-[11px] font-semibold text-muted">Média por hora</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
+            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
           </div>
         </div>
       </section>
@@ -239,7 +239,7 @@ export default function Home() {
       {/* Seção da Jornada */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-foreground">Jornada</h2>
+          <h2 className="text-[16px] font-extrabold text-foreground font-heading">Jornada</h2>
           <button 
             onClick={() => router.push('/jornada')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -263,19 +263,19 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-border pt-4">
                 <div>
                   <span className="text-[11px] font-semibold text-muted block uppercase">Início</span>
-                  <span className="text-[14px] font-bold text-foreground">{activeStartTime}</span>
+                  <span className="text-[14px] font-bold text-foreground font-heading">{activeStartTime}</span>
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-muted block uppercase">Tempo online</span>
-                  <span className="text-[14px] font-bold text-foreground">{elapsedTime}</span>
+                  <span className="text-[14px] font-bold text-foreground font-heading">{elapsedTime}</span>
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-muted block uppercase">Km rodados</span>
-                  <span className="text-[14px] font-bold text-foreground">{liveDistance.toFixed(1).replace('.', ',')} km</span>
+                  <span className="text-[14px] font-bold text-foreground font-heading">{liveDistance.toFixed(1).replace('.', ',')} km</span>
                 </div>
                 <div>
                   <span className="text-[11px] font-semibold text-muted block uppercase">Lucro</span>
-                  <span className="text-[14px] font-extrabold text-[#19A85B]">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-[14px] font-extrabold text-[#19A85B] font-heading">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
                 </div>
               </div>
 
@@ -319,7 +319,7 @@ export default function Home() {
       {/* Nova Seção de Metas */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-foreground">Metas</h2>
+          <h2 className="text-[16px] font-extrabold text-foreground font-heading">Metas</h2>
           <button 
             onClick={() => router.push('/perfil')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -388,7 +388,7 @@ export default function Home() {
       {/* Seção Resumo da Semana */}
       <section className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <h2 className="text-[16px] font-extrabold text-foreground">Resumo da semana</h2>
+          <h2 className="text-[16px] font-extrabold text-foreground font-heading">Resumo da semana</h2>
           <button 
             onClick={() => router.push('/relatorios')}
             className="text-[13px] font-bold text-[#EA1D2C] hover:underline cursor-pointer"
@@ -400,17 +400,17 @@ export default function Home() {
         <div className="bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
           <div className="flex-1">
             <span className="text-[10px] font-bold text-muted block uppercase">Ganhos</span>
-            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
           </div>
           <div className="h-6 border-l border-border" />
           <div className="flex-1">
             <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
-            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
           </div>
           <div className="h-6 border-l border-border" />
           <div className="flex-1">
             <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
-            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block">{displayDeliveriesSemana}</span>
+            <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDeliveriesSemana}</span>
           </div>
         </div>
       </section>
@@ -429,7 +429,7 @@ export default function Home() {
             <div className="flex justify-between items-center border-b border-border pb-4">
               <div className="flex items-center space-x-2">
                 <Motorbike size={22} strokeWidth={2.5} className="text-[#EA1D2C]" />
-                <span className="text-[16px] font-extrabold text-foreground">MotoPilot Menu</span>
+                <span className="text-[16px] font-extrabold text-foreground font-heading">MotoPilot Menu</span>
               </div>
               <button 
                 onClick={() => setIsMenuOpen(false)}
