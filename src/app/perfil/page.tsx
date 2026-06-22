@@ -100,10 +100,11 @@ export default function Perfil() {
     if (goalType === 'daily') {
       await updateGoal(value);
     } else {
-      updateGoalDirect(goalType, value);
+      await updateGoalDirect(goalType, value);
     }
     setLoading(false);
     setIsGoalModalOpen(false);
+    setNewGoal('');
   };
 
   const handleOpenVehicleModal = () => {
@@ -193,60 +194,60 @@ export default function Perfil() {
 
       {/* Grid de Estatísticas Cumulativas */}
       <section className="grid grid-cols-3 gap-2 animate-fade-in-up delay-75">
-        <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm">
-          <span className="text-[8px] font-bold text-muted uppercase tracking-wider block">Total Km</span>
+        <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
+          <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Total Km</span>
           <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
             {totalKm.toFixed(0).replace('.', ',')} km
           </span>
         </div>
-        <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm">
-          <span className="text-[8px] font-bold text-muted uppercase tracking-wider block">Entregas</span>
+        <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
+          <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Entregas</span>
           <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
             {totalDeliveries}
           </span>
         </div>
-        <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm">
-          <span className="text-[8px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
-          <span className="text-[13px] font-black text-emerald-500 block mt-0.5 font-heading">
+        <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
+          <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Ganhos</span>
+          <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
             R$ {totalGains.toFixed(0)}
           </span>
         </div>
       </section>
 
       {/* Veículo Ativo com Detalhes */}
-      <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium animate-fade-in-up delay-100">
+      <section className="bg-card border border-border rounded-[20px] p-4 animate-fade-in-up delay-100">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-[11px] font-bold text-muted uppercase tracking-wider">Veículo de Trabalho</h3>
+          <h3 className="text-[11px] font-extrabold text-muted uppercase tracking-wider">Veículo de Trabalho</h3>
           <button 
             onClick={handleOpenVehicleModal}
-            className="text-[13px] font-extrabold text-primary hover:underline active:scale-95 transition-transform"
+            className="text-[12px] font-extrabold text-primary hover:underline active:scale-95 transition-transform"
           >
             Editar
           </button>
         </div>
         <div className="flex items-center space-x-3 mb-3">
-          <div className="w-11 h-11 bg-card-secondary rounded-xl flex items-center justify-center border border-border">
+          <div className="w-11 h-11 bg-card-secondary rounded-xl flex items-center justify-center border border-border/60">
             <span className="text-[22px]">{getVehicleEmoji(vehicle.type)}</span>
           </div>
           <div>
             <h4 className="text-[14px] font-extrabold text-foreground font-heading">{vehicle.name}</h4>
-            <span className="text-[10px] font-bold text-muted tracking-widest bg-card-secondary px-1.5 py-0.5 rounded-md border border-border uppercase inline-block mt-0.5">
+            <span className="text-[10px] font-bold text-muted tracking-widest bg-card-secondary/60 px-1.5 py-0.5 rounded-md border border-border/60 uppercase inline-block mt-0.5">
               {vehicle.plate}
             </span>
           </div>
         </div>
 
-        <div className="border-t border-border pt-3 grid grid-cols-2 gap-2 text-[11px]">
+        <div className="border-t border-border/60 pt-3 grid grid-cols-2 gap-2 text-[11px]">
           <div className="space-y-0.5">
             <span className="text-muted block font-semibold">Odômetro atual</span>
             <span className="text-foreground font-extrabold font-heading">{effectiveOdometer.toFixed(0).replace('.', ',')} km</span>
           </div>
-          <div className="space-y-0.5 border-l border-border pl-3">
+          <div className="space-y-0.5 border-l border-border/60 pl-3">
             <span className="text-muted block font-semibold">Próxima revisão</span>
             <span className={`font-extrabold font-heading ${
-              serviceUrgency === 'urgent' ? 'text-red-500' :
+              serviceUrgency === 'urgent' ? 'text-[#EF4444]' :
               serviceUrgency === 'warning' ? 'text-[#F59E0B]' :
-              'text-success-muted'
+              'text-[#10B981]'
             }`}>
               Em {kmUntilService.toFixed(0).replace('.', ',')} km
             </span>
@@ -255,31 +256,31 @@ export default function Perfil() {
 
         <button
           onClick={handleOpenMaintenanceModal}
-          className="w-full mt-3 py-2.5 bg-card-secondary hover:bg-card-secondary/80 border border-border rounded-xl text-[12px] font-bold text-foreground flex items-center justify-center space-x-2 transition-all active:scale-[0.98] cursor-pointer"
+          className="w-full mt-3 py-2.5 bg-card-secondary/50 hover:bg-card-secondary border border-border/60 rounded-xl text-[12px] font-bold text-foreground flex items-center justify-center space-x-2 transition-all active:scale-[0.98] cursor-pointer"
         >
-          <Wrench size={16} className="text-muted" />
+          <Wrench size={14} className="text-muted" />
           <span>Configurar Revisão</span>
         </button>
       </section>
 
       {/* Ajustes e Preferências */}
       <section className="space-y-2 pt-1 animate-fade-in-up delay-150">
-        <h3 className="text-[11px] font-bold text-muted px-1 uppercase tracking-wider">Configurações & Ajustes</h3>
+        <h3 className="text-[11px] font-extrabold text-muted px-1 uppercase tracking-wider">Metas</h3>
         
-        <div className="bg-card border border-border rounded-[20px] overflow-hidden shadow-premium">
+        <div className="bg-card border border-border rounded-[20px] overflow-hidden">
           {/* Meta Diária */}
-          <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+          <div className="flex justify-between items-center p-3.5 border-b border-border/60">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-card-secondary rounded-xl">
-                <Flag size={16} className="text-muted" />
+              <div className="p-2 bg-card-secondary/60 rounded-xl">
+                <Flag size={14} className="text-muted" />
               </div>
               <div>
-                <p className="text-[13px] font-extrabold text-foreground">Meta Diária</p>
+                <p className="text-[13px] font-extrabold text-foreground">Diária</p>
                 <p className="text-[10px] text-muted">R$ {dailyGoal.toFixed(2).replace('.', ',')}</p>
               </div>
             </div>
             <button 
-              onClick={() => { setGoalType('daily'); setIsGoalModalOpen(true); }} 
+              onClick={() => { setGoalType('daily'); setNewGoal(String(dailyGoal)); setIsGoalModalOpen(true); }} 
               className="text-[12px] font-extrabold text-primary hover:underline"
             >
               Editar
@@ -287,18 +288,18 @@ export default function Perfil() {
           </div>
 
           {/* Meta Semanal */}
-          <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+          <div className="flex justify-between items-center p-3.5 border-b border-border/60">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-card-secondary rounded-xl">
-                <Calendar size={16} className="text-muted" />
+              <div className="p-2 bg-card-secondary/60 rounded-xl">
+                <Calendar size={14} className="text-muted" />
               </div>
               <div>
-                <p className="text-[13px] font-extrabold text-foreground">Meta Semanal</p>
+                <p className="text-[13px] font-extrabold text-foreground">Semanal</p>
                 <p className="text-[10px] text-muted">R$ {weeklyGoal.toFixed(2).replace('.', ',')}</p>
               </div>
             </div>
             <button 
-              onClick={() => { setGoalType('weekly'); setIsGoalModalOpen(true); }} 
+              onClick={() => { setGoalType('weekly'); setNewGoal(String(weeklyGoal)); setIsGoalModalOpen(true); }} 
               className="text-[12px] font-extrabold text-primary hover:underline"
             >
               Editar
@@ -306,55 +307,59 @@ export default function Perfil() {
           </div>
 
           {/* Meta Mensal */}
-          <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+          <div className="flex justify-between items-center p-3.5">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-card-secondary rounded-xl">
-                <TrendingUp size={16} className="text-muted" />
+              <div className="p-2 bg-card-secondary/60 rounded-xl">
+                <TrendingUp size={14} className="text-muted" />
               </div>
               <div>
-                <p className="text-[13px] font-extrabold text-foreground">Meta Mensal</p>
+                <p className="text-[13px] font-extrabold text-foreground">Mensal</p>
                 <p className="text-[10px] text-muted">R$ {monthlyGoal.toFixed(2).replace('.', ',')}</p>
               </div>
             </div>
             <button 
-              onClick={() => { setGoalType('monthly'); setIsGoalModalOpen(true); }} 
+              onClick={() => { setGoalType('monthly'); setNewGoal(String(monthlyGoal)); setIsGoalModalOpen(true); }} 
               className="text-[12px] font-extrabold text-primary hover:underline"
             >
               Editar
             </button>
           </div>
+        </div>
+      </section>
 
-          {/* Theme Selector */}
-          <div className="p-3.5 space-y-2">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-card-secondary rounded-xl">
-                <Settings size={16} className="text-muted" />
-              </div>
-              <div>
-                <p className="text-[13px] font-extrabold text-foreground">Tema do Aplicativo</p>
-                <p className="text-[10px] text-muted">Escolha seu estilo visual</p>
-              </div>
+      {/* Tema */}
+      <section className="space-y-2 pt-1 animate-fade-in-up delay-175">
+        <h3 className="text-[11px] font-extrabold text-muted px-1 uppercase tracking-wider">Aparência</h3>
+        
+        <div className="bg-card border border-border rounded-[20px] p-3.5">
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="p-2 bg-card-secondary/60 rounded-xl">
+              <Settings size={14} className="text-muted" />
             </div>
-            
-            <div className="grid grid-cols-3 gap-2 pt-1">
-              {[
-                { id: 'light', label: '☀ Claro' },
-                { id: 'dark', label: '🌙 Escuro' },
-                { id: 'ifood', label: '🔴 iFood' }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => changeTheme(t.id as 'light' | 'dark' | 'ifood')}
-                  className={`py-2.5 rounded-xl border text-[12px] font-extrabold text-center transition-all cursor-pointer active:scale-95 ${
-                    theme === t.id 
-                      ? 'border-primary ring-2 ring-primary/20 shadow-sm font-black' 
-                      : 'border-border bg-card text-muted hover:text-foreground'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
+            <div>
+              <p className="text-[13px] font-extrabold text-foreground">Tema do Aplicativo</p>
+              <p className="text-[10px] text-muted">Escolha seu estilo visual</p>
             </div>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: 'light', label: 'Claro' },
+              { id: 'dark', label: 'Escuro' },
+              { id: 'ifood', label: 'iFood' }
+            ].map(t => (
+              <button
+                key={t.id}
+                onClick={() => changeTheme(t.id as 'light' | 'dark' | 'ifood')}
+                className={`py-2.5 rounded-xl border text-[12px] font-extrabold text-center transition-all cursor-pointer active:scale-95 ${
+                  theme === t.id 
+                    ? 'border-primary bg-primary/10 text-primary shadow-sm' 
+                    : 'border-border/60 bg-card-secondary/40 text-muted hover:text-foreground'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -373,37 +378,47 @@ export default function Perfil() {
       {/* Modal de Meta */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
-            <div className="flex justify-between items-center p-5 border-b border-border">
-              <h3 className="text-[18px] font-extrabold text-foreground font-heading">
+          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
+            <div className="flex justify-between items-center p-4 border-b border-border/60">
+              <h3 className="text-[16px] font-extrabold text-foreground font-heading">
                 {goalType === 'daily' ? 'Meta Diária' : goalType === 'weekly' ? 'Meta Semanal' : 'Meta Mensal'}
               </h3>
               <button onClick={() => setIsGoalModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
             
-            <form onSubmit={handleUpdateGoal} className="p-5 space-y-5">
-              <div className="space-y-2">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Nova Meta (R$)</label>
+            <form onSubmit={handleUpdateGoal} className="p-4 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-extrabold text-muted block uppercase tracking-wider">Novo valor (R$)</label>
                 <input 
                   type="number" 
                   step="0.01"
                   required
                   value={newGoal}
                   onChange={e => setNewGoal(e.target.value)}
-                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[20px] font-black text-foreground"
-                  placeholder="250,00"
+                  className="w-full py-3 px-4 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-[18px] font-black text-foreground"
+                  placeholder="0,00"
+                  autoFocus
                 />
               </div>
 
-              <button 
-                type="submit" 
-                disabled={loading}
-                className="w-full py-4 font-bold text-white bg-primary rounded-2xl hover:bg-primary/95 active:scale-[0.98] transition-transform disabled:opacity-50 text-[14px] cursor-pointer shadow-md"
-              >
-                {loading ? 'Salvando...' : 'Salvar Meta'}
-              </button>
+              <div className="flex space-x-2">
+                <button 
+                  type="button"
+                  onClick={() => setIsGoalModalOpen(false)}
+                  className="flex-1 py-3 font-bold text-foreground bg-card-secondary/50 border border-border rounded-xl hover:bg-card-secondary transition-all active:scale-[0.98] text-[13px] cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="flex-1 py-3 font-bold text-white bg-primary rounded-xl hover:bg-primary/95 active:scale-[0.98] transition-transform disabled:opacity-50 text-[13px] cursor-pointer"
+                >
+                  {loading ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

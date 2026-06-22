@@ -77,24 +77,25 @@ export function useGoals() {
   const updateGoalDirect = async (field: 'daily' | 'weekly' | 'monthly', value: number) => {
     if (!user) return { error: { message: 'Usuário não logado' } };
 
-    const goals = { daily: dailyGoal, weekly: weeklyGoal, monthly: monthlyGoal };
-    goals[field] = value;
+    const newDaily = field === 'daily' ? value : dailyGoal;
+    const newWeekly = field === 'weekly' ? value : weeklyGoal;
+    const newMonthly = field === 'monthly' ? value : monthlyGoal;
 
     const { error } = await supabase
       .from('goals')
       .upsert({ 
         user_id: user.id, 
-        daily_goal: goals.daily, 
-        weekly_goal: goals.weekly, 
-        monthly_goal: goals.monthly, 
+        daily_goal: newDaily, 
+        weekly_goal: newWeekly, 
+        monthly_goal: newMonthly, 
         updated_at: new Date().toISOString() 
       }, { onConflict: 'user_id' });
 
     if (!error) {
-      setDailyGoal(goals.daily);
-      setWeeklyGoal(goals.weekly);
-      setMonthlyGoal(goals.monthly);
-      saveToLocalStorage(goals);
+      setDailyGoal(newDaily);
+      setWeeklyGoal(newWeekly);
+      setMonthlyGoal(newMonthly);
+      saveToLocalStorage({ daily: newDaily, weekly: newWeekly, monthly: newMonthly });
     }
     return { error };
   };
