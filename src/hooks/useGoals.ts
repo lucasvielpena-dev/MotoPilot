@@ -58,18 +58,19 @@ export function useGoals() {
   const updateGoal = async (amount: number) => {
     if (!user) return { error: { message: 'Usuário não logado' } };
 
+    setDailyGoal(amount);
+    const newWeekly = amount * 7;
+    const newMonthly = amount * 28;
+    setWeeklyGoal(newWeekly);
+    setMonthlyGoal(newMonthly);
+    saveToLocalStorage({ daily: amount, weekly: newWeekly, monthly: newMonthly });
+
     const { error } = await supabase
       .from('goals')
       .upsert({ user_id: user.id, daily_goal: amount, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
 
-    if (!error) {
-      setDailyGoal(amount);
-      // Auto-adjust weekly/monthly
-      const newWeekly = amount * 7;
-      const newMonthly = amount * 28;
-      setWeeklyGoal(newWeekly);
-      setMonthlyGoal(newMonthly);
-      saveToLocalStorage({ daily: amount, weekly: newWeekly, monthly: newMonthly });
+    if (error) {
+      console.warn('Supabase goals upsert error (localStorage saved):', error.message);
     }
     return { error };
   };
@@ -81,6 +82,11 @@ export function useGoals() {
     const newWeekly = field === 'weekly' ? value : weeklyGoal;
     const newMonthly = field === 'monthly' ? value : monthlyGoal;
 
+    setDailyGoal(newDaily);
+    setWeeklyGoal(newWeekly);
+    setMonthlyGoal(newMonthly);
+    saveToLocalStorage({ daily: newDaily, weekly: newWeekly, monthly: newMonthly });
+
     const { error } = await supabase
       .from('goals')
       .upsert({ 
@@ -91,11 +97,8 @@ export function useGoals() {
         updated_at: new Date().toISOString() 
       }, { onConflict: 'user_id' });
 
-    if (!error) {
-      setDailyGoal(newDaily);
-      setWeeklyGoal(newWeekly);
-      setMonthlyGoal(newMonthly);
-      saveToLocalStorage({ daily: newDaily, weekly: newWeekly, monthly: newMonthly });
+    if (error) {
+      console.warn('Supabase goals upsert error (localStorage saved):', error.message);
     }
     return { error };
   };
