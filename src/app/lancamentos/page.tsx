@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   ArrowLeft,
@@ -49,6 +49,36 @@ export default function Lancamentos() {
   const [notes, setNotes] = useState('');
   const [pasteText, setPasteText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showNotesField, setShowNotesField] = useState(false);
+  const [saveSuccessType, setSaveSuccessType] = useState<'gasto' | 'ganhos' | null>(null);
+
+  const amountRef = useRef<HTMLInputElement>(null);
+
+  const quickRecords = [
+    { icon: '⛽', label: 'Combustível', category: 'Combustível', amount: '50' },
+    { icon: '🍔', label: 'Almoço', category: 'Alimentação', amount: '25' },
+    { icon: '🔧', label: 'Manutenção', category: 'Manutenção', amount: '40' }
+  ];
+
+  // Load last selected category and payment method on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const lastCat = localStorage.getItem('motopilot_last_category');
+      const lastPay = localStorage.getItem('motopilot_last_payment_method');
+      if (lastCat) setCategory(lastCat);
+      if (lastPay) setPaymentMethod(lastPay);
+    }
+  }, []);
+
+  // Autofocus field amount when page or tab loads
+  useEffect(() => {
+    if (isNew && !saveSuccessType) {
+      const timer = setTimeout(() => {
+        amountRef.current?.focus();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isNew, expenseTab, saveSuccessType]);
 
   // Screen 5 (List) States
   const [listTab, setListTab] = useState<'lista' | 'resumo'>('lista');
@@ -119,13 +149,21 @@ export default function Lancamentos() {
     if (isNaN(parsedAmount) || parsedAmount <= 0) return;
 
     setLoading(true);
-    const desc = notes ? `${category} - ${notes}` : category;
-    await addEntry('expense', parsedAmount, desc, activeJourneyId);
+    // Format: Category - PaymentMethod - Notes
+    const desc = notes ? `${category} - ${paymentMethod} - ${notes}` : `${category} - ${paymentMethod}`;
+    const res = await addEntry('expense', parsedAmount, desc, activeJourneyId);
     setLoading(false);
 
-    setAmount('');
-    setNotes('');
-    router.push('/lancamentos');
+    if (!res.error) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('motopilot_last_category', category);
+        localStorage.setItem('motopilot_last_payment_method', paymentMethod);
+      }
+      setSaveSuccessType('gasto');
+      setAmount('');
+      setNotes('');
+      setShowNotesField(false);
+    }
   };
 
   const handleSaveGain = async (e: React.FormEvent) => {
@@ -135,12 +173,15 @@ export default function Lancamentos() {
 
     setLoading(true);
     const desc = notes ? `Ganho - ${notes}` : 'Ganho';
-    await addEntry('gain', parsedAmount, desc, activeJourneyId);
+    const res = await addEntry('gain', parsedAmount, desc, activeJourneyId);
     setLoading(false);
 
-    setAmount('');
-    setNotes('');
-    router.push('/lancamentos');
+    if (!res.error) {
+      setSaveSuccessType('ganhos');
+      setAmount('');
+      setNotes('');
+      setShowNotesField(false);
+    }
   };
 
   const handleImport = async (e: React.FormEvent) => {
@@ -299,6 +340,13 @@ export default function Lancamentos() {
     return `${day}/${month}/${year}`;
   };
 
+  const formatDisplayTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   const categoriesList = [
     { name: 'Alimentação', label: 'Alimentação', Icon: ForkKnife, color: 'rose' },
     { name: 'Combustível', label: 'Combustível', Icon: Fuel, color: 'emerald' },
@@ -326,7 +374,49 @@ export default function Lancamentos() {
             <div className="w-10 h-10" /> {/* Spacer */}
           </header>
 
-          {/* Tabs */}
+          {saveSuccessType ? (
+            /* SUCCESS STATE */
+            <div className="bg-card border border-border rounded-[32px] p-6 text-center space-y-6 shadow-premium animate-fade-in-up">
+              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-900/50">
+                <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="text-[18px] font-black text-foreground font-heading">
+                  {saveSuccessType === 'gasto' ? 'Gasto salvo com sucesso!' : 'Ganho salvo com sucesso!'}
+                </h3>
+                <p className="text-[13px] text-muted font-semibold">
+                  O lançamento foi registrado e atualizado em seus relatórios.
+                </p>
+              </div>
+
+              <div className="flex flex-col space-y-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSaveSuccessType(null);
+                  }}
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] cursor-pointer shadow-sm"
+                >
+                  Novo lançamento
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSaveSuccessType(null);
+                    router.push('/lancamentos');
+                  }}
+                  className="w-full bg-card-secondary hover:bg-card-secondary/80 text-foreground font-bold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] border border-border cursor-pointer"
+                >
+                  Voltar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Tabs */}
           <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
             <button 
               onClick={() => setExpenseTab('gasto')} 
@@ -357,6 +447,7 @@ export default function Lancamentos() {
                 <div className="flex items-center justify-center space-x-1">
                   <span className="text-xl font-bold text-emerald-500">R$</span>
                   <input
+                    ref={amountRef}
                     type="number"
                     inputMode="decimal"
                     step="0.01"
@@ -399,15 +490,27 @@ export default function Lancamentos() {
                 </div>
               </div>
 
+              {/* Observação Input Colapsável */}
               <div className="space-y-1.5">
                 <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-emerald-500 text-[14px] font-bold text-foreground placeholder:text-muted/65"
-                  placeholder="Ex: corrida 99, iFood, etc."
-                />
+                {showNotesField ? (
+                  <input
+                    type="text"
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-emerald-500 text-[14px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
+                    placeholder="Ex: corrida 99, iFood, etc."
+                    autoFocus
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowNotesField(true)}
+                    className="w-full p-3.5 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-2xl text-[13px] font-extrabold text-emerald-500 transition-all active:scale-[0.98] cursor-pointer text-left"
+                  >
+                    + Adicionar observação
+                  </button>
+                )}
               </div>
 
               <button
@@ -422,35 +525,58 @@ export default function Lancamentos() {
             <form onSubmit={handleSave} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
               {/* Category Grid (for general gasto) */}
               {expenseTab === 'gasto' && (
-                <div className="space-y-2">
-                  <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Categoria</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {categoriesList.map((cat) => {
-                      const CatIcon = cat.Icon;
-                      const isActive = category === cat.name;
-                      
-                      const borderStyles = isActive 
-                        ? cat.color === 'rose' ? 'border-[#EF4444] bg-[#EF4444]/5 text-[#EF4444]'
-                          : cat.color === 'emerald' ? 'border-[#10B981] bg-[#10B981]/5 text-[#10B981]'
-                          : cat.color === 'indigo' ? 'border-[#6366F1] bg-[#6366F1]/5 text-[#6366F1]'
-                          : cat.color === 'blue' ? 'border-[#3B82F6] bg-[#3B82F6]/5 text-[#3B82F6]'
-                          : 'border-[#F59E0B] bg-[#F59E0B]/5 text-[#F59E0B]'
-                        : 'border-border bg-card text-foreground hover:bg-card-secondary/80';
+                <>
+                  <div className="space-y-2">
+                    <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Categoria</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {categoriesList.map((cat) => {
+                        const CatIcon = cat.Icon;
+                        const isActive = category === cat.name;
+                        
+                        const borderStyles = isActive 
+                          ? cat.color === 'rose' ? 'border-[#EF4444] bg-[#EF4444]/5 text-[#EF4444]'
+                            : cat.color === 'emerald' ? 'border-[#10B981] bg-[#10B981]/5 text-[#10B981]'
+                            : cat.color === 'indigo' ? 'border-[#6366F1] bg-[#6366F1]/5 text-[#6366F1]'
+                            : cat.color === 'blue' ? 'border-[#3B82F6] bg-[#3B82F6]/5 text-[#3B82F6]'
+                            : 'border-[#F59E0B] bg-[#F59E0B]/5 text-[#F59E0B]'
+                          : 'border-border bg-card text-foreground hover:bg-card-secondary/80';
 
-                      return (
-                        <button
-                          key={cat.name}
-                          type="button"
-                          onClick={() => setCategory(cat.name)}
-                          className={`p-3.5 rounded-[20px] border flex flex-col items-center justify-center space-y-1.5 cursor-pointer transition-all active:scale-[0.95] ${borderStyles}`}
-                        >
-                          <CatIcon size={20} />
-                          <span className="text-[11px] font-bold tracking-tight">{cat.label}</span>
-                        </button>
-                      );
-                    })}
+                        return (
+                          <button
+                            key={cat.name}
+                            type="button"
+                            onClick={() => setCategory(cat.name)}
+                            className={`p-3.5 rounded-[20px] border flex flex-col items-center justify-center space-y-1.5 cursor-pointer transition-all active:scale-[0.95] ${borderStyles}`}
+                          >
+                            <CatIcon size={20} />
+                            <span className="text-[11px] font-bold tracking-tight">{cat.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+
+                  {/* Lançamentos Rápidos */}
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Últimos registros utilizados</label>
+                    <div className="flex space-x-2 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
+                      {quickRecords.map((rec, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => {
+                            setCategory(rec.category);
+                            setAmount(rec.amount);
+                          }}
+                          className="flex items-center space-x-1.5 px-3 py-2 bg-card-secondary/60 hover:bg-card border border-border rounded-xl text-[12px] font-bold text-foreground transition-all active:scale-95 cursor-pointer whitespace-nowrap shadow-sm hover:border-border/80"
+                        >
+                          <span>{rec.icon}</span>
+                          <span className="font-extrabold">{rec.label} R${rec.amount}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Big amount field */}
@@ -459,6 +585,7 @@ export default function Lancamentos() {
                 <div className="flex items-center justify-center space-x-1">
                   <span className="text-xl font-bold text-muted">R$</span>
                   <input
+                    ref={amountRef}
                     type="number"
                     inputMode="decimal"
                     step="0.01"
@@ -520,16 +647,27 @@ export default function Lancamentos() {
                 </div>
               </div>
 
-              {/* Observação Input */}
+              {/* Observação Input Colapsável */}
               <div className="space-y-1.5">
                 <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-bold text-foreground placeholder:text-muted/65"
-                  placeholder="Posto Ipiranga, almoço, etc."
-                />
+                {showNotesField ? (
+                  <input
+                    type="text"
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
+                    placeholder="Posto Ipiranga, almoço, etc."
+                    autoFocus
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowNotesField(true)}
+                    className="w-full p-3.5 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-2xl text-[13px] font-extrabold text-primary transition-all active:scale-[0.98] cursor-pointer text-left"
+                  >
+                    + Adicionar observação
+                  </button>
+                )}
               </div>
 
               {/* Submit Button */}
@@ -594,6 +732,8 @@ export default function Lancamentos() {
                 {loading ? 'Processando...' : 'Importar Lançamentos'}
               </button>
             </form>
+          )}
+            </>
           )}
         </div>
       ) : (
@@ -679,52 +819,17 @@ export default function Lancamentos() {
 
           {listTab === 'lista' ? (
             <>
-              {/* Category Spending Recharts Bar Chart */}
-              <section className="bg-card border border-border rounded-[32px] p-5 shadow-premium">
-                <h3 className="text-[12px] font-bold text-muted uppercase tracking-wider mb-4">Divisão de despesas</h3>
-                {chartData.length === 0 ? (
-                  <div className="h-[120px] flex items-center justify-center text-muted text-[13px] font-semibold">
-                    Nenhum gasto registrado para gráfico.
-                  </div>
-                ) : (
-                  <div className="h-[140px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
-                        <XAxis type="number" hide />
-                        <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} width={80} />
-                        <Tooltip 
-                          formatter={(value: any) => [`R$ ${Number(value).toFixed(2)}`, 'Gasto']}
-                          contentStyle={{ background: 'var(--card-color)', borderColor: 'var(--border-color)', borderRadius: '12px', fontSize: '11px', color: 'var(--text-color)' }}
-                        />
-                        <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={12}>
-                          {chartData.map((entry, index) => {
-                            const colors = {
-                              Combustível: '#10B981',
-                              Alimentação: '#EF4444',
-                              Manutenção: '#6366F1',
-                              Estacionamento: '#3B82F6',
-                              Outros: '#F59E0B'
-                            };
-                            return <Cell key={`cell-${index}`} fill={colors[entry.name as keyof typeof colors] || '#71717A'} />;
-                          })}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </section>
-
-              {/* Financial stats summary indicators */}
+              {/* Financial stats summary indicators - Replaces Chart */}
               <div className="grid grid-cols-3 gap-2.5">
-                <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)] card-premium">
                   <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
                   <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)] card-premium">
                   <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
                   <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card border border-border rounded-[24px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)] card-premium">
                   <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
                   <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
                 </div>
@@ -771,8 +876,8 @@ export default function Lancamentos() {
                 </div>
               )}
 
-              {/* Filtration pills - Categorias */}
-              <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar -mx-4 px-4">
+              {/* Filtration pills - Categorias (Sticky top-0 z-30) */}
+              <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm py-2.5 -mx-4 px-4 border-b border-border/10 flex overflow-x-auto gap-2 hide-scrollbar">
                 {filterOptions.map((filter) => {
                   const isActive = activeFilter === filter;
                   return (
@@ -814,6 +919,25 @@ export default function Lancamentos() {
                   filteredEntries.map((entry) => {
                     const styling = getCategoryIcon(entry.description);
                     const CategoryIcon = styling.Icon;
+
+                    const parts = (entry.description || '').split(' - ');
+                    const categoryName = parts[0] || 'Despesa';
+                    let paymentMethodVal = 'Dinheiro';
+                    let notesVal = '';
+
+                    if (parts.length === 2) {
+                      const possiblePayment = parts[1].trim();
+                      const lowerPossible = possiblePayment.toLowerCase();
+                      if (['dinheiro', 'cartão de crédito', 'cartão de débito', 'pix'].includes(lowerPossible)) {
+                        paymentMethodVal = possiblePayment;
+                      } else {
+                        notesVal = possiblePayment;
+                      }
+                    } else if (parts.length >= 3) {
+                      paymentMethodVal = parts[1].trim();
+                      notesVal = parts.slice(2).join(' - ');
+                    }
+
                     return (
                       <div 
                         key={entry.id}
@@ -825,10 +949,13 @@ export default function Lancamentos() {
                           </div>
                           <div>
                             <span className="text-[15px] font-bold text-foreground block">
-                              {entry.description?.split(' - ')[0] || 'Despesa'}
+                              {categoryName}
                             </span>
                             <span className="text-[12px] font-semibold text-muted mt-0.5 block">
-                              {formatDisplayDate(entry.date)} {entry.description?.split(' - ')[1] && `| ${entry.description?.split(' - ')[1]}`}
+                              {formatDisplayDate(entry.date)} • {formatDisplayTime(entry.date)}
+                            </span>
+                            <span className="text-[11px] font-extrabold text-primary-muted uppercase tracking-wider block mt-0.5">
+                              {paymentMethodVal.toUpperCase()} {notesVal && `• ${notesVal}`}
                             </span>
                           </div>
                         </div>
