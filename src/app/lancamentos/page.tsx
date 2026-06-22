@@ -430,17 +430,10 @@ export default function Lancamentos() {
             >
               Ganhos
             </button>
-            <button 
-              onClick={() => setExpenseTab('importar')} 
-              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${expenseTab === 'importar' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
-            >
-              Importar
-            </button>
           </div>
 
           {/* Form */}
           {expenseTab === 'ganhos' ? (
-            /* Ganhos Form */
             <form onSubmit={handleSaveGain} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
               <div className="flex flex-col items-center justify-center py-4 bg-emerald-50 rounded-[20px] border border-emerald-200 mb-2">
                 <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">Valor do ganho</span>
@@ -521,7 +514,7 @@ export default function Lancamentos() {
                 {loading ? 'Salvando...' : 'Salvar Ganho'}
               </button>
             </form>
-          ) : expenseTab !== 'importar' ? (
+          ) : (
             <form onSubmit={handleSave} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
               {/* Category Grid (for general gasto) */}
               {expenseTab === 'gasto' && (
@@ -679,59 +672,6 @@ export default function Lancamentos() {
                 {loading ? 'Salvando...' : 'Salvar Gasto'}
               </button>
             </form>
-          ) : (
-            /* Import Tab */
-            <form onSubmit={handleImport} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-muted block uppercase flex items-center space-x-1.5">
-                  <ClipboardList size={14} />
-                  <span>Dados do comprovante/recibo</span>
-                </label>
-                <textarea
-                  rows={5}
-                  required
-                  value={pasteText}
-                  onChange={e => setPasteText(e.target.value)}
-                  className="w-full p-3 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-medium text-foreground resize-none"
-                  placeholder={`Cole o texto ou cole um CSV/JSON.\n\nCSV: Data,Tipo,Valor\n2024-01-15,Ganho,45.00\n2024-01-15,Gasto,25.00\n\nJSON:\n[{"tipo":"Ganho","valor":45.00}]`}
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-muted block uppercase">Ou importe arquivo</label>
-                <label className="flex items-center justify-center space-x-2 py-3 bg-card-secondary/50 border border-dashed border-border rounded-xl cursor-pointer hover:bg-card-secondary transition-colors">
-                  <Upload size={16} className="text-muted" />
-                  <span className="text-[12px] font-bold text-muted">Selecionar CSV ou JSON</span>
-                  <input
-                    type="file"
-                    accept=".csv,.json"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = (ev) => {
-                        setPasteText(ev.target?.result as string);
-                      };
-                      reader.readAsText(file);
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div className="flex items-center space-x-2 text-[11px] text-muted">
-                <FileSpreadsheet size={14} />
-                <span>Formatos aceitos: CSV (Data,Tipo,Valor) ou JSON array</span>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !pasteText.trim()}
-                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50"
-              >
-                {loading ? 'Processando...' : 'Importar Lançamentos'}
-              </button>
-            </form>
           )}
             </>
           )}
@@ -766,56 +706,6 @@ export default function Lancamentos() {
               Resumo
             </button>
           </div>
-
-          {/* Financial Summary Accordion */}
-          <button
-            onClick={() => setShowFinancialSummary(!showFinancialSummary)}
-            className="w-full bg-card border border-border rounded-[16px] p-3 flex items-center justify-between hover:bg-card-secondary/50 transition-all active:scale-[0.99] cursor-pointer"
-          >
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <DollarSign size={16} className="text-primary" />
-              </div>
-              <div className="text-left">
-                <p className="text-[12px] font-extrabold text-foreground">Resumo Financeiro</p>
-                <p className="text-[10px] text-muted font-semibold">Entradas vs. Saídas</p>
-              </div>
-            </div>
-            {showFinancialSummary ? <ChevronUp size={18} className="text-muted" /> : <ChevronDown size={18} className="text-muted" />}
-          </button>
-
-          {showFinancialSummary && (
-            <div className="bg-card border border-border rounded-[20px] p-4 space-y-3 animate-fade-in-up">
-              <div className="grid grid-cols-3 gap-2">
-                <div className="text-center p-2 bg-emerald-500/10 rounded-lg">
-                  <span className="text-[9px] font-bold text-emerald-600 uppercase block">Entradas</span>
-                  <span className="text-[14px] font-black text-emerald-600 font-heading block mt-0.5">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
-                </div>
-                <div className="text-center p-2 bg-primary/10 rounded-lg">
-                  <span className="text-[9px] font-bold text-primary uppercase block">Saídas</span>
-                  <span className="text-[14px] font-black text-primary font-heading block mt-0.5">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
-                </div>
-                <div className={`text-center p-2 rounded-lg ${netProfit >= 0 ? 'bg-emerald-500/10' : 'bg-primary/10'}`}>
-                  <span className={`text-[9px] font-bold uppercase block ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>Lucro</span>
-                  <span className={`text-[14px] font-black font-heading block mt-0.5 ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>R$ {(totalGains - totalExpensesSum).toFixed(2).replace('.', ',')}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-[11px] font-bold">
-                  <span className="text-muted">Total Entradas</span>
-                  <span className="text-emerald-600">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
-                </div>
-                <div className="flex justify-between text-[11px] font-bold">
-                  <span className="text-muted">Total Saídas</span>
-                  <span className="text-primary">- R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
-                </div>
-                <div className="border-t border-border pt-2 flex justify-between text-[13px] font-black">
-                  <span className="text-foreground">Lucro Líquido</span>
-                  <span className={netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}>R$ {(totalGains - totalExpensesSum).toFixed(2).replace('.', ',')}</span>
-                </div>
-              </div>
-            </div>
-          )}
 
           {listTab === 'lista' ? (
             <>
