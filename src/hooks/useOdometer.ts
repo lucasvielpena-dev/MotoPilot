@@ -21,6 +21,8 @@ type BackgroundGeolocationPlugin = {
       requestPermissions?: boolean;
       stale?: boolean;
       distanceFilter?: number;
+      pauseLocationUpdates?: boolean;
+      disableStopDetection?: boolean;
     },
     callback: (
       location?: BackgroundLocation,
@@ -185,11 +187,13 @@ export function useOdometer(journeyId: string | null) {
     try {
       const watcherId = await BackgroundGeolocation.addWatcher(
         {
-          backgroundTitle: 'MotoPilot rodando',
+          backgroundTitle: 'MotoPilot',
           backgroundMessage: 'Sua jornada está ativa e os km continuam sendo marcados.',
           requestPermissions: true,
           stale: false,
-          distanceFilter: 5
+          distanceFilter: 5,
+          pauseLocationUpdates: false,
+          disableStopDetection: true
         },
         (location, err) => {
           if (err) {

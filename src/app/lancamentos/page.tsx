@@ -421,6 +421,36 @@ export default function Lancamentos() {
                 </div>
               </div>
 
+              {/* Atalhos de origem do ganho */}
+              <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-2">
+                <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Plataforma</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { label: 'iFood', value: 'iFood' },
+                    { label: 'Aiqfome', value: 'Aiqfome' },
+                    { label: '99', value: '99' },
+                    { label: 'Maxine', value: 'Maxine' },
+                    { label: 'Outros', value: 'Outros' }
+                  ].map((src) => (
+                    <button
+                      key={src.value}
+                      type="button"
+                      onClick={() => {
+                        setNotes(src.value);
+                        setShowNotesField(true);
+                      }}
+                      className={`px-3 py-2 rounded-lg text-[11px] font-bold transition-all active:scale-95 cursor-pointer border ${
+                        notes === src.value
+                          ? 'bg-primary/10 text-primary border-primary/30'
+                          : 'bg-card-secondary/60 text-foreground border-border hover:bg-card-secondary'
+                      }`}
+                    >
+                      {src.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
                 <div className="space-y-1">
                   <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Data</label>
