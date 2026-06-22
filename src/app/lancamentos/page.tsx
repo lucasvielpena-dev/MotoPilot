@@ -856,7 +856,7 @@ export default function Lancamentos() {
                         </div>
                         
                         <div className="flex items-center space-x-2">
-                          <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-foreground' : 'text-foreground'}`}>
+                          <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
                             {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
