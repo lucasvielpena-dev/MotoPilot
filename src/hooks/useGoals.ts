@@ -39,18 +39,19 @@ export function useGoals() {
     if (!user) return;
     const { data, error } = await supabase
       .from('goals')
-      .select('daily_goal')
+      .select('daily_goal, weekly_goal, monthly_goal')
       .eq('user_id', user.id)
       .maybeSingle();
 
     if (!error && data) {
       setDailyGoal(data.daily_goal);
-      // Derive weekly/monthly from daily if not set locally
-      const saved = localStorage.getItem('motopilot_goals');
-      if (!saved) {
-        setWeeklyGoal(data.daily_goal * 7);
-        setMonthlyGoal(data.daily_goal * 28);
-      }
+      setWeeklyGoal(data.weekly_goal || data.daily_goal * 7);
+      setMonthlyGoal(data.monthly_goal || data.daily_goal * 28);
+      saveToLocalStorage({ 
+        daily: data.daily_goal, 
+        weekly: data.weekly_goal || data.daily_goal * 7, 
+        monthly: data.monthly_goal || data.daily_goal * 28 
+      });
     }
   }, [user]);
 

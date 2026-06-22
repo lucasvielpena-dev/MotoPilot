@@ -144,9 +144,7 @@ export default function Home() {
     <div className="space-y-6 pb-28 pt-2">
       {/* Logo */}
       <div className="flex items-center justify-center space-x-2 mb-6">
-        <div className="w-8 h-8 rounded-full bg-primary-muted flex items-center justify-center">
-          <Motorbike size={18} strokeWidth={2.5} className="text-white" />
-        </div>
+        <Motorbike size={22} strokeWidth={2.5} className="text-foreground" />
         <span className="text-[18px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 
@@ -169,9 +167,9 @@ export default function Home() {
             className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
           >
             {showAmount ? (
-              <Eye size={16} className="text-white" />
+              <Eye size={16} strokeWidth={2.5} className="text-white" />
             ) : (
-              <EyeOff size={16} className="text-white" />
+              <EyeOff size={16} strokeWidth={2.5} className="text-white" />
             )}
           </button>
         </div>
@@ -234,9 +232,7 @@ export default function Home() {
       {/* Grid de Estatísticas */}
       <section className="grid grid-cols-2 gap-4">
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-1">
-            <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
-          </div>
+          <Clock size={18} strokeWidth={2} className="text-muted" />
           <div>
             <p className="text-[11px] font-semibold text-muted">Tempo online</p>
             <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{activeJourney ? elapsedTime : '0h 0m'}</p>
@@ -244,9 +240,7 @@ export default function Home() {
         </div>
         
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center mb-1">
-            <Map size={16} strokeWidth={2.5} className="text-rose-500" />
-          </div>
+          <Map size={18} strokeWidth={2} className="text-muted" />
           <div>
             <p className="text-[11px] font-semibold text-muted">Km rodados</p>
             <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
@@ -254,9 +248,7 @@ export default function Home() {
         </div>
         
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-1">
-            <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
-          </div>
+          <ShoppingBag size={18} strokeWidth={2} className="text-muted" />
           <div>
             <p className="text-[11px] font-semibold text-muted">Entregas</p>
             <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{deliveriesCount}</p>
@@ -264,9 +256,7 @@ export default function Home() {
         </div>
         
         <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center mb-1">
-            <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
-          </div>
+          <TrendingUp size={18} strokeWidth={2} className="text-muted" />
           <div>
             <p className="text-[11px] font-semibold text-muted">Média por hora</p>
             <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
@@ -280,14 +270,12 @@ export default function Home() {
           onClick={() => router.push('/lancamentos?new=true&cat=Combustivel')}
           className="w-full bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.005)] flex items-center space-x-4 hover:bg-card-secondary/50 transition-all active:scale-[0.98] cursor-pointer card-premium"
         >
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-            <Fuel size={22} className="text-emerald-500" />
-          </div>
+          <Fuel size={20} strokeWidth={2} className="text-muted" />
           <div className="flex-1 text-left">
             <p className="text-[14px] font-extrabold text-foreground">Registrar Combustível</p>
             <p className="text-[11px] font-semibold text-muted mt-0.5">Atalho rápido para abastecimento</p>
           </div>
-          <ChevronRight size={18} className="text-muted" />
+          <ChevronRight size={18} strokeWidth={2.5} className="text-foreground/50" />
         </button>
       </section>
 
@@ -338,11 +326,8 @@ export default function Home() {
               </button>
             </>
           ) : (
-            <div className="text-center py-3 space-y-4">
-              <div className="space-y-1">
-                <p className="text-[15px] font-bold text-foreground">Nenhuma jornada ativa</p>
-                <p className="text-[12px] text-muted max-w-[280px] mx-auto">Inicie sua jornada para começar a registrar seus km e faturamento em tempo real.</p>
-              </div>
+            <div className="text-center py-2 space-y-2">
+              <p className="text-[14px] font-bold text-foreground">Nenhuma jornada ativa</p>
               <button
                 onClick={async () => {
                   setIsTransitioning(true);
@@ -394,7 +379,7 @@ export default function Home() {
             </div>
             <div className="goal-bar w-full bg-card-secondary">
               <div 
-                className="h-full bg-primary-muted rounded-full transition-all duration-500"
+                className="h-full bg-foreground/60 rounded-full transition-all duration-500"
                 style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
               />
             </div>
@@ -409,7 +394,7 @@ export default function Home() {
             <div className="space-y-2">
               <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
                 <span>Meta semanal</span>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-1.5">
                   <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
                   {editingGoal === 'weekly' ? (
                     <div className="flex items-center space-x-1">
@@ -418,23 +403,23 @@ export default function Home() {
                         value={goalInput}
                         onChange={e => setGoalInput(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('weekly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                        className="w-16 px-1 py-0.5 bg-card-secondary border border-primary rounded-lg text-[10px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                        className="w-20 px-2 py-1 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
                         autoFocus
                       />
                       <button onClick={() => handleSaveGoal('weekly')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => startEditGoal('weekly', weeklyGoal)} className="w-5 h-5 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    <button onClick={() => startEditGoal('weekly', weeklyGoal)} className="w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                     </button>
                   )}
                 </div>
               </div>
               <div className="goal-bar w-full bg-card-secondary">
                 <div 
-                  className="h-full bg-success-muted rounded-full transition-all duration-500"
+                  className="h-full bg-muted rounded-full transition-all duration-500"
                   style={{ width: `${weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100) : 0}%` }}
                 />
               </div>
@@ -447,7 +432,7 @@ export default function Home() {
             <div className="space-y-2">
               <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
                 <span>Meta mensal</span>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-1.5">
                   <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
                   {editingGoal === 'monthly' ? (
                     <div className="flex items-center space-x-1">
@@ -456,23 +441,23 @@ export default function Home() {
                         value={goalInput}
                         onChange={e => setGoalInput(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('monthly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                        className="w-16 px-1 py-0.5 bg-card-secondary border border-primary rounded-lg text-[10px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                        className="w-20 px-2 py-1 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
                         autoFocus
                       />
                       <button onClick={() => handleSaveGoal('monthly')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => startEditGoal('monthly', monthlyGoal)} className="w-5 h-5 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    <button onClick={() => startEditGoal('monthly', monthlyGoal)} className="w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                     </button>
                   )}
                 </div>
               </div>
               <div className="goal-bar w-full bg-card-secondary">
                 <div 
-                  className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                  className="h-full bg-muted rounded-full transition-all duration-500"
                   style={{ width: `${monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100) : 0}%` }}
                 />
               </div>
@@ -495,14 +480,14 @@ export default function Home() {
           <div className="relative w-72 max-w-xs bg-card border-r border-border h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
             <div className="flex justify-between items-center border-b border-border pb-4">
               <div className="flex items-center space-x-2">
-                <Motorbike size={22} strokeWidth={2.5} className="text-primary-muted" />
+                <Motorbike size={22} strokeWidth={3} className="text-primary-muted" />
                 <span className="text-[16px] font-extrabold text-foreground font-heading">MotoPilot Menu</span>
               </div>
               <button 
                 onClick={() => setIsMenuOpen(false)}
                 className="text-muted hover:text-foreground cursor-pointer"
               >
-                <X size={24} strokeWidth={2.5} />
+                <X size={24} strokeWidth={3} />
               </button>
             </div>
 
@@ -512,7 +497,7 @@ export default function Home() {
                   onClick={() => { setIsMenuOpen(false); router.push('/perfil'); }}
                   className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
                 >
-                  <User size={20} strokeWidth={2.5} className="text-muted" />
+                  <User size={20} strokeWidth={3} className="text-foreground/60" />
                   <span>Meu Perfil</span>
                 </button>
                 
@@ -520,7 +505,7 @@ export default function Home() {
                   onClick={() => { setIsMenuOpen(false); router.push('/relatorios'); }}
                   className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
                 >
-                  <Settings size={20} strokeWidth={2.5} className="text-muted" />
+                  <Settings size={20} strokeWidth={3} className="text-foreground/60" />
                   <span>Configurações</span>
                 </button>
               </div>
@@ -529,7 +514,7 @@ export default function Home() {
                 onClick={() => { setIsMenuOpen(false); handleLogout(); }}
                 className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500/60 rounded-xl hover:bg-red-500/10 hover:text-red-500/80 transition-colors text-left cursor-pointer border border-red-500/10 bg-red-500/5"
               >
-                <LogOut size={20} strokeWidth={2.5} />
+                <LogOut size={20} strokeWidth={3} />
                 <span>Sair da conta</span>
               </button>
             </div>
