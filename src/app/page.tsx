@@ -25,14 +25,12 @@ export default function Home() {
   const { user } = useAuth();
   const { activeJourney, liveDistance, startJourney, finishJourney, historicalJourneys, fetchHistoricalJourneys } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
-  const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal, updateGoalDirect } = useGoals();
+  const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal } = useGoals();
   
   const [elapsedTime, setElapsedTime] = useState('0h 0m');
   const [showAmount, setShowAmount] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [editingGoal, setEditingGoal] = useState<'daily' | 'weekly' | 'monthly' | null>(null);
-  const [goalInput, setGoalInput] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('motopilot_show_amount') !== 'false';
@@ -98,20 +96,6 @@ export default function Home() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-  };
-
-  const handleSaveGoal = async (field: 'daily' | 'weekly' | 'monthly') => {
-    const value = parseFloat(goalInput.replace(',', '.'));
-    if (!isNaN(value) && value >= 0) {
-      await updateGoalDirect(field, value);
-    }
-    setEditingGoal(null);
-    setGoalInput('');
-  };
-
-  const startEditGoal = (field: 'daily' | 'weekly' | 'monthly', currentValue: number) => {
-    setEditingGoal(field);
-    setGoalInput(currentValue.toFixed(0));
   };
 
   return (
@@ -299,28 +283,7 @@ export default function Home() {
           <div className="space-y-2">
             <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
               <span>Semanal</span>
-              <div className="flex items-center space-x-1.5">
-                <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
-                {editingGoal === 'weekly' ? (
-                  <div className="flex items-center space-x-1">
-                    <input
-                      type="number"
-                      value={goalInput}
-                      onChange={e => setGoalInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('weekly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                      className="w-16 px-1 py-0.5 bg-card-secondary border border-primary rounded-lg text-[11px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
-                      autoFocus
-                    />
-                    <button onClick={() => handleSaveGoal('weekly')} className="save-goal-btn text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                    </button>
-                  </div>
-                ) : (
-                  <button onClick={() => startEditGoal('weekly', weeklyGoal)} className="edit-goal-btn w-5 h-5 bg-card-secondary rounded-full flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                  </button>
-                )}
-              </div>
+              <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
             </div>
             <div className="goal-bar w-full bg-card-secondary h-1.5">
               <div 
@@ -337,28 +300,7 @@ export default function Home() {
           <div className="space-y-2">
             <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
               <span>Mensal</span>
-              <div className="flex items-center space-x-1.5">
-                <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
-                {editingGoal === 'monthly' ? (
-                  <div className="flex items-center space-x-1">
-                    <input
-                      type="number"
-                      value={goalInput}
-                      onChange={e => setGoalInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('monthly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                      className="w-16 px-1 py-0.5 bg-card-secondary border border-primary rounded-lg text-[11px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
-                      autoFocus
-                    />
-                    <button onClick={() => handleSaveGoal('monthly')} className="save-goal-btn text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                    </button>
-                  </div>
-                ) : (
-                  <button onClick={() => startEditGoal('monthly', monthlyGoal)} className="edit-goal-btn w-5 h-5 bg-card-secondary rounded-full flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                  </button>
-                )}
-              </div>
+              <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
             </div>
             <div className="goal-bar w-full bg-card-secondary h-1.5">
               <div 
