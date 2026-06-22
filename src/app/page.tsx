@@ -99,16 +99,16 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-[12px] pb-28 pt-2 animate-fade-in-up">
+    <div className="space-y-3 pb-28 pt-1 animate-fade-in-up">
       {/* Logo */}
-      <div className="flex items-center justify-center space-x-2 mb-4">
-        <Motorbike size={22} strokeWidth={2.5} className="text-foreground" />
-        <span className="text-[18px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
+      <div className="flex items-center justify-center space-x-2 mb-2">
+        <Motorbike size={20} strokeWidth={2.5} className="text-foreground" />
+        <span className="text-[16px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 
-      {/* 1. Card de Lucro (Verde #1db96b) */}
+      {/* 1. Card de Lucro */}
       <section 
-        className="rounded-[20px] p-4 relative overflow-hidden flex flex-col justify-between space-y-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] text-white border-0"
+        className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] text-white border-0"
         style={{ backgroundColor: '#1db96b' }}
       >
         <div className="flex justify-between items-center">
@@ -126,12 +126,12 @@ export default function Home() {
         </div>
         
         {/* Número principal em 36px bold branco */}
-        <div className="text-[36px] font-bold tracking-tight leading-none select-none font-heading">
+        <div className="text-[30px] font-bold tracking-tight leading-none select-none font-heading">
           {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
         </div>
 
         {/* Ganhos / Gastos / Entregas com R$/entrega */}
-        <div className="flex justify-between items-center pt-2.5 border-t border-white/10 text-white/90">
+        <div className="flex justify-between items-center pt-2 border-t border-white/10 text-white/90">
           <div className="text-left flex-1">
             <span className="opacity-75 block text-[11px] font-bold uppercase tracking-wide">Ganhos</span>
             <span className="text-[15px] font-extrabold leading-tight">
@@ -155,7 +155,7 @@ export default function Home() {
         </div>
 
         {/* Barra de progresso da meta diária com label e percentual */}
-        <div className="space-y-1.5 pt-2.5 border-t border-white/10 text-[11px] font-bold text-white/90">
+        <div className="space-y-1 pt-2 border-t border-white/10 text-[11px] font-bold text-white/90">
           <div className="flex justify-between items-center">
             <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
             <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
@@ -169,20 +169,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Card de Jornada (Branco) */}
-      <section className="bg-card border border-border rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] card-premium space-y-4">
+      {/* 2. Card de Jornada */}
+      <section className="bg-card border border-border rounded-[20px] p-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] card-premium space-y-3">
         {/* Header com label "Jornada" + indicador de status */}
         <div className="flex justify-between items-center">
-          <span className="text-[12px] font-bold text-foreground uppercase tracking-wide">Jornada</span>
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wide">Jornada</span>
           {activeJourney ? (
-            <span className="flex items-center space-x-1.5 text-[12px] font-bold text-emerald-500 uppercase tracking-wider">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Jornada em andamento</span>
+            <span className="flex items-center space-x-1 text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Em andamento</span>
             </span>
           ) : (
-            <span className="flex items-center space-x-1.5 text-[12px] font-bold text-red-500 uppercase tracking-wider">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-              <span>Nenhuma jornada ativa</span>
+            <span className="flex items-center space-x-1 text-[10px] font-bold text-muted uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-muted" />
+              <span>Parada</span>
             </span>
           )}
         </div>
@@ -196,7 +196,7 @@ export default function Home() {
               setIsTransitioning(false);
             }}
             disabled={isTransitioning}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3 rounded-xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
           >
             <Square size={14} fill="currentColor" />
             <span>{isTransitioning ? 'Encerrando...' : 'Encerrar Jornada'}</span>
@@ -209,7 +209,7 @@ export default function Home() {
               setIsTransitioning(false);
             }}
             disabled={isTransitioning}
-            className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
           >
             <Play size={14} fill="currentColor" />
             <span>{isTransitioning ? 'Iniciando...' : 'Iniciar Jornada'}</span>
@@ -217,42 +217,42 @@ export default function Home() {
         )}
 
         {/* Grid 2x2 com Tempo online, Km rodados, Média/hora, Entregas */}
-        <div className="grid grid-cols-2 gap-y-3.5 gap-x-4 border-t border-border/80 pt-4">
+        <div className="grid grid-cols-2 gap-y-2.5 gap-x-4 border-t border-border/80 pt-3">
           <div className="flex flex-col text-left">
-            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Tempo online</span>
-            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wide">Tempo online</span>
+            <span className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">
               {activeJourney ? elapsedTime : '0h 0m'}
             </span>
           </div>
           
           <div className="border-l border-border pl-4 flex flex-col text-left">
-            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Km rodados</span>
-            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wide">Km rodados</span>
+            <span className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">
               {activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}
             </span>
           </div>
 
           <div className="flex flex-col text-left border-t border-border/80 pt-3">
-            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Média/hora</span>
-            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wide">Média/hora</span>
+            <span className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">
               R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}
             </span>
           </div>
           
           <div className="border-l border-border pl-4 flex flex-col text-left border-t border-border/80 pt-3">
-            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Entregas</span>
-            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wide">Entregas</span>
+            <span className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">
               {deliveriesCount}
             </span>
           </div>
         </div>
       </section>
 
-      {/* 3. Card de Metas (Branco) */}
-      <section className="bg-card border border-border rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] card-premium space-y-4">
+      {/* 3. Card de Metas */}
+      <section className="bg-card border border-border rounded-[20px] p-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] card-premium space-y-3">
         <div className="flex items-center space-x-2">
-          <TrendingUp size={16} className="text-primary-muted" />
-          <span className="text-[12px] font-bold text-foreground uppercase tracking-wide">Metas</span>
+          <TrendingUp size={14} className="text-muted" />
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wide">Metas</span>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

@@ -358,47 +358,47 @@ export default function Lancamentos() {
   const filterOptions = ['Todos', 'Combustível', 'Alimentação', 'Manutenção', 'Estacionamento', 'Outros'] as const;
 
   return (
-    <div className="space-y-6 pb-28 pt-2">
+    <div className="space-y-4 pb-28 pt-1">
       {isNew ? (
         /* SCREEN 4: NOVO GASTO */
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Header */}
-          <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
+          <header className="flex justify-between items-center bg-card px-2 py-2 border-b border-border -mx-4">
             <button 
               onClick={() => router.push('/lancamentos')}
-              className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
             >
-              <ArrowLeft size={24} strokeWidth={2.5} />
+              <ArrowLeft size={22} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-foreground font-heading">Novo lançamento</h1>
-            <div className="w-10 h-10" /> {/* Spacer */}
+            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Novo lançamento</h1>
+            <div className="w-9 h-9" /> {/* Spacer */}
           </header>
 
           {saveSuccessType ? (
             /* SUCCESS STATE */
-            <div className="bg-card border border-border rounded-[32px] p-6 text-center space-y-6 shadow-premium animate-fade-in-up">
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-900/50">
-                <svg className="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+            <div className="bg-card border border-border rounded-[24px] p-5 text-center space-y-4 shadow-premium animate-fade-in-up">
+              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-900/50">
+                <svg className="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               </div>
               
-              <div className="space-y-2">
-                <h3 className="text-[18px] font-black text-foreground font-heading">
+              <div className="space-y-1.5">
+                <h3 className="text-[16px] font-black text-foreground font-heading">
                   {saveSuccessType === 'gasto' ? 'Gasto salvo com sucesso!' : 'Ganho salvo com sucesso!'}
                 </h3>
-                <p className="text-[13px] text-muted font-semibold">
+                <p className="text-[12px] text-muted font-semibold">
                   O lançamento foi registrado e atualizado em seus relatórios.
                 </p>
               </div>
 
-              <div className="flex flex-col space-y-2.5 pt-2">
+              <div className="flex flex-col space-y-2 pt-1">
                 <button
                   type="button"
                   onClick={() => {
                     setSaveSuccessType(null);
                   }}
-                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] cursor-pointer shadow-sm"
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-2xl transition-all active:scale-[0.98] text-[14px] cursor-pointer shadow-sm"
                 >
                   Novo lançamento
                 </button>
@@ -408,7 +408,7 @@ export default function Lancamentos() {
                     setSaveSuccessType(null);
                     router.push('/lancamentos');
                   }}
-                  className="w-full bg-card-secondary hover:bg-card-secondary/80 text-foreground font-bold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] border border-border cursor-pointer"
+                  className="w-full bg-card-secondary hover:bg-card-secondary/80 text-foreground font-bold py-3.5 rounded-2xl transition-all active:scale-[0.98] text-[14px] border border-border cursor-pointer"
                 >
                   Voltar
                 </button>
@@ -417,22 +417,22 @@ export default function Lancamentos() {
           ) : (
             <>
               {/* Tabs */}
-          <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
+          <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
             <button 
               onClick={() => setExpenseTab('gasto')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'gasto' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
+              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${expenseTab === 'gasto' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Gasto
             </button>
             <button 
               onClick={() => setExpenseTab('ganhos')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'ganhos' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
+              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${expenseTab === 'ganhos' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Ganhos
             </button>
             <button 
               onClick={() => setExpenseTab('importar')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${expenseTab === 'importar' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
+              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${expenseTab === 'importar' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Importar
             </button>
@@ -441,9 +441,9 @@ export default function Lancamentos() {
           {/* Form */}
           {expenseTab === 'ganhos' ? (
             /* Ganhos Form */
-            <form onSubmit={handleSaveGain} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
-              <div className="flex flex-col items-center justify-center py-5 bg-emerald-50 rounded-[28px] border border-emerald-200 mb-3">
-                <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2">Valor do ganho</span>
+            <form onSubmit={handleSaveGain} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
+              <div className="flex flex-col items-center justify-center py-4 bg-emerald-50 rounded-[20px] border border-emerald-200 mb-2">
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">Valor do ganho</span>
                 <div className="flex items-center justify-center space-x-1">
                   <span className="text-xl font-bold text-emerald-500">R$</span>
                   <input
@@ -455,26 +455,26 @@ export default function Lancamentos() {
                     autoFocus
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-emerald-600 w-[220px] font-heading"
+                    className="bg-transparent border-none text-center focus:outline-none text-[32px] font-black text-emerald-600 w-[200px] font-heading"
                     placeholder="0,00"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Data</label>
-                <div className="flex space-x-2">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Data</label>
+                <div className="flex space-x-1.5">
                   <button
                     type="button"
                     onClick={() => setDate(todayStr)}
-                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
                   >
                     Hoje
                   </button>
                   <button
                     type="button"
                     onClick={() => setDate(yesterdayStr)}
-                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
                   >
                     Ontem
                   </button>
@@ -484,21 +484,21 @@ export default function Lancamentos() {
                       required
                       value={date}
                       onChange={e => setDate(e.target.value)}
-                      className="w-full py-3.5 px-3 bg-card border border-border rounded-2xl text-[13px] font-extrabold text-foreground focus:outline-none focus:border-emerald-500 cursor-pointer text-center"
+                      className="w-full py-3 px-2.5 bg-card border border-border rounded-xl text-[12px] font-extrabold text-foreground focus:outline-none focus:border-emerald-500 cursor-pointer text-center"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Observação Input Colapsável */}
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
                 {showNotesField ? (
                   <input
                     type="text"
                     value={notes}
                     onChange={e => setNotes(e.target.value)}
-                    className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-emerald-500 text-[14px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
+                    className="w-full p-3 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-emerald-500 text-[13px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
                     placeholder="Ex: corrida 99, iFood, etc."
                     autoFocus
                   />
@@ -506,7 +506,7 @@ export default function Lancamentos() {
                   <button
                     type="button"
                     onClick={() => setShowNotesField(true)}
-                    className="w-full p-3.5 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-2xl text-[13px] font-extrabold text-emerald-500 transition-all active:scale-[0.98] cursor-pointer text-left"
+                    className="w-full p-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-emerald-500 transition-all active:scale-[0.98] cursor-pointer text-left"
                   >
                     + Adicionar observação
                   </button>
@@ -516,13 +516,13 @@ export default function Lancamentos() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-4.5 rounded-[24px] transition-all active:scale-[0.98] text-[15px] shadow-lg cursor-pointer disabled:opacity-50 mt-4"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-3.5 rounded-[20px] transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50 mt-3"
               >
                 {loading ? 'Salvando...' : 'Salvar Ganho'}
               </button>
             </form>
           ) : expenseTab !== 'importar' ? (
-            <form onSubmit={handleSave} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
+            <form onSubmit={handleSave} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
               {/* Category Grid (for general gasto) */}
               {expenseTab === 'gasto' && (
                 <>
@@ -580,8 +580,8 @@ export default function Lancamentos() {
               )}
 
               {/* Big amount field */}
-              <div className="flex flex-col items-center justify-center py-5 bg-card-secondary/40 rounded-[28px] border border-border/50 mb-3">
-                <span className="text-[11px] font-bold text-muted uppercase tracking-wider mb-2">Valor do gasto</span>
+              <div className="flex flex-col items-center justify-center py-4 bg-card-secondary/40 rounded-[20px] border border-border/50 mb-2">
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider mb-1.5">Valor do gasto</span>
                 <div className="flex items-center justify-center space-x-1">
                   <span className="text-xl font-bold text-muted">R$</span>
                   <input
@@ -593,27 +593,27 @@ export default function Lancamentos() {
                     autoFocus
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="bg-transparent border-none text-center focus:outline-none text-[36px] font-black text-foreground w-[220px] font-heading"
+                    className="bg-transparent border-none text-center focus:outline-none text-[32px] font-black text-foreground w-[200px] font-heading"
                     placeholder="0,00"
                   />
                 </div>
               </div>
 
               {/* Date Input */}
-              <div className="space-y-2">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Data</label>
-                <div className="flex space-x-2">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Data</label>
+                <div className="flex space-x-1.5">
                   <button
                     type="button"
                     onClick={() => setDate(todayStr)}
-                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
                   >
                     Hoje
                   </button>
                   <button
                     type="button"
                     onClick={() => setDate(yesterdayStr)}
-                    className={`flex-1 py-3.5 text-[13px] font-extrabold rounded-2xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
                   >
                     Ontem
                   </button>
@@ -623,20 +623,20 @@ export default function Lancamentos() {
                       required
                       value={date}
                       onChange={e => setDate(e.target.value)}
-                      className="w-full py-3.5 px-3 bg-card border border-border rounded-2xl text-[13px] font-extrabold text-foreground focus:outline-none focus:border-primary cursor-pointer text-center"
+                      className="w-full py-3 px-2.5 bg-card border border-border rounded-xl text-[12px] font-extrabold text-foreground focus:outline-none focus:border-primary cursor-pointer text-center"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Método de pagamento dropdown */}
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Método de pagamento</label>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Método de pagamento</label>
                 <div className="relative">
                   <select
                     value={paymentMethod}
                     onChange={e => setPaymentMethod(e.target.value)}
-                    className="w-full p-4 pr-10 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary appearance-none text-[14px] font-bold text-foreground cursor-pointer"
+                    className="w-full p-3 pr-10 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary appearance-none text-[13px] font-bold text-foreground cursor-pointer"
                   >
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Cartão de Crédito">Cartão de Crédito</option>
@@ -648,14 +648,14 @@ export default function Lancamentos() {
               </div>
 
               {/* Observação Input Colapsável */}
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
                 {showNotesField ? (
                   <input
                     type="text"
                     value={notes}
                     onChange={e => setNotes(e.target.value)}
-                    className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
+                    className="w-full p-3 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
                     placeholder="Posto Ipiranga, almoço, etc."
                     autoFocus
                   />
@@ -663,7 +663,7 @@ export default function Lancamentos() {
                   <button
                     type="button"
                     onClick={() => setShowNotesField(true)}
-                    className="w-full p-3.5 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-2xl text-[13px] font-extrabold text-primary transition-all active:scale-[0.98] cursor-pointer text-left"
+                    className="w-full p-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-primary transition-all active:scale-[0.98] cursor-pointer text-left"
                   >
                     + Adicionar observação
                   </button>
@@ -674,34 +674,34 @@ export default function Lancamentos() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4.5 rounded-[24px] transition-all active:scale-[0.98] text-[15px] shadow-lg cursor-pointer disabled:opacity-50 mt-4"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-[20px] transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50 mt-3"
               >
                 {loading ? 'Salvando...' : 'Salvar Gasto'}
               </button>
             </form>
           ) : (
             /* Import Tab */
-            <form onSubmit={handleImport} className="space-y-5 bg-card border border-border rounded-[32px] p-5 shadow-premium">
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase flex items-center space-x-1.5">
-                  <ClipboardList size={16} />
+            <form onSubmit={handleImport} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-muted block uppercase flex items-center space-x-1.5">
+                  <ClipboardList size={14} />
                   <span>Dados do comprovante/recibo</span>
                 </label>
                 <textarea
-                  rows={6}
+                  rows={5}
                   required
                   value={pasteText}
                   onChange={e => setPasteText(e.target.value)}
-                  className="w-full p-4 bg-card-secondary/50 border border-border rounded-2xl focus:outline-none focus:border-primary text-[14px] font-medium text-foreground resize-none"
+                  className="w-full p-3 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-medium text-foreground resize-none"
                   placeholder={`Cole o texto ou cole um CSV/JSON.\n\nCSV: Data,Tipo,Valor\n2024-01-15,Ganho,45.00\n2024-01-15,Gasto,25.00\n\nJSON:\n[{"tipo":"Ganho","valor":45.00}]`}
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase">Ou importe arquivo</label>
-                <label className="flex items-center justify-center space-x-2 py-4 bg-card-secondary/50 border border-dashed border-border rounded-2xl cursor-pointer hover:bg-card-secondary transition-colors">
-                  <Upload size={18} className="text-muted" />
-                  <span className="text-[13px] font-bold text-muted">Selecionar CSV ou JSON</span>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-muted block uppercase">Ou importe arquivo</label>
+                <label className="flex items-center justify-center space-x-2 py-3 bg-card-secondary/50 border border-dashed border-border rounded-xl cursor-pointer hover:bg-card-secondary transition-colors">
+                  <Upload size={16} className="text-muted" />
+                  <span className="text-[12px] font-bold text-muted">Selecionar CSV ou JSON</span>
                   <input
                     type="file"
                     accept=".csv,.json"
@@ -727,7 +727,7 @@ export default function Lancamentos() {
               <button
                 type="submit"
                 disabled={loading || !pasteText.trim()}
-                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4.5 rounded-2xl transition-all active:scale-[0.98] text-[16px] shadow-lg cursor-pointer disabled:opacity-50"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50"
               >
                 {loading ? 'Processando...' : 'Importar Lançamentos'}
               </button>
@@ -738,30 +738,30 @@ export default function Lancamentos() {
         </div>
       ) : (
         /* SCREEN 5: GASTOS (LIST VIEW) */
-        <div className="space-y-6 animate-fade-in-up">
+        <div className="space-y-4 animate-fade-in-up">
           {/* Header */}
-          <header className="flex justify-between items-center bg-card px-2 py-3 border-b border-border -mx-4">
+          <header className="flex justify-between items-center bg-card px-2 py-2 border-b border-border -mx-4">
             <button 
               onClick={() => router.push('/')}
-              className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
             >
-              <ArrowLeft size={24} strokeWidth={2.5} />
+              <ArrowLeft size={22} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[18px] font-extrabold text-foreground font-heading">Gastos</h1>
-            <div className="w-10 h-10" /> {/* Spacer */}
+            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Gastos</h1>
+            <div className="w-9 h-9" /> {/* Spacer */}
           </header>
 
           {/* Tabs */}
-          <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
+          <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
             <button 
               onClick={() => setListTab('lista')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'lista' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
+              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${listTab === 'lista' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Lista
             </button>
             <button 
               onClick={() => setListTab('resumo')} 
-              className={`flex-1 py-2.5 text-[14px] font-bold rounded-xl transition-all cursor-pointer ${listTab === 'resumo' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
+              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${listTab === 'resumo' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
             >
               Resumo
             </button>
@@ -770,34 +770,34 @@ export default function Lancamentos() {
           {/* Financial Summary Accordion */}
           <button
             onClick={() => setShowFinancialSummary(!showFinancialSummary)}
-            className="w-full bg-card border border-border rounded-[20px] p-4 flex items-center justify-between hover:bg-card-secondary/50 transition-all active:scale-[0.99] cursor-pointer"
+            className="w-full bg-card border border-border rounded-[16px] p-3 flex items-center justify-between hover:bg-card-secondary/50 transition-all active:scale-[0.99] cursor-pointer"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <DollarSign size={18} className="text-primary" />
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <DollarSign size={16} className="text-primary" />
               </div>
               <div className="text-left">
-                <p className="text-[13px] font-extrabold text-foreground">Resumo Financeiro</p>
-                <p className="text-[11px] text-muted font-semibold">Entradas vs. Saídas</p>
+                <p className="text-[12px] font-extrabold text-foreground">Resumo Financeiro</p>
+                <p className="text-[10px] text-muted font-semibold">Entradas vs. Saídas</p>
               </div>
             </div>
             {showFinancialSummary ? <ChevronUp size={18} className="text-muted" /> : <ChevronDown size={18} className="text-muted" />}
           </button>
 
           {showFinancialSummary && (
-            <div className="bg-card border border-border rounded-[24px] p-5 space-y-4 animate-fade-in-up">
-              <div className="grid grid-cols-3 gap-3">
-                <div className="text-center p-3 bg-emerald-500/10 rounded-xl">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase block">Entradas</span>
-                  <span className="text-[16px] font-black text-emerald-600 font-heading block mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+            <div className="bg-card border border-border rounded-[20px] p-4 space-y-3 animate-fade-in-up">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="text-center p-2 bg-emerald-500/10 rounded-lg">
+                  <span className="text-[9px] font-bold text-emerald-600 uppercase block">Entradas</span>
+                  <span className="text-[14px] font-black text-emerald-600 font-heading block mt-0.5">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
                 </div>
-                <div className="text-center p-3 bg-primary/10 rounded-xl">
-                  <span className="text-[10px] font-bold text-primary uppercase block">Saídas</span>
-                  <span className="text-[16px] font-black text-primary font-heading block mt-1">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+                <div className="text-center p-2 bg-primary/10 rounded-lg">
+                  <span className="text-[9px] font-bold text-primary uppercase block">Saídas</span>
+                  <span className="text-[14px] font-black text-primary font-heading block mt-0.5">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
                 </div>
-                <div className={`text-center p-3 rounded-xl ${netProfit >= 0 ? 'bg-emerald-500/10' : 'bg-primary/10'}`}>
-                  <span className={`text-[10px] font-bold uppercase block ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>Lucro</span>
-                  <span className={`text-[16px] font-black font-heading block mt-1 ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>R$ {(totalGains - totalExpensesSum).toFixed(2).replace('.', ',')}</span>
+                <div className={`text-center p-2 rounded-lg ${netProfit >= 0 ? 'bg-emerald-500/10' : 'bg-primary/10'}`}>
+                  <span className={`text-[9px] font-bold uppercase block ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>Lucro</span>
+                  <span className={`text-[14px] font-black font-heading block mt-0.5 ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>R$ {(totalGains - totalExpensesSum).toFixed(2).replace('.', ',')}</span>
                 </div>
               </div>
               <div className="space-y-2">
@@ -820,28 +820,28 @@ export default function Lancamentos() {
           {listTab === 'lista' ? (
             <>
               {/* Financial stats summary indicators - Replaces Chart */}
-              <div className="grid grid-cols-3 gap-2.5">
-                <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)] card-premium">
-                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
-                  <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm card-premium">
+                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
+                  <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)] card-premium">
-                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
-                  <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
+                <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm card-premium">
+                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
+                  <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-[0_4px_12px_rgba(0,0,0,0.01)] card-premium">
-                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
-                  <span className="text-[15px] font-black text-foreground mt-1 block font-heading">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
+                <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm card-premium">
+                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
+                  <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
                 </div>
               </div>
 
               {/* Filtro de Período */}
-              <div className="flex bg-card-secondary/80 p-1 rounded-2xl border border-border">
+              <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
                 {(['semanal', 'mensal', 'personalizado'] as const).map((period) => (
                   <button
                     key={period}
                     onClick={() => setPeriodFilter(period)}
-                    className={`flex-1 py-2.5 text-[13px] font-bold rounded-xl transition-all cursor-pointer capitalize ${
+                    className={`flex-1 py-2 text-[12px] font-bold rounded-lg transition-all cursor-pointer capitalize ${
                       periodFilter === period
                         ? 'bg-card text-foreground border border-border shadow-sm'
                         : 'text-muted hover:text-foreground'
@@ -877,14 +877,14 @@ export default function Lancamentos() {
               )}
 
               {/* Filtration pills - Categorias (Sticky top-0 z-30) */}
-              <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm py-2.5 -mx-4 px-4 border-b border-border/10 flex overflow-x-auto gap-2 hide-scrollbar">
+              <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm py-2 -mx-4 px-4 border-b border-border/10 flex overflow-x-auto gap-1.5 hide-scrollbar">
                 {filterOptions.map((filter) => {
                   const isActive = activeFilter === filter;
                   return (
                     <button
                       key={filter}
                       onClick={() => setActiveFilter(filter)}
-                      className={`px-4 py-2 text-[12px] font-extrabold rounded-full whitespace-nowrap border transition-all active:scale-95 cursor-pointer ${
+                      className={`px-3 py-1.5 text-[11px] font-extrabold rounded-full whitespace-nowrap border transition-all active:scale-95 cursor-pointer ${
                         isActive
                           ? 'bg-primary text-white border-primary shadow-sm'
                           : 'bg-card text-muted border-border hover:bg-card-secondary/80'
@@ -905,7 +905,7 @@ export default function Lancamentos() {
               )}
 
               {/* Scrollable list */}
-              <section className="space-y-3">
+              <section className="space-y-2">
                 {entriesLoading && !fetched ? (
                   <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-sm">
                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -941,27 +941,27 @@ export default function Lancamentos() {
                     return (
                       <div 
                         key={entry.id}
-                        className="bg-card border border-border hover:border-border/80 rounded-[24px] p-4 flex justify-between items-center shadow-sm active:scale-[0.99] transition-all"
+                        className="bg-card border border-border hover:border-border/80 rounded-[16px] p-3 flex justify-between items-center shadow-sm active:scale-[0.99] transition-all"
                       >
-                        <div className="flex items-center space-x-4">
-                          <div className={`w-12 h-12 rounded-2xl ${styling.bg} flex items-center justify-center`}>
-                            <CategoryIcon size={22} className={styling.color} />
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-10 h-10 rounded-xl ${styling.bg} flex items-center justify-center`}>
+                            <CategoryIcon size={18} className={styling.color} />
                           </div>
                           <div>
-                            <span className="text-[15px] font-bold text-foreground block">
+                            <span className="text-[13px] font-bold text-foreground block">
                               {categoryName}
                             </span>
-                            <span className="text-[12px] font-semibold text-muted mt-0.5 block">
+                            <span className="text-[11px] font-semibold text-muted mt-0.5 block">
                               {formatDisplayDate(entry.date)} • {formatDisplayTime(entry.date)}
                             </span>
-                            <span className="text-[11px] font-extrabold text-primary-muted uppercase tracking-wider block mt-0.5">
+                            <span className="text-[10px] font-extrabold text-primary-muted uppercase tracking-wider block mt-0.5">
                               {paymentMethodVal.toUpperCase()} {notesVal && `• ${notesVal}`}
                             </span>
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-3">
-                          <span className="text-[16px] font-extrabold text-foreground font-heading">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-[14px] font-extrabold text-foreground font-heading">
                             R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
@@ -980,10 +980,10 @@ export default function Lancamentos() {
               </section>
 
               {/* Bottom New Expense Trigger button */}
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   onClick={() => router.push('/lancamentos?new=true')}
-                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-lg"
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-2xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-lg"
                 >
                   <Plus size={18} strokeWidth={2.5} />
                   <span>Novo gasto</span>

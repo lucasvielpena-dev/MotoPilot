@@ -160,31 +160,31 @@ export default function Perfil() {
   };
 
   return (
-    <div className="p-4 space-y-6 pb-28">
-      <header className="flex justify-between items-center mb-4">
-        <h1 className="text-[20px] font-black tracking-tight text-foreground font-heading">Perfil</h1>
+    <div className="p-3 space-y-4 pb-28">
+      <header className="flex justify-between items-center mb-2">
+        <h1 className="text-[18px] font-black tracking-tight text-foreground font-heading">Perfil</h1>
         <button className="text-muted hover:text-foreground transition-colors">
           <Settings size={22} />
         </button>
       </header>
 
       {/* Info do Usuário */}
-      <section className="flex items-center space-x-4 bg-card border border-border p-6 rounded-[28px] shadow-premium animate-fade-in-up">
-        <div className="w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center relative flex-shrink-0">
-          <UserCircle size={40} className="text-primary" />
-          <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-card flex items-center justify-center animate-pulse" title="Online"></span>
+      <section className="flex items-center space-x-3 bg-card border border-border p-4 rounded-[20px] shadow-premium animate-fade-in-up">
+        <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center relative flex-shrink-0">
+          <UserCircle size={32} className="text-primary" />
+          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-card flex items-center justify-center animate-pulse" title="Online"></span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
-            <h2 className="text-[18px] font-black text-foreground truncate font-heading">
+            <h2 className="text-[15px] font-black text-foreground truncate font-heading">
               {user?.email?.split('@')[0] || 'Piloto'}
             </h2>
-            <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide bg-primary/10 text-primary rounded-md border border-primary/15">
+            <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide bg-primary/10 text-primary rounded-md border border-primary/15">
               PRO
             </span>
           </div>
-          <p className="text-[12px] text-muted truncate mt-0.5">{user?.email}</p>
-          <div className="mt-2 inline-flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-500/10 rounded-full text-[11px] font-bold text-emerald-500">
+          <p className="text-[11px] text-muted truncate mt-0.5">{user?.email}</p>
+          <div className="mt-1.5 inline-flex items-center space-x-1 px-2 py-0.5 bg-emerald-500/10 rounded-full text-[10px] font-bold text-emerald-500">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             <span>Piloto Online</span>
           </div>
@@ -192,31 +192,31 @@ export default function Perfil() {
       </section>
 
       {/* Grid de Estatísticas Cumulativas */}
-      <section className="grid grid-cols-3 gap-2.5 animate-fade-in-up delay-75">
-        <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-sm">
-          <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Total Km</span>
-          <span className="text-[15px] font-black text-foreground block mt-1 font-heading">
+      <section className="grid grid-cols-3 gap-2 animate-fade-in-up delay-75">
+        <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm">
+          <span className="text-[8px] font-bold text-muted uppercase tracking-wider block">Total Km</span>
+          <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
             {totalKm.toFixed(0).replace('.', ',')} km
           </span>
         </div>
-        <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-sm">
-          <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Entregas</span>
-          <span className="text-[15px] font-black text-foreground block mt-1 font-heading">
+        <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm">
+          <span className="text-[8px] font-bold text-muted uppercase tracking-wider block">Entregas</span>
+          <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
             {totalDeliveries}
           </span>
         </div>
-        <div className="bg-card border border-border rounded-[20px] p-3 text-center shadow-sm">
-          <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
-          <span className="text-[15px] font-black text-emerald-500 block mt-1 font-heading">
+        <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm">
+          <span className="text-[8px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
+          <span className="text-[13px] font-black text-emerald-500 block mt-0.5 font-heading">
             R$ {totalGains.toFixed(0)}
           </span>
         </div>
       </section>
 
       {/* Veículo Ativo com Detalhes */}
-      <section className="bg-card border border-border rounded-[28px] p-5 shadow-premium animate-fade-in-up delay-100">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-[12px] font-bold text-muted uppercase tracking-wider">Veículo de Trabalho</h3>
+      <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium animate-fade-in-up delay-100">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-[11px] font-bold text-muted uppercase tracking-wider">Veículo de Trabalho</h3>
           <button 
             onClick={handleOpenVehicleModal}
             className="text-[13px] font-extrabold text-primary hover:underline active:scale-95 transition-transform"
@@ -224,19 +224,19 @@ export default function Perfil() {
             Editar
           </button>
         </div>
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="w-14 h-14 bg-card-secondary rounded-2xl flex items-center justify-center border border-border">
-            <span className="text-[28px]">{getVehicleEmoji(vehicle.type)}</span>
+        <div className="flex items-center space-x-3 mb-3">
+          <div className="w-11 h-11 bg-card-secondary rounded-xl flex items-center justify-center border border-border">
+            <span className="text-[22px]">{getVehicleEmoji(vehicle.type)}</span>
           </div>
           <div>
-            <h4 className="text-[16px] font-extrabold text-foreground font-heading">{vehicle.name}</h4>
-            <span className="text-[11px] font-bold text-muted tracking-widest bg-card-secondary px-2 py-0.5 rounded-md border border-border uppercase inline-block mt-0.5">
+            <h4 className="text-[14px] font-extrabold text-foreground font-heading">{vehicle.name}</h4>
+            <span className="text-[10px] font-bold text-muted tracking-widest bg-card-secondary px-1.5 py-0.5 rounded-md border border-border uppercase inline-block mt-0.5">
               {vehicle.plate}
             </span>
           </div>
         </div>
 
-        <div className="border-t border-border pt-4 grid grid-cols-2 gap-3 text-[12px]">
+        <div className="border-t border-border pt-3 grid grid-cols-2 gap-2 text-[11px]">
           <div className="space-y-0.5">
             <span className="text-muted block font-semibold">Odômetro atual</span>
             <span className="text-foreground font-extrabold font-heading">{effectiveOdometer.toFixed(0).replace('.', ',')} km</span>
@@ -255,7 +255,7 @@ export default function Perfil() {
 
         <button
           onClick={handleOpenMaintenanceModal}
-          className="w-full mt-4 py-3 bg-card-secondary hover:bg-card-secondary/80 border border-border rounded-xl text-[13px] font-bold text-foreground flex items-center justify-center space-x-2 transition-all active:scale-[0.98] cursor-pointer"
+          className="w-full mt-3 py-2.5 bg-card-secondary hover:bg-card-secondary/80 border border-border rounded-xl text-[12px] font-bold text-foreground flex items-center justify-center space-x-2 transition-all active:scale-[0.98] cursor-pointer"
         >
           <Wrench size={16} className="text-muted" />
           <span>Configurar Revisão</span>
@@ -263,81 +263,80 @@ export default function Perfil() {
       </section>
 
       {/* Ajustes e Preferências */}
-      <section className="space-y-3 pt-2 animate-fade-in-up delay-150">
-        <h3 className="text-[12px] font-bold text-muted px-1 uppercase tracking-wider">Configurações & Ajustes</h3>
+      <section className="space-y-2 pt-1 animate-fade-in-up delay-150">
+        <h3 className="text-[11px] font-bold text-muted px-1 uppercase tracking-wider">Configurações & Ajustes</h3>
         
-        <div className="bg-card border border-border rounded-[28px] overflow-hidden shadow-premium">
+        <div className="bg-card border border-border rounded-[20px] overflow-hidden shadow-premium">
           {/* Meta Diária */}
-          <div className="flex justify-between items-center p-5 border-b border-border hover:bg-card-secondary/30 transition-colors">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-card-secondary rounded-2xl">
-                <Flag size={20} className="text-primary animate-pulse" />
+          <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-card-secondary rounded-xl">
+                <Flag size={16} className="text-primary" />
               </div>
               <div>
-                <p className="text-[15px] font-extrabold text-foreground">Meta Diária</p>
-                <p className="text-[12px] text-muted mt-0.5">Meta ativa: R$ {dailyGoal.toFixed(2).replace('.', ',')}</p>
+                <p className="text-[13px] font-extrabold text-foreground">Meta Diária</p>
+                <p className="text-[10px] text-muted">R$ {dailyGoal.toFixed(2).replace('.', ',')}</p>
               </div>
             </div>
             <button 
               onClick={() => { setGoalType('daily'); setIsGoalModalOpen(true); }} 
-              className="text-[13px] font-extrabold text-primary hover:underline"
+              className="text-[12px] font-extrabold text-primary hover:underline"
             >
               Editar
             </button>
           </div>
 
           {/* Meta Semanal */}
-          <div className="flex justify-between items-center p-5 border-b border-border hover:bg-card-secondary/30 transition-colors">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-card-secondary rounded-2xl">
-                <Calendar size={20} className="text-success-muted" />
+          <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-card-secondary rounded-xl">
+                <Calendar size={16} className="text-success-muted" />
               </div>
               <div>
-                <p className="text-[15px] font-extrabold text-foreground">Meta Semanal</p>
-                <p className="text-[12px] text-muted mt-0.5">Meta ativa: R$ {weeklyGoal.toFixed(2).replace('.', ',')}</p>
+                <p className="text-[13px] font-extrabold text-foreground">Meta Semanal</p>
+                <p className="text-[10px] text-muted">R$ {weeklyGoal.toFixed(2).replace('.', ',')}</p>
               </div>
             </div>
             <button 
               onClick={() => { setGoalType('weekly'); setIsGoalModalOpen(true); }} 
-              className="text-[13px] font-extrabold text-primary hover:underline"
+              className="text-[12px] font-extrabold text-primary hover:underline"
             >
               Editar
             </button>
           </div>
 
           {/* Meta Mensal */}
-          <div className="flex justify-between items-center p-5 border-b border-border hover:bg-card-secondary/30 transition-colors">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-card-secondary rounded-2xl">
-                <TrendingUp size={20} className="text-indigo-500" />
+          <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-card-secondary rounded-xl">
+                <TrendingUp size={16} className="text-indigo-500" />
               </div>
               <div>
-                <p className="text-[15px] font-extrabold text-foreground">Meta Mensal</p>
-                <p className="text-[12px] text-muted mt-0.5">Meta ativa: R$ {monthlyGoal.toFixed(2).replace('.', ',')}</p>
+                <p className="text-[13px] font-extrabold text-foreground">Meta Mensal</p>
+                <p className="text-[10px] text-muted">R$ {monthlyGoal.toFixed(2).replace('.', ',')}</p>
               </div>
             </div>
             <button 
               onClick={() => { setGoalType('monthly'); setIsGoalModalOpen(true); }} 
-              className="text-[13px] font-extrabold text-primary hover:underline"
+              className="text-[12px] font-extrabold text-primary hover:underline"
             >
               Editar
             </button>
           </div>
 
           {/* Theme Selector */}
-          <div className="p-5 space-y-3">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-card-secondary rounded-2xl">
-                <Settings size={20} className="text-muted" />
+          <div className="p-3.5 space-y-2">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-card-secondary rounded-xl">
+                <Settings size={16} className="text-muted" />
               </div>
               <div>
-                <p className="text-[15px] font-extrabold text-foreground">Tema do Aplicativo</p>
-                <p className="text-[12px] text-muted mt-0.5">Escolha seu estilo visual premium</p>
+                <p className="text-[13px] font-extrabold text-foreground">Tema do Aplicativo</p>
+                <p className="text-[10px] text-muted">Escolha seu estilo visual</p>
               </div>
             </div>
             
-            {/* 3-Theme Selector Grid */}
-            <div className="grid grid-cols-3 gap-2.5 pt-1.5">
+            <div className="grid grid-cols-3 gap-2 pt-1">
               {[
                 { id: 'light', label: '☀ Claro' },
                 { id: 'dark', label: '🌙 Escuro' },
@@ -346,7 +345,7 @@ export default function Perfil() {
                 <button
                   key={t.id}
                   onClick={() => changeTheme(t.id as 'light' | 'dark' | 'ifood')}
-                  className={`py-3.5 rounded-2xl border text-[13px] font-extrabold text-center transition-all cursor-pointer active:scale-95 ${
+                  className={`py-2.5 rounded-xl border text-[12px] font-extrabold text-center transition-all cursor-pointer active:scale-95 ${
                     theme === t.id 
                       ? 'border-primary ring-2 ring-primary/20 shadow-sm font-black' 
                       : 'border-border bg-card text-muted hover:text-foreground'
@@ -361,10 +360,10 @@ export default function Perfil() {
       </section>
 
       {/* Ações */}
-      <section className="space-y-3 pt-2 animate-fade-in-up delay-200">
+      <section className="space-y-2 pt-1 animate-fade-in-up delay-200">
         <button 
           onClick={handleLogout}
-          className="w-full flex items-center justify-center space-x-2 bg-card hover:bg-card-secondary text-red-500 font-extrabold py-4.5 rounded-[24px] border border-border transition-colors active:scale-[0.98] text-[15px] shadow-sm cursor-pointer"
+          className="w-full flex items-center justify-center space-x-2 bg-card hover:bg-card-secondary text-red-500 font-extrabold py-3.5 rounded-[20px] border border-border transition-colors active:scale-[0.98] text-[14px] shadow-sm cursor-pointer"
         >
           <LogOut size={20} />
           <span>Sair da Conta</span>
