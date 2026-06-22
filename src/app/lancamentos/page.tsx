@@ -55,9 +55,9 @@ export default function Lancamentos() {
   const amountRef = useRef<HTMLInputElement>(null);
 
   const quickRecords = [
-    { icon: '⛽', label: 'Combustível', category: 'Combustível', amount: '50' },
-    { icon: '🍔', label: 'Almoço', category: 'Alimentação', amount: '25' },
-    { icon: '🔧', label: 'Manutenção', category: 'Manutenção', amount: '40' }
+    { Icon: Fuel, label: 'Combustível', category: 'Combustível', amount: '50' },
+    { Icon: ForkKnife, label: 'Almoço', category: 'Alimentação', amount: '25' },
+    { Icon: Wrench, label: 'Manutenção', category: 'Manutenção', amount: '40' }
   ];
 
   // Load last selected category and payment method on mount
@@ -564,10 +564,10 @@ export default function Lancamentos() {
                               setCategory(rec.category);
                               setAmount(rec.amount);
                             }}
-                            className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-card-secondary/60 hover:bg-card border border-border rounded-lg text-[11px] font-bold text-foreground transition-all active:scale-95 cursor-pointer whitespace-nowrap hover:border-border/80"
-                          >
-                            <span className="text-[10px]">{rec.icon}</span>
-                            <span className="font-extrabold">{rec.label} R${rec.amount}</span>
+                          className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-card-secondary/60 hover:bg-card border border-border rounded-lg text-[11px] font-bold text-foreground transition-all active:scale-95 cursor-pointer whitespace-nowrap hover:border-border/80"
+                        >
+                          <rec.Icon size={13} strokeWidth={2.5} />
+                          <span className="font-extrabold">{rec.label} R${rec.amount}</span>
                           </button>
                         ))}
                       </div>
