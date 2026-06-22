@@ -267,8 +267,16 @@ export default function Home() {
             </div>
             <div className="goal-bar w-full bg-card-secondary h-1.5">
               <div 
-                className="h-full bg-muted rounded-full transition-all duration-500"
-                style={{ width: `${weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100) : 0}%` }}
+                className="h-full rounded-full transition-all duration-500"
+                style={{ 
+                  width: `${weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100) : 0}%`,
+                  backgroundColor: weeklyGoal > 0
+                    ? (weekNetProfit / weeklyGoal) >= 1 ? '#10B981'
+                      : (weekNetProfit / weeklyGoal) >= 0.7 ? '#22C55E'
+                      : (weekNetProfit / weeklyGoal) >= 0.4 ? '#F59E0B'
+                      : '#EF4444'
+                    : '#71717A'
+                }}
               />
             </div>
             <div className="text-[9px] text-muted font-semibold">
@@ -284,8 +292,16 @@ export default function Home() {
             </div>
             <div className="goal-bar w-full bg-card-secondary h-1.5">
               <div 
-                className="h-full bg-muted rounded-full transition-all duration-500"
-                style={{ width: `${monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100) : 0}%` }}
+                className="h-full rounded-full transition-all duration-500"
+                style={{ 
+                  width: `${monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100) : 0}%`,
+                  backgroundColor: monthlyGoal > 0
+                    ? (monthNetProfit / monthlyGoal) >= 1 ? '#10B981'
+                      : (monthNetProfit / monthlyGoal) >= 0.7 ? '#22C55E'
+                      : (monthNetProfit / monthlyGoal) >= 0.4 ? '#F59E0B'
+                      : '#EF4444'
+                    : '#71717A'
+                }}
               />
             </div>
             <div className="text-[9px] text-muted font-semibold">
