@@ -213,19 +213,19 @@ export default function Jornada() {
 
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="space-y-0.5">
-                <Clock size={14} className="text-indigo-500/60 mx-auto mb-0.5" />
+                <Clock size={14} className="text-muted mx-auto mb-0.5" />
                 <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Tempo</span>
                 <span className="text-[13px] font-extrabold text-foreground block font-heading">{elapsedTime.slice(0, 5)}h</span>
               </div>
               <div className="space-y-0.5 border-l border-border">
-                <CircleDollarSign size={14} className="text-success-muted mx-auto mb-0.5" />
+                <CircleDollarSign size={14} className="text-muted mx-auto mb-0.5" />
                 <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
                 <span className="text-[13px] font-extrabold text-success-muted block font-heading">
                   {showAmount ? `R$ ${activeGains.toFixed(2).replace('.', ',')}` : 'R$ •••'}
                 </span>
               </div>
               <div className="space-y-0.5 border-l border-border">
-                <TrendingUp size={14} className="text-primary-muted mx-auto mb-0.5" />
+                <TrendingUp size={14} className="text-muted mx-auto mb-0.5" />
                 <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Gastos</span>
                 <span className="text-[13px] font-extrabold text-primary-muted block font-heading">
                   {showAmount ? `R$ ${activeExpenses.toFixed(2).replace('.', ',')}` : 'R$ •••'}
@@ -326,15 +326,15 @@ export default function Jornada() {
 
                             <div className="flex items-center gap-3 text-[10px] font-bold text-muted">
                               <div className="flex items-center space-x-1">
-                                <Clock size={12} className="text-indigo-500/60" />
+                                <Clock size={12} className="text-muted" />
                                 <span>{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
                               </div>
                               <div className="flex items-center space-x-1">
-                                <Map size={12} className="text-rose-500/60" />
+                                <Map size={12} className="text-muted" />
                                 <span>{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
                               </div>
                               <div className="flex items-center space-x-1">
-                                <ShoppingBag size={12} className="text-success-muted" />
+                                <ShoppingBag size={12} className="text-muted" />
                                 <span>{stats.deliveries} entregas</span>
                               </div>
                             </div>

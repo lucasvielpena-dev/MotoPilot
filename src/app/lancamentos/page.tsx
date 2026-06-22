@@ -319,22 +319,22 @@ export default function Lancamentos() {
 
   const getCategoryIcon = (desc: string | null, type?: string) => {
     if (type === 'gain') {
-      return { Icon: DollarSign, bg: 'bg-emerald-50', color: 'text-emerald-500' };
+      return { Icon: DollarSign, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     const d = (desc || '').toLowerCase();
     if (d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer')) {
-      return { Icon: Fuel, bg: 'bg-emerald-50', color: 'text-emerald-500' };
+      return { Icon: Fuel, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     if (d.includes('alimentação') || d.includes('almoço') || d.includes('lanche') || d.includes('comer')) {
-      return { Icon: ForkKnife, bg: 'bg-rose-50', color: 'text-rose-500' };
+      return { Icon: ForkKnife, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     if (d.includes('manutenção') || d.includes('oficina') || d.includes('óleo') || d.includes('conserto')) {
-      return { Icon: Wrench, bg: 'bg-indigo-50', color: 'text-indigo-500' };
+      return { Icon: Wrench, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     if (d.includes('estacionamento') || d.includes('parar') || d.includes('pedágio')) {
-      return { Icon: MapPin, bg: 'bg-blue-50', color: 'text-blue-500' };
+      return { Icon: MapPin, bg: 'bg-foreground/5', color: 'text-muted' };
     }
-    return { Icon: MoreHorizontal, bg: 'bg-amber-50', color: 'text-amber-500' };
+    return { Icon: MoreHorizontal, bg: 'bg-foreground/5', color: 'text-muted' };
   };
 
   const formatDisplayDate = (dateStr: string) => {
@@ -382,8 +382,8 @@ export default function Lancamentos() {
           {saveSuccessType ? (
             /* SUCCESS STATE */
             <div className="bg-card border border-border rounded-[24px] p-5 text-center space-y-4 shadow-premium animate-fade-in-up">
-              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-900/50">
-                <svg className="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+              <div className="w-14 h-14 bg-card-secondary rounded-full flex items-center justify-center mx-auto border border-border">
+                <svg className="w-7 h-7 text-foreground" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               </div>
@@ -440,10 +440,10 @@ export default function Lancamentos() {
           {/* Form */}
           {expenseTab === 'ganhos' ? (
             <form onSubmit={handleSaveGain} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
-              <div className="flex flex-col items-center justify-center py-4 bg-emerald-50 rounded-[20px] border border-emerald-200 mb-2">
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">Valor do ganho</span>
+              <div className="flex flex-col items-center justify-center py-4 bg-card-secondary rounded-[20px] border border-border mb-2">
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider mb-1.5">Valor do ganho</span>
                 <div className="flex items-center justify-center space-x-1">
-                  <span className="text-xl font-bold text-emerald-500">R$</span>
+                  <span className="text-xl font-bold text-muted">R$</span>
                   <input
                     ref={amountRef}
                     type="number"
@@ -453,7 +453,7 @@ export default function Lancamentos() {
                     autoFocus
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
-                    className="bg-transparent border-none text-center focus:outline-none text-[32px] font-black text-emerald-600 w-[200px] font-heading"
+                    className="bg-transparent border-none text-center focus:outline-none text-[32px] font-black text-foreground w-[200px] font-heading"
                     placeholder="0,00"
                   />
                 </div>
@@ -465,14 +465,14 @@ export default function Lancamentos() {
                   <button
                     type="button"
                     onClick={() => setDate(todayStr)}
-                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
                   >
                     Hoje
                   </button>
                   <button
                     type="button"
                     onClick={() => setDate(yesterdayStr)}
-                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
+                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
                   >
                     Ontem
                   </button>
@@ -504,7 +504,7 @@ export default function Lancamentos() {
                   <button
                     type="button"
                     onClick={() => setShowNotesField(true)}
-                    className="w-full p-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-emerald-500 transition-all active:scale-[0.98] cursor-pointer text-left"
+                    className="w-full p-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-muted transition-all active:scale-[0.98] cursor-pointer text-left"
                   >
                     + Adicionar observação
                   </button>
@@ -514,7 +514,7 @@ export default function Lancamentos() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-3.5 rounded-[20px] transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50 mt-3"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-[20px] transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50 mt-3"
               >
                 {loading ? 'Salvando...' : 'Salvar Ganho'}
               </button>
@@ -856,7 +856,7 @@ export default function Lancamentos() {
                         </div>
                         
                         <div className="flex items-center space-x-2">
-                          <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-emerald-500' : 'text-foreground'}`}>
+                          <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-foreground' : 'text-foreground'}`}>
                             {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
@@ -892,17 +892,17 @@ export default function Lancamentos() {
               <div className="bg-card border border-border rounded-[24px] p-5 space-y-4 shadow-sm">
                 <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Resumo Geral</h3>
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="text-center p-3 bg-emerald-500/10 rounded-xl">
-                    <span className="text-[10px] font-bold text-emerald-600 uppercase block">Entradas</span>
-                    <span className="text-[16px] font-black text-emerald-600 font-heading block mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+                  <div className="text-center p-3 bg-card-secondary rounded-xl">
+                    <span className="text-[10px] font-bold text-muted uppercase block">Entradas</span>
+                    <span className="text-[16px] font-black text-foreground font-heading block mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
                   </div>
-                  <div className="text-center p-3 bg-primary/10 rounded-xl">
-                    <span className="text-[10px] font-bold text-primary uppercase block">Saídas</span>
-                    <span className="text-[16px] font-black text-primary font-heading block mt-1">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
+                  <div className="text-center p-3 bg-card-secondary rounded-xl">
+                    <span className="text-[10px] font-bold text-muted uppercase block">Saídas</span>
+                    <span className="text-[16px] font-black text-foreground font-heading block mt-1">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
                   </div>
-                  <div className={`text-center p-3 rounded-xl ${netProfit >= 0 ? 'bg-emerald-500/10' : 'bg-primary/10'}`}>
-                    <span className={`text-[10px] font-bold uppercase block ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>Lucro</span>
-                    <span className={`text-[16px] font-black font-heading block mt-1 ${netProfit >= 0 ? 'text-emerald-600' : 'text-primary'}`}>R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                  <div className="text-center p-3 bg-card-secondary rounded-xl">
+                    <span className="text-[10px] font-bold text-muted uppercase block">Lucro</span>
+                    <span className="text-[16px] font-black text-foreground font-heading block mt-1">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
                   </div>
                 </div>
               </div>

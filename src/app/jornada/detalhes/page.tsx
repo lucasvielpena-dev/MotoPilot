@@ -160,10 +160,9 @@ function DetalhesJornadaConteudo() {
 
         {/* Metricas detalhadas */}
         <div className="grid grid-cols-2 gap-y-4 gap-x-2">
-          {/* Tempo Online */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-              <Clock size={16} strokeWidth={2.5} className="text-indigo-500" />
+            <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <Clock size={16} strokeWidth={2.5} className="text-muted" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Tempo online</span>
@@ -171,10 +170,9 @@ function DetalhesJornadaConteudo() {
             </div>
           </div>
 
-          {/* Km rodados */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center">
-              <Map size={16} strokeWidth={2.5} className="text-rose-500" />
+            <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <Map size={16} strokeWidth={2.5} className="text-muted" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
@@ -182,10 +180,9 @@ function DetalhesJornadaConteudo() {
             </div>
           </div>
 
-          {/* Entregas */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <ShoppingBag size={16} strokeWidth={2.5} className="text-emerald-500" />
+            <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <ShoppingBag size={16} strokeWidth={2.5} className="text-muted" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
@@ -193,10 +190,9 @@ function DetalhesJornadaConteudo() {
             </div>
           </div>
 
-          {/* Média ganhos/h */}
           <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <TrendingUp size={16} strokeWidth={2.5} className="text-amber-500" />
+              <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center">
+                <TrendingUp size={16} strokeWidth={2.5} className="text-muted" />
               </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Média ganhos/h</span>

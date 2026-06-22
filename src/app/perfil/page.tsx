@@ -184,7 +184,7 @@ export default function Perfil() {
             </span>
           </div>
           <p className="text-[11px] text-muted truncate mt-0.5">{user?.email}</p>
-          <div className="mt-1.5 inline-flex items-center space-x-1 px-2 py-0.5 bg-emerald-500/10 rounded-full text-[10px] font-bold text-emerald-500">
+          <div className="mt-1.5 inline-flex items-center space-x-1 px-2 py-0.5 bg-foreground/5 rounded-full text-[10px] font-bold text-muted">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             <span>Piloto Online</span>
           </div>
@@ -271,7 +271,7 @@ export default function Perfil() {
           <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-card-secondary rounded-xl">
-                <Flag size={16} className="text-primary" />
+                <Flag size={16} className="text-muted" />
               </div>
               <div>
                 <p className="text-[13px] font-extrabold text-foreground">Meta Diária</p>
@@ -290,7 +290,7 @@ export default function Perfil() {
           <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-card-secondary rounded-xl">
-                <Calendar size={16} className="text-success-muted" />
+                <Calendar size={16} className="text-muted" />
               </div>
               <div>
                 <p className="text-[13px] font-extrabold text-foreground">Meta Semanal</p>
@@ -309,7 +309,7 @@ export default function Perfil() {
           <div className="flex justify-between items-center p-3.5 border-b border-border hover:bg-card-secondary/30 transition-colors">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-card-secondary rounded-xl">
-                <TrendingUp size={16} className="text-indigo-500" />
+                <TrendingUp size={16} className="text-muted" />
               </div>
               <div>
                 <p className="text-[13px] font-extrabold text-foreground">Meta Mensal</p>
