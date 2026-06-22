@@ -9,6 +9,7 @@ import {
   Eye,
   EyeOff,
   ChevronRight,
+  ChevronDown,
   Clock,
   Map,
   ShoppingBag,
@@ -42,6 +43,7 @@ export default function Home() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [editingGoal, setEditingGoal] = useState<'daily' | 'weekly' | 'monthly' | null>(null);
   const [goalInput, setGoalInput] = useState('');
+  const [isGoalsExpanded, setIsGoalsExpanded] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('motopilot_show_amount') !== 'false';
@@ -141,50 +143,50 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-6 pb-28 pt-2">
+    <div className="space-y-[12px] pb-28 pt-2">
       {/* Logo */}
-      <div className="flex items-center justify-center space-x-2 mb-6">
+      <div className="flex items-center justify-center space-x-2 mb-4">
         <Motorbike size={22} strokeWidth={2.5} className="text-foreground" />
         <span className="text-[18px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 
-      {/* Cartão de Lucro Líquido */}
+      {/* 1. Card Principal Redesenhado - Lucro Líquido */}
       <section 
-        className="rounded-[28px] p-5 relative overflow-hidden flex flex-col justify-between space-y-4 shadow-lg text-white border-0"
+        className="rounded-[20px] p-4 relative overflow-hidden flex flex-col justify-between space-y-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] text-white border-0"
         style={{
           background: netProfit >= 0
-            ? `radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 22%), linear-gradient(135deg, #059669 0%, #34D399 ${Math.min(50 + (netProfit / (dailyGoal || 1)) * 50, 100)}%)`
-            : `radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 22%), linear-gradient(135deg, #DC2626 0%, #F87171 ${Math.min(50 + (Math.abs(netProfit) / (dailyGoal || 1)) * 50, 100)}%)`,
+            ? `radial-gradient(circle at 85% 18%, rgba(255,255,255,0.18), transparent 20%), linear-gradient(135deg, #059669 0%, #34D399 ${Math.min(50 + (netProfit / (dailyGoal || 1)) * 50, 100)}%)`
+            : `radial-gradient(circle at 85% 18%, rgba(255,255,255,0.18), transparent 20%), linear-gradient(135deg, #DC2626 0%, #F87171 ${Math.min(50 + (Math.abs(netProfit) / (dailyGoal || 1)) * 50, 100)}%)`,
           boxShadow: netProfit >= 0
-            ? `0 22px 48px -24px rgba(5, 150, 105, ${Math.min(0.3 + (netProfit / (dailyGoal || 1)) * 0.35, 0.65)})`
-            : `0 22px 48px -24px rgba(220, 38, 38, ${Math.min(0.3 + (Math.abs(netProfit) / (dailyGoal || 1)) * 0.35, 0.65)})`
+            ? `0 12px 28px -12px rgba(5, 150, 105, ${Math.min(0.2 + (netProfit / (dailyGoal || 1)) * 0.25, 0.45)})`
+            : `0 12px 28px -12px rgba(220, 38, 38, ${Math.min(0.2 + (Math.abs(netProfit) / (dailyGoal || 1)) * 0.25, 0.45)})`
         }}
       >
         <div className="flex justify-between items-center">
-          <span className="text-[12px] font-bold tracking-wide uppercase opacity-85">lucro líquido</span>
+          <span className="text-[12px] font-bold tracking-wide uppercase opacity-85">LUCRO LÍQUIDO</span>
           <button 
             onClick={toggleShowAmount}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
+            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
           >
             {showAmount ? (
-              <Eye size={16} strokeWidth={2.5} className="text-white" />
+              <Eye size={14} strokeWidth={2.5} className="text-white" />
             ) : (
-              <EyeOff size={16} strokeWidth={2.5} className="text-white" />
+              <EyeOff size={14} strokeWidth={2.5} className="text-white" />
             )}
           </button>
         </div>
         
-        <div className="text-[32px] font-extrabold tracking-tight leading-none select-none font-heading">
+        <div className="text-[48px] font-extrabold tracking-tight leading-none select-none font-heading">
           {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
         </div>
 
-        {/* Progresso da Meta Diária - Barra grossa */}
-        <div className="space-y-1.5 pt-1">
+        {/* Progresso da Meta Diária */}
+        <div className="space-y-1 pt-0.5">
           <div className="flex justify-between text-[11px] font-bold text-white/90">
-            <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}% concluída</span>
+            <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
             <span>R$ {netProfit.toFixed(2).replace('.', ',')} / R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
           </div>
-          <div className="goal-bar w-full bg-white/25">
+          <div className="w-full bg-white/25 h-2 rounded-full overflow-hidden">
             <div 
               className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
@@ -192,123 +194,71 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Detalhes de Faturamento/Gastos/Lucro */}
-        <div className="flex justify-between items-center pt-3 border-t border-white/10 text-[11px] font-bold text-white/90">
-          <div className="text-left">
-            <span className="opacity-75 block text-[9px] uppercase tracking-wide">Faturamento</span>
-            <span className="text-[13px] font-extrabold">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
+        {/* Ganhos | Gastos | Lucro */}
+        <div className="flex justify-between items-center pt-2.5 border-t border-white/10 text-white/90">
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[12px] font-bold uppercase tracking-wide">Ganhos</span>
+            <span className="text-[24px] font-extrabold leading-tight">
+              {showAmount ? `R$ ${totalGains.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+            </span>
           </div>
-          <div className="h-6 border-l border-white/20" />
-          <div className="text-left">
-            <span className="opacity-75 block text-[9px] uppercase tracking-wide">Gastos</span>
-            <span className="text-[13px] font-extrabold">R$ {totalExpenses.toFixed(2).replace('.', ',')}</span>
+          <div className="h-8 border-l border-white/20 mx-2" />
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[12px] font-bold uppercase tracking-wide">Gastos</span>
+            <span className="text-[24px] font-extrabold leading-tight">
+              {showAmount ? `R$ ${totalExpenses.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+            </span>
           </div>
-          <div className="h-6 border-l border-white/20" />
-          <div className="text-left">
-            <span className="opacity-75 block text-[9px] uppercase tracking-wide">Lucro</span>
-            <span className="text-[13px] font-extrabold">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+          <div className="h-8 border-l border-white/20 mx-2" />
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[12px] font-bold uppercase tracking-wide">Lucro</span>
+            <span className="text-[24px] font-extrabold leading-tight">
+              {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+            </span>
           </div>
+        </div>
+
+        {/* Linha 8 Entregas | 1,4 km | R$53,68/entrega */}
+        <div className="pt-2 border-t border-white/10 flex justify-center items-center text-[12px] font-bold text-white/90 space-x-2">
+          <span>{deliveriesCount} {deliveriesCount === 1 ? 'Entrega' : 'Entregas'}</span>
+          <span className="opacity-40">|</span>
+          <span>{activeJourney ? liveDistance.toFixed(1).replace('.', ',') : '0,0'} km</span>
+          <span className="opacity-40">|</span>
+          <span>R$ {(deliveriesCount > 0 ? totalGains / deliveriesCount : 0).toFixed(2).replace('.', ',')}/entrega</span>
         </div>
       </section>
 
-      {/* Resumo Financeiro Rápido (movido para cima) */}
-      <section className="bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] flex justify-between items-center text-center card-premium">
-        <div className="flex-1">
-          <span className="text-[10px] font-bold text-muted block uppercase">Ganhos</span>
-          <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">R$ {displayGanhosSemana.toFixed(2).replace('.', ',')}</span>
-        </div>
-        <div className="h-6 border-l border-border" />
-        <div className="flex-1">
-          <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
-          <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDistanceSemana.toFixed(1).replace('.', ',')} km</span>
-        </div>
-        <div className="h-6 border-l border-border" />
-        <div className="flex-1">
-          <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
-          <span className="text-[15px] font-extrabold text-foreground mt-0.5 block font-heading">{displayDeliveriesSemana}</span>
-        </div>
-      </section>
-
-      {/* Grid de Estatísticas */}
-      <section className="grid grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <Clock size={18} strokeWidth={2} className="text-muted" />
-          <div>
-            <p className="text-[11px] font-semibold text-muted">Tempo online</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{activeJourney ? elapsedTime : '0h 0m'}</p>
-          </div>
-        </div>
-        
-        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <Map size={18} strokeWidth={2} className="text-muted" />
-          <div>
-            <p className="text-[11px] font-semibold text-muted">Km rodados</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}</p>
-          </div>
-        </div>
-        
-        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <ShoppingBag size={18} strokeWidth={2} className="text-muted" />
-          <div>
-            <p className="text-[11px] font-semibold text-muted">Entregas</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">{deliveriesCount}</p>
-          </div>
-        </div>
-        
-        <div className="bg-card border border-border rounded-[24px] p-4 flex flex-col justify-between min-h-[95px] shadow-[0_4px_16px_rgba(0,0,0,0.005)] card-premium hover:translate-y-[-2px] transition-transform">
-          <TrendingUp size={18} strokeWidth={2} className="text-muted" />
-          <div>
-            <p className="text-[11px] font-semibold text-muted">Média por hora</p>
-            <p className="text-[16px] font-extrabold text-foreground mt-0.5 font-heading">R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Ação Rápida - Combustível */}
-      <section>
-        <button
-          onClick={() => router.push('/lancamentos?new=true&cat=Combustivel')}
-          className="w-full bg-card border border-border rounded-[24px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.005)] flex items-center space-x-4 hover:bg-card-secondary/50 transition-all active:scale-[0.98] cursor-pointer card-premium"
-        >
-          <Fuel size={20} strokeWidth={2} className="text-muted" />
-          <div className="flex-1 text-left">
-            <p className="text-[14px] font-extrabold text-foreground">Registrar Combustível</p>
-            <p className="text-[11px] font-semibold text-muted mt-0.5">Atalho rápido para abastecimento</p>
-          </div>
-          <ChevronRight size={18} strokeWidth={2.5} className="text-foreground/50" />
-        </button>
-      </section>
-
-      {/* Seção da Jornada */}
-      <section className="space-y-3">
-        <h2 className="text-[16px] font-extrabold text-foreground font-heading px-1">Jornada</h2>
-        
-        <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-5 card-premium">
+      {/* 2. Jornada - Dashboard Inteligente */}
+      <section className="space-y-2">
+        <div className="bg-card border border-border rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-3.5 card-premium">
           {activeJourney ? (
             <>
               <div className="flex justify-between items-center">
-                <span className="text-[15px] font-bold text-foreground">Jornada atual</span>
-                <span className="delivery-pill text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                  Em andamento
+                <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Jornada</span>
+                <span className="flex items-center space-x-1.5 text-[12px] font-bold text-emerald-500 uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Jornada em andamento</span>
                 </span>
               </div>
               
-              <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-border pt-4">
-                <div>
-                  <span className="text-[11px] font-semibold text-muted block uppercase">Início</span>
-                  <span className="text-[14px] font-bold text-foreground font-heading">{activeStartTime}</span>
+              <div className="grid grid-cols-4 gap-1 border-t border-border/80 pt-3">
+                <div className="text-center">
+                  <span className="text-[12px] font-bold text-muted block uppercase tracking-wide">Online</span>
+                  <span className="text-[18px] font-extrabold text-foreground block font-heading">{elapsedTime}</span>
                 </div>
-                <div>
-                  <span className="text-[11px] font-semibold text-muted block uppercase">Tempo online</span>
-                  <span className="text-[14px] font-bold text-foreground font-heading">{elapsedTime}</span>
+                <div className="border-l border-border/60 text-center">
+                  <span className="text-[12px] font-bold text-muted block uppercase tracking-wide">Ganhos</span>
+                  <span className="text-[18px] font-extrabold text-foreground block font-heading">
+                    {showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••'}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-[11px] font-semibold text-muted block uppercase">Km rodados</span>
-                  <span className="text-[14px] font-bold text-foreground font-heading">{liveDistance.toFixed(1).replace('.', ',')} km</span>
+                <div className="border-l border-border/60 text-center">
+                  <span className="text-[12px] font-bold text-muted block uppercase tracking-wide">Km</span>
+                  <span className="text-[18px] font-extrabold text-foreground block font-heading">{liveDistance.toFixed(1).replace('.', ',')}</span>
                 </div>
-                <div>
-                  <span className="text-[11px] font-semibold text-muted block uppercase">Lucro</span>
-                  <span className="text-[14px] font-extrabold text-success-muted font-heading">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                <div className="border-l border-border/60 text-center">
+                  <span className="text-[12px] font-bold text-muted block uppercase tracking-wide">Entregas</span>
+                  <span className="text-[18px] font-extrabold text-foreground block font-heading">{deliveriesCount}</span>
                 </div>
               </div>
 
@@ -319,15 +269,22 @@ export default function Home() {
                   setIsTransitioning(false);
                 }}
                 disabled={isTransitioning}
-                className="w-full bg-primary-muted hover:bg-primary/80 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
               >
-                <Square size={18} fill="currentColor" />
-                <span>{isTransitioning ? 'Encerrando...' : 'Encerrar jornada'}</span>
+                <Square size={14} fill="currentColor" />
+                <span>{isTransitioning ? 'Encerrando...' : 'Encerrar Jornada'}</span>
               </button>
             </>
           ) : (
-            <div className="text-center py-2 space-y-2">
-              <p className="text-[14px] font-bold text-foreground">Nenhuma jornada ativa</p>
+            <>
+              <div className="flex justify-between items-center">
+                <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Jornada</span>
+                <span className="flex items-center space-x-1.5 text-[12px] font-bold text-red-500 uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span>Nenhuma jornada ativa</span>
+                </span>
+              </div>
+
               <button
                 onClick={async () => {
                   setIsTransitioning(true);
@@ -335,137 +292,200 @@ export default function Home() {
                   setIsTransitioning(false);
                 }}
                 disabled={isTransitioning}
-                className="w-full bg-primary-muted hover:bg-primary/80 text-white font-extrabold py-4 rounded-2xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-md disabled:opacity-50"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[15px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
               >
-                <Play size={18} fill="currentColor" />
-                <span>{isTransitioning ? 'Iniciando...' : 'Iniciar jornada'}</span>
+                <Play size={14} fill="currentColor" />
+                <span>{isTransitioning ? 'Iniciando...' : 'Iniciar Jornada'}</span>
               </button>
-            </div>
+            </>
           )}
         </div>
       </section>
 
-      {/* Seção de Metas */}
-      <section className="space-y-3">
-        <h2 className="text-[16px] font-extrabold text-foreground font-heading px-1">Metas</h2>
+      {/* 3. Grid de Estatísticas Compacto */}
+      <section className="bg-card border border-border rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] card-premium">
+        <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+          <div className="flex flex-col text-left">
+            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Tempo Online</span>
+            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+              {activeJourney ? elapsedTime : '0h 0m'}
+            </span>
+          </div>
+          
+          <div className="border-l border-border pl-4 flex flex-col text-left">
+            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">KM Rodados</span>
+            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+              {activeJourney ? `${liveDistance.toFixed(1).replace('.', ',')} km` : '0,0 km'}
+            </span>
+          </div>
 
-        <div className="bg-card border border-border rounded-[24px] p-5 shadow-[0_4px_16px_rgba(0,0,0,0.005)] space-y-4 card-premium">
-          {/* Meta Diária */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-[12px] font-bold text-foreground items-center">
-              <span>Meta diária</span>
-              <div className="flex items-center space-x-2">
-                <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
-                {editingGoal === 'daily' ? (
-                  <div className="flex items-center space-x-1">
-                    <input
-                      type="number"
-                      value={goalInput}
-                      onChange={e => setGoalInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('daily'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                      className="w-20 px-2 py-1 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
-                      autoFocus
-                    />
-                    <button onClick={() => handleSaveGoal('daily')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                    </button>
-                  </div>
-                ) : (
-                  <button onClick={() => startEditGoal('daily', dailyGoal)} className="w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                  </button>
-                )}
-              </div>
+          <div className="col-span-2 border-t border-border/80 my-0.5" />
+
+          <div className="flex flex-col text-left">
+            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Entregas</span>
+            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+              {deliveriesCount}
+            </span>
+          </div>
+          
+          <div className="border-l border-border pl-4 flex flex-col text-left">
+            <span className="text-[12px] font-bold text-muted uppercase tracking-wide">Média/Hora</span>
+            <span className="text-[18px] font-extrabold text-foreground mt-0.5 font-heading">
+              R$ {avgHourlyEarnings.toFixed(2).replace('.', ',')}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Metas Colapsáveis */}
+      <section className="space-y-2">
+        <div 
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('input') || target.closest('button.edit-goal-btn') || target.closest('button.save-goal-btn')) {
+              return;
+            }
+            setIsGoalsExpanded(!isGoalsExpanded);
+          }}
+          className="bg-card border border-border rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] cursor-pointer card-premium select-none"
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <TrendingUp size={16} className="text-primary-muted" />
+              <span className="text-[12px] font-bold text-foreground uppercase tracking-wide">Metas</span>
             </div>
-            <div className="goal-bar w-full bg-card-secondary">
-              <div 
-                className="h-full bg-foreground/60 rounded-full transition-all duration-500"
-                style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
+            
+            <div className="flex items-center space-x-1.5 text-[12px] font-bold text-muted">
+              <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
+              <ChevronDown 
+                size={16} 
+                className={`transition-transform duration-300 ${isGoalsExpanded ? 'rotate-180' : ''}`} 
               />
             </div>
-            <div className="flex justify-between text-[10px] text-muted font-semibold">
-              <span>R$ {netProfit.toFixed(2).replace('.', ',')}</span>
-              <span>R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-1">
-            {/* Meta Semanal */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
-                <span>Meta semanal</span>
-                <div className="flex items-center space-x-1.5">
-                  <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
-                  {editingGoal === 'weekly' ? (
-                    <div className="flex items-center space-x-1">
-                      <input
-                        type="number"
-                        value={goalInput}
-                        onChange={e => setGoalInput(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('weekly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                        className="w-20 px-2 py-1 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
-                        autoFocus
-                      />
-                      <button onClick={() => handleSaveGoal('weekly')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+          {isGoalsExpanded && (
+            <div className="space-y-4 pt-4 border-t border-border/80 mt-3 animate-in fade-in duration-200">
+              {/* Meta Diária */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-[12px] font-bold text-foreground items-center">
+                  <span>Meta diária</span>
+                  <div className="flex items-center space-x-2">
+                    <span>{dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                    {editingGoal === 'daily' ? (
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="number"
+                          value={goalInput}
+                          onChange={e => setGoalInput(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('daily'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
+                          className="w-20 px-2 py-0.5 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                          autoFocus
+                        />
+                        <button onClick={() => handleSaveGoal('daily')} className="save-goal-btn text-emerald-500 hover:text-emerald-600 cursor-pointer">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => startEditGoal('daily', dailyGoal)} className="edit-goal-btn w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                       </button>
-                    </div>
-                  ) : (
-                    <button onClick={() => startEditGoal('weekly', weeklyGoal)} className="w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                    </button>
-                  )}
+                    )}
+                  </div>
+                </div>
+                <div className="goal-bar w-full bg-card-secondary">
+                  <div 
+                    className="h-full bg-foreground/60 rounded-full transition-all duration-500"
+                    style={{ width: `${dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100) : 0}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-[10px] text-muted font-semibold">
+                  <span>R$ {netProfit.toFixed(2).replace('.', ',')}</span>
+                  <span>R$ {dailyGoal.toFixed(2).replace('.', ',')}</span>
                 </div>
               </div>
-              <div className="goal-bar w-full bg-card-secondary">
-                <div 
-                  className="h-full bg-muted rounded-full transition-all duration-500"
-                  style={{ width: `${weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100) : 0}%` }}
-                />
-              </div>
-              <div className="text-[9px] text-muted font-semibold">
-                R$ {weekNetProfit.toFixed(2).replace('.', ',')} / R$ {weeklyGoal.toFixed(2).replace('.', ',')}
-              </div>
-            </div>
 
-            {/* Meta Mensal */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
-                <span>Meta mensal</span>
-                <div className="flex items-center space-x-1.5">
-                  <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
-                  {editingGoal === 'monthly' ? (
-                    <div className="flex items-center space-x-1">
-                      <input
-                        type="number"
-                        value={goalInput}
-                        onChange={e => setGoalInput(e.target.value)}
-                        onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('monthly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                        className="w-20 px-2 py-1 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
-                        autoFocus
-                      />
-                      <button onClick={() => handleSaveGoal('monthly')} className="text-emerald-500 hover:text-emerald-600 cursor-pointer">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                      </button>
+              <div className="border-t border-border/60" />
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Meta Semanal */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
+                    <span>Semanal</span>
+                    <div className="flex items-center space-x-1.5">
+                      <span>{weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                      {editingGoal === 'weekly' ? (
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="number"
+                            value={goalInput}
+                            onChange={e => setGoalInput(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('weekly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
+                            className="w-20 px-2 py-0.5 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                            autoFocus
+                          />
+                          <button onClick={() => handleSaveGoal('weekly')} className="save-goal-btn text-emerald-500 hover:text-emerald-600 cursor-pointer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <button onClick={() => startEditGoal('weekly', weeklyGoal)} className="edit-goal-btn w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                        </button>
+                      )}
                     </div>
-                  ) : (
-                    <button onClick={() => startEditGoal('monthly', monthlyGoal)} className="w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                    </button>
-                  )}
+                  </div>
+                  <div className="goal-bar w-full bg-card-secondary">
+                    <div 
+                      className="h-full bg-muted rounded-full transition-all duration-500"
+                      style={{ width: `${weeklyGoal > 0 ? Math.min((weekNetProfit / weeklyGoal) * 100, 100) : 0}%` }}
+                    />
+                  </div>
+                  <div className="text-[9px] text-muted font-semibold">
+                    R$ {weekNetProfit.toFixed(0)} / R$ {weeklyGoal.toFixed(0)}
+                  </div>
+                </div>
+
+                {/* Meta Mensal */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[11px] font-bold text-foreground items-center">
+                    <span>Mensal</span>
+                    <div className="flex items-center space-x-1.5">
+                      <span>{monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0) : 0}%</span>
+                      {editingGoal === 'monthly' ? (
+                        <div className="flex items-center space-x-1">
+                          <input
+                            type="number"
+                            value={goalInput}
+                            onChange={e => setGoalInput(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('monthly'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
+                            className="w-20 px-2 py-0.5 bg-card-secondary border border-primary rounded-lg text-[12px] font-bold text-foreground focus:outline-none focus:border-primary text-right"
+                            autoFocus
+                          />
+                          <button onClick={() => handleSaveGoal('monthly')} className="save-goal-btn text-emerald-500 hover:text-emerald-600 cursor-pointer">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <button onClick={() => startEditGoal('monthly', monthlyGoal)} className="edit-goal-btn w-6 h-6 rounded-full bg-card-secondary flex items-center justify-center text-muted hover:text-foreground hover:bg-primary/10 transition-colors cursor-pointer">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="goal-bar w-full bg-card-secondary">
+                    <div 
+                      className="h-full bg-muted rounded-full transition-all duration-500"
+                      style={{ width: `${monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100) : 0}%` }}
+                    />
+                  </div>
+                  <div className="text-[9px] text-muted font-semibold">
+                    R$ {monthNetProfit.toFixed(0)} / R$ {monthlyGoal.toFixed(0)}
+                  </div>
                 </div>
               </div>
-              <div className="goal-bar w-full bg-card-secondary">
-                <div 
-                  className="h-full bg-muted rounded-full transition-all duration-500"
-                  style={{ width: `${monthlyGoal > 0 ? Math.min((monthNetProfit / monthlyGoal) * 100, 100) : 0}%` }}
-                />
-              </div>
-              <div className="text-[9px] text-muted font-semibold">
-                R$ {monthNetProfit.toFixed(2).replace('.', ',')} / R$ {monthlyGoal.toFixed(2).replace('.', ',')}
-              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
