@@ -84,7 +84,7 @@ export default function Lancamentos() {
   const [listTab, setListTab] = useState<'lista' | 'resumo'>('lista');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<'Todos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
+  const [activeFilter, setActiveFilter] = useState<'Todos' | 'Ganhos' | 'Gastos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
   const [periodFilter, setPeriodFilter] = useState<'semanal' | 'mensal' | 'personalizado'>('mensal');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -247,13 +247,12 @@ export default function Lancamentos() {
     }
   };
 
-  // Filtragem e cálculos para Screen 5 (Gastos)
+  // Filtragem e cálculos para Screen 5 (Lançamentos)
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   const periodFilteredEntries = entries.filter(e => {
-    if (e.type !== 'expense') return false;
     const entryDate = new Date(e.date);
     if (periodFilter === 'semanal') return entryDate >= sevenDaysAgo;
     if (periodFilter === 'mensal') return entryDate >= thirtyDaysAgo;
@@ -266,19 +265,22 @@ export default function Lancamentos() {
     return true;
   });
 
-  const expenseEntries = periodFilteredEntries;
+  const expenseEntries = periodFilteredEntries.filter(e => e.type === 'expense');
+  const gainEntries = periodFilteredEntries.filter(e => e.type === 'gain');
   const totalExpensesSum = expenseEntries.reduce((acc, curr) => acc + curr.amount, 0);
-  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
+  const totalGains = gainEntries.reduce((acc, curr) => acc + curr.amount, 0);
   const netProfit = totalGains - totalExpensesSum;
 
-  const filteredEntries = expenseEntries.filter(entry => {
+  const filteredEntries = periodFilteredEntries.filter(entry => {
     if (activeFilter === 'Todos') return true;
+    if (activeFilter === 'Ganhos') return entry.type === 'gain';
+    if (activeFilter === 'Gastos') return entry.type === 'expense';
     const desc = (entry.description || '').toLowerCase();
     if (activeFilter === 'Combustível') return desc.includes('combustível') || desc.includes('gasolina') || desc.includes('abastecer');
     if (activeFilter === 'Alimentação') return desc.includes('alimentação') || desc.includes('almoço') || desc.includes('lanche') || desc.includes('comer');
     if (activeFilter === 'Manutenção') return desc.includes('manutenção') || desc.includes('oficina') || desc.includes('óleo') || desc.includes('conserto');
     if (activeFilter === 'Estacionamento') return desc.includes('estacionamento') || desc.includes('parar') || desc.includes('pedágio');
-    if (activeFilter === 'Outros') return !desc.includes('combustível') && !desc.includes('gasolina') && !desc.includes('abastecer') && !desc.includes('alimentação') && !desc.includes('almoço') && !desc.includes('lanche') && !desc.includes('comer') && !desc.includes('manutenção') && !desc.includes('oficina') && !desc.includes('óleo') && !desc.includes('conserto') && !desc.includes('estacionamento') && !desc.includes('parar') && !desc.includes('pedágio');
+    if (activeFilter === 'Outros') return entry.type === 'expense' && !desc.includes('combustível') && !desc.includes('gasolina') && !desc.includes('abastecer') && !desc.includes('alimentação') && !desc.includes('almoço') && !desc.includes('lanche') && !desc.includes('comer') && !desc.includes('manutenção') && !desc.includes('oficina') && !desc.includes('óleo') && !desc.includes('conserto') && !desc.includes('estacionamento') && !desc.includes('parar') && !desc.includes('pedágio');
     return true;
   });
 
@@ -315,7 +317,10 @@ export default function Lancamentos() {
     value: parseFloat(value.toFixed(2)),
   })).filter(item => item.value > 0);
 
-  const getCategoryIcon = (desc: string | null) => {
+  const getCategoryIcon = (desc: string | null, type?: string) => {
+    if (type === 'gain') {
+      return { Icon: DollarSign, bg: 'bg-emerald-50', color: 'text-emerald-500' };
+    }
     const d = (desc || '').toLowerCase();
     if (d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer')) {
       return { Icon: Fuel, bg: 'bg-emerald-50', color: 'text-emerald-500' };
@@ -355,7 +360,7 @@ export default function Lancamentos() {
     { name: 'Outros', label: 'Outros', Icon: MoreHorizontal, color: 'amber' }
   ];
 
-  const filterOptions = ['Todos', 'Combustível', 'Alimentação', 'Manutenção', 'Estacionamento', 'Outros'] as const;
+  const filterOptions = ['Todos', 'Ganhos', 'Gastos', 'Combustível', 'Alimentação', 'Manutenção', 'Estacionamento', 'Outros'] as const;
 
   return (
     <div className="space-y-4 pb-28 pt-1">
@@ -687,7 +692,7 @@ export default function Lancamentos() {
             >
               <ArrowLeft size={22} strokeWidth={2.5} />
             </button>
-            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Gastos</h1>
+            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Lançamentos</h1>
             <div className="w-9 h-9" /> {/* Spacer */}
           </header>
 
@@ -803,15 +808,15 @@ export default function Lancamentos() {
                   </div>
                 ) : filteredEntries.length === 0 ? (
                   <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-sm">
-                    <p className="text-[14px] text-muted font-bold">Nenhum gasto encontrado.</p>
+                    <p className="text-[14px] text-muted font-bold">Nenhum lançamento encontrado.</p>
                   </div>
                 ) : (
                   filteredEntries.map((entry) => {
-                    const styling = getCategoryIcon(entry.description);
+                    const styling = getCategoryIcon(entry.description, entry.type);
                     const CategoryIcon = styling.Icon;
 
                     const parts = (entry.description || '').split(' - ');
-                    const categoryName = parts[0] || 'Despesa';
+                    const categoryName = entry.type === 'gain' ? 'Ganho' : (parts[0] || 'Despesa');
                     let paymentMethodVal = 'Dinheiro';
                     let notesVal = '';
 
@@ -851,8 +856,8 @@ export default function Lancamentos() {
                         </div>
                         
                         <div className="flex items-center space-x-2">
-                          <span className="text-[14px] font-extrabold text-foreground font-heading">
-                            R$ {entry.amount.toFixed(2).replace('.', ',')}
+                          <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-emerald-500' : 'text-foreground'}`}>
+                            {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
                           <button 
@@ -875,8 +880,8 @@ export default function Lancamentos() {
                   onClick={() => router.push('/lancamentos?new=true')}
                   className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-2xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-lg"
                 >
-                  <Plus size={18} strokeWidth={2.5} />
-                  <span>Novo gasto</span>
+                  <Plus size={16} strokeWidth={2.5} />
+                  <span>Novo lançamento</span>
                 </button>
               </div>
             </>
@@ -926,7 +931,7 @@ export default function Lancamentos() {
                 <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider mb-4">Divisão por Categoria</h3>
                 {chartData.length === 0 ? (
                   <div className="h-[120px] flex items-center justify-center text-muted text-[13px] font-semibold">
-                    Nenhum gasto registrado.
+                    Nenhum lançamento registrado.
                   </div>
                 ) : (
                   <div className="h-[160px] w-full">
@@ -960,7 +965,7 @@ export default function Lancamentos() {
               <div className="bg-card border border-border rounded-[24px] p-5 space-y-3 shadow-sm">
                 <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Detalhamento</h3>
                 {Object.entries(categoryTotals).filter(([, v]) => v > 0).length === 0 ? (
-                  <p className="text-[12px] text-muted font-semibold text-center py-4">Nenhum gasto registrado no período.</p>
+                  <p className="text-[12px] text-muted font-semibold text-center py-4">Nenhum lançamento registrado no período.</p>
                 ) : (
                   Object.entries(categoryTotals).filter(([, v]) => v > 0).map(([cat, total]) => {
                     const styling = getCategoryIcon(cat);
