@@ -439,11 +439,11 @@ export default function Lancamentos() {
 
           {/* Form */}
           {expenseTab === 'ganhos' ? (
-            <form onSubmit={handleSaveGain} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
-              <div className="flex flex-col items-center justify-center py-4 bg-card-secondary rounded-[20px] border border-border mb-2">
-                <span className="text-[10px] font-bold text-muted uppercase tracking-wider mb-1.5">Valor do ganho</span>
+            <form onSubmit={handleSaveGain} className="space-y-3">
+              <div className="flex flex-col items-center justify-center py-4 bg-card border border-border rounded-[20px]">
+                <span className="text-[10px] font-extrabold text-muted uppercase tracking-wider mb-1">Valor do ganho</span>
                 <div className="flex items-center justify-center space-x-1">
-                  <span className="text-xl font-bold text-muted">R$</span>
+                  <span className="text-lg font-bold text-muted">R$</span>
                   <input
                     ref={amountRef}
                     type="number"
@@ -459,129 +459,127 @@ export default function Lancamentos() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Data</label>
-                <div className="flex space-x-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setDate(todayStr)}
-                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
-                  >
-                    Hoje
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDate(yesterdayStr)}
-                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
-                  >
-                    Ontem
-                  </button>
-                  <div className="flex-1 relative">
-                    <input
-                      type="date"
-                      required
-                      value={date}
-                      onChange={e => setDate(e.target.value)}
-                      className="w-full py-3 px-2.5 bg-card border border-border rounded-xl text-[12px] font-extrabold text-foreground focus:outline-none focus:border-emerald-500 cursor-pointer text-center"
-                    />
+              <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Data</label>
+                  <div className="flex space-x-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setDate(todayStr)}
+                      className={`flex-1 py-2.5 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card-secondary/40 text-foreground border-border hover:bg-card-secondary/80'}`}
+                    >
+                      Hoje
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDate(yesterdayStr)}
+                      className={`flex-1 py-2.5 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card-secondary/40 text-foreground border-border hover:bg-card-secondary/80'}`}
+                    >
+                      Ontem
+                    </button>
+                    <div className="flex-1 relative">
+                      <input
+                        type="date"
+                        required
+                        value={date}
+                        onChange={e => setDate(e.target.value)}
+                        className="w-full py-2.5 px-2.5 bg-card-secondary/40 border border-border rounded-xl text-[12px] font-extrabold text-foreground focus:outline-none focus:border-primary cursor-pointer text-center"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Observação Input Colapsável */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
-                {showNotesField ? (
-                  <input
-                    type="text"
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                    className="w-full p-3 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-emerald-500 text-[13px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
-                    placeholder="Ex: corrida 99, iFood, etc."
-                    autoFocus
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowNotesField(true)}
-                    className="w-full p-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-muted transition-all active:scale-[0.98] cursor-pointer text-left"
-                  >
-                    + Adicionar observação
-                  </button>
-                )}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Observação</label>
+                  {showNotesField ? (
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={e => setNotes(e.target.value)}
+                      className="w-full py-2.5 px-3 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50 animate-in fade-in duration-200"
+                      placeholder="Ex: corrida 99, iFood, etc."
+                      autoFocus
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowNotesField(true)}
+                      className="w-full py-2.5 px-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-muted transition-all active:scale-[0.98] cursor-pointer text-left"
+                    >
+                      + Adicionar observação
+                    </button>
+                  )}
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-[20px] transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50 mt-3"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-[16px] transition-all active:scale-[0.98] text-[14px] shadow-sm cursor-pointer disabled:opacity-50 mt-1"
               >
                 {loading ? 'Salvando...' : 'Salvar Ganho'}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleSave} className="space-y-4 bg-card border border-border rounded-[24px] p-4 shadow-premium">
-              {/* Category Grid (for general gasto) */}
+            <form onSubmit={handleSave} className="space-y-3">
               {expenseTab === 'gasto' && (
-                <>
-                  <div className="space-y-2">
-                    <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Categoria</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {categoriesList.map((cat) => {
-                        const CatIcon = cat.Icon;
-                        const isActive = category === cat.name;
-                        
-                        const borderStyles = isActive 
-                          ? cat.color === 'rose' ? 'border-[#EF4444] bg-[#EF4444]/5 text-[#EF4444]'
-                            : cat.color === 'emerald' ? 'border-[#10B981] bg-[#10B981]/5 text-[#10B981]'
-                            : cat.color === 'indigo' ? 'border-[#6366F1] bg-[#6366F1]/5 text-[#6366F1]'
-                            : cat.color === 'blue' ? 'border-[#3B82F6] bg-[#3B82F6]/5 text-[#3B82F6]'
-                            : 'border-[#F59E0B] bg-[#F59E0B]/5 text-[#F59E0B]'
-                          : 'border-border bg-card text-foreground hover:bg-card-secondary/80';
+                <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
+                  <label className="text-[11px] font-extrabold text-muted block uppercase tracking-wider">Categoria</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {categoriesList.map((cat) => {
+                      const CatIcon = cat.Icon;
+                      const isActive = category === cat.name;
+                      
+                      const borderStyles = isActive 
+                        ? cat.color === 'rose' ? 'border-[#EF4444] bg-[#EF4444]/5 text-[#EF4444]'
+                          : cat.color === 'emerald' ? 'border-[#10B981] bg-[#10B981]/5 text-[#10B981]'
+                          : cat.color === 'indigo' ? 'border-[#6366F1] bg-[#6366F1]/5 text-[#6366F1]'
+                          : cat.color === 'blue' ? 'border-[#3B82F6] bg-[#3B82F6]/5 text-[#3B82F6]'
+                          : 'border-[#F59E0B] bg-[#F59E0B]/5 text-[#F59E0B]'
+                        : 'border-border bg-card-secondary/40 text-foreground hover:bg-card-secondary/80';
 
-                        return (
-                          <button
-                            key={cat.name}
-                            type="button"
-                            onClick={() => setCategory(cat.name)}
-                            className={`p-3.5 rounded-[20px] border flex flex-col items-center justify-center space-y-1.5 cursor-pointer transition-all active:scale-[0.95] ${borderStyles}`}
-                          >
-                            <CatIcon size={20} />
-                            <span className="text-[11px] font-bold tracking-tight">{cat.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Lançamentos Rápidos */}
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Últimos registros utilizados</label>
-                    <div className="flex space-x-2 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
-                      {quickRecords.map((rec, i) => (
+                      return (
                         <button
-                          key={i}
+                          key={cat.name}
                           type="button"
-                          onClick={() => {
-                            setCategory(rec.category);
-                            setAmount(rec.amount);
-                          }}
-                          className="flex items-center space-x-1.5 px-3 py-2 bg-card-secondary/60 hover:bg-card border border-border rounded-xl text-[12px] font-bold text-foreground transition-all active:scale-95 cursor-pointer whitespace-nowrap shadow-sm hover:border-border/80"
+                          onClick={() => setCategory(cat.name)}
+                          className={`p-3 rounded-[16px] border flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all active:scale-[0.95] ${borderStyles}`}
                         >
-                          <span>{rec.icon}</span>
-                          <span className="font-extrabold">{rec.label} R${rec.amount}</span>
+                          <CatIcon size={18} />
+                          <span className="text-[10px] font-bold tracking-tight">{cat.label}</span>
                         </button>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                </>
+
+                  {quickRecords.length > 0 && (
+                    <div className="space-y-1.5 pt-1 border-t border-border/50">
+                      <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Rápidos</label>
+                      <div className="flex space-x-1.5 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
+                        {quickRecords.map((rec, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              setCategory(rec.category);
+                              setAmount(rec.amount);
+                            }}
+                            className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-card-secondary/60 hover:bg-card border border-border rounded-lg text-[11px] font-bold text-foreground transition-all active:scale-95 cursor-pointer whitespace-nowrap hover:border-border/80"
+                          >
+                            <span className="text-[10px]">{rec.icon}</span>
+                            <span className="font-extrabold">{rec.label} R${rec.amount}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
-              {/* Big amount field */}
-              <div className="flex flex-col items-center justify-center py-4 bg-card-secondary/40 rounded-[20px] border border-border/50 mb-2">
-                <span className="text-[10px] font-bold text-muted uppercase tracking-wider mb-1.5">Valor do gasto</span>
+              <div className="flex flex-col items-center justify-center py-4 bg-card border border-border rounded-[20px]">
+                <span className="text-[10px] font-extrabold text-muted uppercase tracking-wider mb-1">Valor do gasto</span>
                 <div className="flex items-center justify-center space-x-1">
-                  <span className="text-xl font-bold text-muted">R$</span>
+                  <span className="text-lg font-bold text-muted">R$</span>
                   <input
                     ref={amountRef}
                     type="number"
@@ -597,82 +595,80 @@ export default function Lancamentos() {
                 </div>
               </div>
 
-              {/* Date Input */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Data</label>
-                <div className="flex space-x-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setDate(todayStr)}
-                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
-                  >
-                    Hoje
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDate(yesterdayStr)}
-                    className={`flex-1 py-3 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card text-foreground border-border hover:bg-card-secondary/80'}`}
-                  >
-                    Ontem
-                  </button>
-                  <div className="flex-1 relative">
-                    <input
-                      type="date"
-                      required
-                      value={date}
-                      onChange={e => setDate(e.target.value)}
-                      className="w-full py-3 px-2.5 bg-card border border-border rounded-xl text-[12px] font-extrabold text-foreground focus:outline-none focus:border-primary cursor-pointer text-center"
-                    />
+              <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Data</label>
+                  <div className="flex space-x-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setDate(todayStr)}
+                      className={`flex-1 py-2.5 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === todayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card-secondary/40 text-foreground border-border hover:bg-card-secondary/80'}`}
+                    >
+                      Hoje
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDate(yesterdayStr)}
+                      className={`flex-1 py-2.5 text-[12px] font-extrabold rounded-xl border transition-all active:scale-[0.97] ${date === yesterdayStr ? 'bg-primary text-white border-primary shadow-sm' : 'bg-card-secondary/40 text-foreground border-border hover:bg-card-secondary/80'}`}
+                    >
+                      Ontem
+                    </button>
+                    <div className="flex-1 relative">
+                      <input
+                        type="date"
+                        required
+                        value={date}
+                        onChange={e => setDate(e.target.value)}
+                        className="w-full py-2.5 px-2.5 bg-card-secondary/40 border border-border rounded-xl text-[12px] font-extrabold text-foreground focus:outline-none focus:border-primary cursor-pointer text-center"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Método de pagamento dropdown */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Método de pagamento</label>
-                <div className="relative">
-                  <select
-                    value={paymentMethod}
-                    onChange={e => setPaymentMethod(e.target.value)}
-                    className="w-full p-3 pr-10 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary appearance-none text-[13px] font-bold text-foreground cursor-pointer"
-                  >
-                    <option value="Dinheiro">Dinheiro</option>
-                    <option value="Cartão de Crédito">Cartão de Crédito</option>
-                    <option value="Cartão de Débito">Cartão de Débito</option>
-                    <option value="Pix">Pix</option>
-                  </select>
-                  <ChevronDown size={18} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Pagamento</label>
+                  <div className="relative">
+                    <select
+                      value={paymentMethod}
+                      onChange={e => setPaymentMethod(e.target.value)}
+                      className="w-full py-2.5 px-3 pr-10 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary appearance-none text-[13px] font-bold text-foreground cursor-pointer"
+                    >
+                      <option value="Dinheiro">Dinheiro</option>
+                      <option value="Cartão de Crédito">Cartão de Crédito</option>
+                      <option value="Cartão de Débito">Cartão de Débito</option>
+                      <option value="Pix">Pix</option>
+                    </select>
+                    <ChevronDown size={16} strokeWidth={2.5} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Observação</label>
+                  {showNotesField ? (
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={e => setNotes(e.target.value)}
+                      className="w-full py-2.5 px-3 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50 animate-in fade-in duration-200"
+                      placeholder="Posto Ipiranga, almoço, etc."
+                      autoFocus
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowNotesField(true)}
+                      className="w-full py-2.5 px-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-muted transition-all active:scale-[0.98] cursor-pointer text-left"
+                    >
+                      + Adicionar observação
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* Observação Input Colapsável */}
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-muted block uppercase tracking-wider">Observação (opcional)</label>
-                {showNotesField ? (
-                  <input
-                    type="text"
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                    className="w-full p-3 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/65 animate-in fade-in duration-200"
-                    placeholder="Posto Ipiranga, almoço, etc."
-                    autoFocus
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setShowNotesField(true)}
-                    className="w-full p-3 bg-card-secondary/30 hover:bg-card-secondary/50 border border-dashed border-border rounded-xl text-[12px] font-extrabold text-primary transition-all active:scale-[0.98] cursor-pointer text-left"
-                  >
-                    + Adicionar observação
-                  </button>
-                )}
-              </div>
-
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-[20px] transition-all active:scale-[0.98] text-[14px] shadow-lg cursor-pointer disabled:opacity-50 mt-3"
+                className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-[16px] transition-all active:scale-[0.98] text-[14px] shadow-sm cursor-pointer disabled:opacity-50 mt-1"
               >
                 {loading ? 'Salvando...' : 'Salvar Gasto'}
               </button>
@@ -714,24 +710,24 @@ export default function Lancamentos() {
 
           {listTab === 'lista' ? (
             <>
-              {/* Financial stats summary indicators - Replaces Chart */}
+              {/* Financial stats summary indicators */}
               <div className="grid grid-cols-3 gap-2">
-                <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm card-premium">
+                <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
                   <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
                   <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm card-premium">
+                <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
                   <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
                   <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card border border-border rounded-[16px] p-2.5 text-center shadow-sm card-premium">
+                <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
                   <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
                   <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
                 </div>
               </div>
 
               {/* Filtro de Período */}
-              <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
+              <div className="flex bg-card-secondary/50 p-0.5 rounded-xl border border-border/60">
                 {(['semanal', 'mensal', 'personalizado'] as const).map((period) => (
                   <button
                     key={period}
@@ -836,36 +832,41 @@ export default function Lancamentos() {
                     return (
                       <div 
                         key={entry.id}
-                        className="bg-card border border-border hover:border-border/80 rounded-[16px] p-3 flex justify-between items-center shadow-sm active:scale-[0.99] transition-all"
+                        className="bg-card border border-border rounded-[16px] p-3 flex justify-between items-center active:scale-[0.99] transition-all"
                       >
                         <div className="flex items-center space-x-3">
                           <div className={`w-10 h-10 rounded-xl ${styling.bg} flex items-center justify-center`}>
                             <CategoryIcon size={18} className={styling.color} />
                           </div>
-                          <div>
-                            <span className="text-[13px] font-bold text-foreground block">
-                              {categoryName}
+                          <div className="space-y-0.5">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-[13px] font-bold text-foreground">
+                                {categoryName}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-muted block">
+                              {formatDisplayDate(entry.date)} {formatDisplayTime(entry.date)}
                             </span>
-                            <span className="text-[11px] font-semibold text-muted mt-0.5 block">
-                              {formatDisplayDate(entry.date)} • {formatDisplayTime(entry.date)}
-                            </span>
-                            <span className="text-[10px] font-extrabold text-primary-muted uppercase tracking-wider block mt-0.5">
-                              {paymentMethodVal.toUpperCase()} {notesVal && `• ${notesVal}`}
-                            </span>
+                            {(paymentMethodVal !== 'Dinheiro' || notesVal) && (
+                              <span className="text-[10px] text-muted/70 block">
+                                {paymentMethodVal !== 'Dinheiro' && paymentMethodVal}
+                                {notesVal && ` · ${notesVal}`}
+                              </span>
+                            )}
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-1.5">
                           <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
                             {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
                           <button 
                             onClick={() => setDeleteId(entry.id)}
-                            className="p-2 text-muted hover:text-primary hover:bg-primary-soft rounded-xl transition-colors cursor-pointer"
+                            className="p-1.5 text-muted hover:text-[#EF4444] rounded-lg transition-colors cursor-pointer"
                             title="Apagar lançamento"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
@@ -878,7 +879,7 @@ export default function Lancamentos() {
               <div className="pt-1">
                 <button
                   onClick={() => router.push('/lancamentos?new=true')}
-                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-2xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-lg"
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-[16px] transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
                 >
                   <Plus size={16} strokeWidth={2.5} />
                   <span>Novo lançamento</span>
