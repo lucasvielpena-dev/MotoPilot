@@ -22,15 +22,6 @@ import {
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
-import { 
-  ResponsiveContainer, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  Cell 
-} from 'recharts';
 
 export default function Lancamentos() {
   const router = useRouter();
@@ -81,7 +72,6 @@ export default function Lancamentos() {
   }, [isNew, expenseTab, saveSuccessType]);
 
   // Screen 5 (List) States
-  const [listTab, setListTab] = useState<'lista' | 'resumo'>('lista');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<'Todos' | 'Ganhos' | 'Gastos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
@@ -288,34 +278,6 @@ export default function Lancamentos() {
   const uniqueDays = new Set(expenseEntries.map(e => e.date)).size || 1;
   const dailyAverage = totalExpensesSum / uniqueDays;
   const maxExpense = expenseEntries.reduce((max, curr) => curr.amount > max ? curr.amount : max, 0);
-
-  // Category Bar Chart data aggregation
-  const categoryTotals = {
-    Alimentação: 0,
-    Combustível: 0,
-    Manutenção: 0,
-    Estacionamento: 0,
-    Outros: 0,
-  };
-  expenseEntries.forEach(entry => {
-    const desc = (entry.description || '').toLowerCase();
-    if (desc.includes('combustível') || desc.includes('gasolina') || desc.includes('abastecer')) {
-      categoryTotals.Combustível += entry.amount;
-    } else if (desc.includes('alimentação') || desc.includes('almoço') || desc.includes('lanche') || desc.includes('comer')) {
-      categoryTotals.Alimentação += entry.amount;
-    } else if (desc.includes('manutenção') || desc.includes('oficina') || desc.includes('óleo') || desc.includes('conserto')) {
-      categoryTotals.Manutenção += entry.amount;
-    } else if (desc.includes('estacionamento') || desc.includes('parar') || desc.includes('pedágio')) {
-      categoryTotals.Estacionamento += entry.amount;
-    } else {
-      categoryTotals.Outros += entry.amount;
-    }
-  });
-
-  const chartData = Object.entries(categoryTotals).map(([name, value]) => ({
-    name,
-    value: parseFloat(value.toFixed(2)),
-  })).filter(item => item.value > 0);
 
   const getCategoryIcon = (desc: string | null, type?: string) => {
     if (type === 'gain') {
@@ -692,25 +654,7 @@ export default function Lancamentos() {
             <div className="w-9 h-9" /> {/* Spacer */}
           </header>
 
-          {/* Tabs */}
-          <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
-            <button 
-              onClick={() => setListTab('lista')} 
-              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${listTab === 'lista' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
-            >
-              Lista
-            </button>
-            <button 
-              onClick={() => setListTab('resumo')} 
-              className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${listTab === 'resumo' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
-            >
-              Resumo
-            </button>
-          </div>
-
-          {listTab === 'lista' ? (
-            <>
-              {/* Financial stats summary indicators */}
+          {/* Financial stats summary indicators */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
                   <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
@@ -885,121 +829,6 @@ export default function Lancamentos() {
                   <span>Novo lançamento</span>
                 </button>
               </div>
-            </>
-          ) : (
-            /* Resumo Tab content */
-            <div className="space-y-5 animate-fade-in-up">
-              {/* Resumo Geral */}
-              <div className="bg-card border border-border rounded-[24px] p-5 space-y-4 shadow-sm">
-                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Resumo Geral</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="text-center p-3 bg-card-secondary rounded-xl">
-                    <span className="text-[10px] font-bold text-muted uppercase block">Entradas</span>
-                    <span className="text-[16px] font-black text-foreground font-heading block mt-1">R$ {totalGains.toFixed(2).replace('.', ',')}</span>
-                  </div>
-                  <div className="text-center p-3 bg-card-secondary rounded-xl">
-                    <span className="text-[10px] font-bold text-muted uppercase block">Saídas</span>
-                    <span className="text-[16px] font-black text-foreground font-heading block mt-1">R$ {totalExpensesSum.toFixed(2).replace('.', ',')}</span>
-                  </div>
-                  <div className="text-center p-3 bg-card-secondary rounded-xl">
-                    <span className="text-[10px] font-bold text-muted uppercase block">Lucro</span>
-                    <span className="text-[16px] font-black text-foreground font-heading block mt-1">R$ {netProfit.toFixed(2).replace('.', ',')}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Estatísticas */}
-              <div className="bg-card border border-border rounded-[24px] p-5 space-y-3 shadow-sm">
-                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Estatísticas</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[12px] font-bold text-muted">Média diária de gastos</span>
-                    <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {dailyAverage.toFixed(2).replace('.', ',')}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[12px] font-bold text-muted">Maior gasto</span>
-                    <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {maxExpense.toFixed(2).replace('.', ',')}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[12px] font-bold text-muted">Dias com gastos</span>
-                    <span className="text-[14px] font-extrabold text-foreground font-heading">{uniqueDays} dias</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Gráfico de Divisão por Categoria */}
-              <div className="bg-card border border-border rounded-[24px] p-5 shadow-sm">
-                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider mb-4">Divisão por Categoria</h3>
-                {chartData.length === 0 ? (
-                  <div className="h-[120px] flex items-center justify-center text-muted text-[13px] font-semibold">
-                    Nenhum lançamento registrado.
-                  </div>
-                ) : (
-                  <div className="h-[160px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
-                        <XAxis type="number" hide />
-                        <YAxis dataKey="name" type="category" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={false} width={90} />
-                        <Tooltip 
-                          formatter={(value: any) => [`R$ ${Number(value).toFixed(2)}`, 'Gasto']}
-                          contentStyle={{ background: 'var(--card-color)', borderColor: 'var(--border-color)', borderRadius: '12px', fontSize: '11px', color: 'var(--text-color)' }}
-                        />
-                        <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={14}>
-                          {chartData.map((entry, index) => {
-                            const colors: Record<string, string> = {
-                              Combustível: '#10B981',
-                              Alimentação: '#EF4444',
-                              Manutenção: '#6366F1',
-                              Estacionamento: '#3B82F6',
-                              Outros: '#F59E0B'
-                            };
-                            return <Cell key={`cell-${index}`} fill={colors[entry.name] || '#71717A'} />;
-                          })}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </div>
-
-              {/* Detalhamento por Categoria */}
-              <div className="bg-card border border-border rounded-[24px] p-5 space-y-3 shadow-sm">
-                <h3 className="text-[13px] font-extrabold text-foreground uppercase tracking-wider">Detalhamento</h3>
-                {Object.entries(categoryTotals).filter(([, v]) => v > 0).length === 0 ? (
-                  <p className="text-[12px] text-muted font-semibold text-center py-4">Nenhum lançamento registrado no período.</p>
-                ) : (
-                  Object.entries(categoryTotals).filter(([, v]) => v > 0).map(([cat, total]) => {
-                    const styling = getCategoryIcon(cat);
-                    const CategoryIcon = styling.Icon;
-                    const percentage = totalExpensesSum > 0 ? ((total / totalExpensesSum) * 100).toFixed(1) : '0';
-                    return (
-                      <div key={cat} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-9 h-9 rounded-xl ${styling.bg} flex items-center justify-center`}>
-                            <CategoryIcon size={18} className={styling.color} />
-                          </div>
-                          <div>
-                            <span className="text-[13px] font-bold text-foreground block">{cat}</span>
-                            <span className="text-[10px] text-muted font-semibold">{percentage}% do total</span>
-                          </div>
-                        </div>
-                        <span className="text-[14px] font-extrabold text-foreground font-heading">R$ {total.toFixed(2).replace('.', ',')}</span>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-
-              {/* Link para relatórios */}
-              <button 
-                onClick={() => router.push('/relatorios')}
-                className="w-full bg-card border border-border hover:bg-card-secondary/50 text-foreground font-bold px-5 py-3.5 rounded-2xl text-[13px] active:scale-[0.98] transition-all cursor-pointer shadow-sm flex items-center justify-center space-x-2"
-              >
-                <span>Abrir Relatórios Completos</span>
-                <ChevronDown size={14} className="rotate-[-90deg]" />
-              </button>
-            </div>
-          )}
         </div>
       )}
 
