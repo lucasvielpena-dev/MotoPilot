@@ -158,30 +158,7 @@ export default function Home() {
         <div className="space-y-1.5 pt-2.5 border-t border-white/10 text-[11px] font-bold text-white/90">
           <div className="flex justify-between items-center">
             <span>Meta diária • {dailyGoal > 0 ? Math.min((netProfit / dailyGoal) * 100, 100).toFixed(0) : 0}%</span>
-            <div className="flex items-center space-x-1.5">
-              {editingGoal === 'daily' ? (
-                <div className="flex items-center space-x-1">
-                  <input
-                    type="number"
-                    value={goalInput}
-                    onChange={e => setGoalInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') handleSaveGoal('daily'); if (e.key === 'Escape') { setEditingGoal(null); setGoalInput(''); }}}
-                    className="w-16 px-1.5 py-0.5 bg-white/20 border border-white/40 rounded-lg text-[11px] font-bold text-white focus:outline-none text-right"
-                    autoFocus
-                  />
-                  <button onClick={() => handleSaveGoal('daily')} className="save-goal-btn text-white hover:text-white/80 cursor-pointer">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
-                  <button onClick={() => startEditGoal('daily', dailyGoal)} className="edit-goal-btn w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-white/85 hover:text-white hover:bg-white/20 transition-colors cursor-pointer">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                  </button>
-                </>
-              )}
-            </div>
+            <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
           </div>
           <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
             <div 
