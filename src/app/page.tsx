@@ -12,7 +12,10 @@ import {
   LogOut,
   User,
   Settings,
-  TrendingUp
+  TrendingUp,
+  Clock,
+  ArrowUpRight,
+  ArrowDownRight
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourneys } from '@/hooks/useJourneys';
@@ -290,6 +293,73 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* 4. Comparativo Semanal */}
+      <section className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
+        <div className="flex items-center space-x-2">
+          <TrendingUp size={14} className="text-muted" />
+          <span className="text-[11px] font-extrabold text-muted uppercase tracking-wider">Comparativo Semanal</span>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-3 space-y-1">
+            <span className="text-[10px] font-extrabold text-muted uppercase tracking-wider block">Esta semana</span>
+            <span className={`text-[15px] font-black font-heading ${weekNetProfit >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+              {showAmount ? `R$ ${weekNetProfit.toFixed(0)}` : 'R$ ••••'}
+            </span>
+            <span className="text-[9px] text-muted block">{weekGains > 0 ? `${Math.min((weekNetProfit / weeklyGoal) * 100, 100).toFixed(0)}% da meta` : 'Sem dados'}</span>
+          </div>
+          <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-3 space-y-1">
+            <span className="text-[10px] font-extrabold text-muted uppercase tracking-wider block">Mês inteiro</span>
+            <span className={`text-[15px] font-black font-heading ${monthNetProfit >= 0 ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+              {showAmount ? `R$ ${monthNetProfit.toFixed(0)}` : 'R$ ••••'}
+            </span>
+            <span className="text-[9px] text-muted block">{monthGains > 0 ? `${Math.min((monthNetProfit / monthlyGoal) * 100, 100).toFixed(0)}% da meta` : 'Sem dados'}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Últimos Lançamentos */}
+      <section className="bg-card border border-border rounded-[20px] p-3.5 space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Clock size={14} className="text-muted" />
+            <span className="text-[11px] font-extrabold text-muted uppercase tracking-wider">Últimos Lançamentos</span>
+          </div>
+          <button 
+            onClick={() => router.push('/lancamentos')}
+            className="text-[11px] font-extrabold text-primary hover:underline"
+          >
+            Ver todos
+          </button>
+        </div>
+
+        {entries.length === 0 ? (
+          <p className="text-[12px] text-muted font-bold text-center py-3">Nenhum lançamento ainda</p>
+        ) : (
+          <div className="space-y-1.5">
+            {entries.slice(0, 5).map((entry) => {
+              const parts = (entry.description || '').split(' - ');
+              const categoryName = entry.type === 'gain' ? 'Ganho' : (parts[0] || 'Despesa');
+              const d = new Date(entry.date);
+              const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+              return (
+                <div key={entry.id} className="flex items-center justify-between py-2 px-1 border-b border-border/40 last:border-0">
+                  <div className="flex items-center space-x-2.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${entry.type === 'gain' ? 'bg-[#10B981]' : 'bg-[#EF4444]'}`} />
+                    <div>
+                      <span className="text-[12px] font-bold text-foreground block">{categoryName}</span>
+                      <span className="text-[10px] text-muted">{dateStr}</span>
+                    </div>
+                  </div>
+                  <span className={`text-[13px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+                    {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Side Menu Drawer */}
