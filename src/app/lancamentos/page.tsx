@@ -23,6 +23,179 @@ import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 
+// Helper para Logos de Plataformas
+const PlatformLogo = ({ id, className = 'w-6 h-6' }: { id: string; className?: string }) => {
+  switch (id) {
+    case 'ifood':
+      return (
+        <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#EA1D2C" />
+          <g transform="translate(3.6, 3.6) scale(0.7)">
+            <path d="M8.428 1.67c-4.65 0-7.184 4.149-7.184 6.998 0 2.294 2.2 3.299 4.25 3.299l-.006-.006c4.244 0 7.184-3.854 7.184-6.998 0-2.29-2.175-3.293-4.244-3.293zm11.328 0c-4.65 0-7.184 4.149-7.184 6.998 0 2.294 2.2 3.299 4.25 3.299l-.006-.006C21.061 11.96 24 8.107 24 4.963c0-2.29-2.18-3.293-4.244-3.293z" fill="white" />
+          </g>
+        </svg>
+      );
+    case 'aiqfome':
+      return (
+        <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#FF0066" />
+          <path d="M12 7.5c-1.8 0-3.3 1.3-3.6 3-.1 0-.2-.1-.4-.1-1.4 0-2.5 1.1-2.5 2.5s1.1 2.5 2.5 2.5h8c1.4 0 2.5-1.1 2.5-2.5s-1.1-2.5-2.5-2.5c-.2 0-.3 0-.4.1-.3-1.7-1.8-3-3.6-3z" fill="white" />
+          <circle cx="10" cy="12.5" r="0.8" fill="#FF0066" />
+          <circle cx="14" cy="12.5" r="0.8" fill="#FF0066" />
+          <path d="M11 14c.3.3.7.3 1 0" stroke="#FF0066" strokeWidth="0.8" strokeLinecap="round" />
+        </svg>
+      );
+    case 'uber':
+      return (
+        <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="black" />
+          <g transform="translate(3.6, 3.6) scale(0.7)">
+            <path d="M0 7.97v4.958c0 1.867 1.302 3.101 3 3.101.826 0 1.562-.316 2.094-.87v.736H6.27V7.97H5.082v4.888c0 1.257-.85 2.106-1.947 2.106-1.11 0-1.946-.827-1.946-2.106V7.971H0zm7.44 0v7.925h1.13v-.725c.521.532 1.257.86 2.06.86a3.006 3.006 0 0 0 3.034-3.01 3.01 3.01 0 0 0-3.033-3.024 2.86 2.86 0 0 0-2.049.861V7.971H7.439zm9.869 2.038c-1.687 0-2.965 1.37-2.965 3 0 1.72 1.334 3.01 3.066 3.01 1.053 0 1.913-.463 2.49-1.233l-.826-.611c-.43.577-.996.847-1.664.847-.973 0-1.753-.7-1.912-1.64h4.697v-.373c0-1.72-1.222-3-2.886-3zm6.295.068c-.634 0-1.098.294-1.381.758v-.713h-1.131v5.774h1.142V12.61c0-.894.544-1.47 1.291-1.47H24v-1.065h-.396zm-6.319.928c.85 0 1.564.588 1.756 1.47H15.52c.203-.882.916-1.47 1.765-1.47zm-6.732.012c1.086 0 1.98.883 1.98 2.004a1.993 1.993 0 0 1-1.98 2.001A1.989 1.989 0 0 1 8.56 13.02a1.99 1.99 0 0 1 1.992-2.004z" fill="white" />
+          </g>
+        </svg>
+      );
+    case '99':
+      return (
+        <svg viewBox="0 0 24 24" className={className} xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#FFB300" />
+          <g transform="translate(6, 6) skewX(-10)">
+            <path d="M5.5 5.5a2.2 2.2 0 1 1-2.2-2.2A2.2 2.2 0 0 1 5.5 5.5zm-.9 0a1.3 1.3 0 1 0-1.3 1.3A1.3 1.3 0 0 0 4.6 5.5zm.9 0c0 1.8-1.2 4-3 5l-.4-.6c1.4-.9 2.2-2.4 2.2-4.4z" fill="black" />
+            <path d="M10.5 5.5a2.2 2.2 0 1 1-2.2-2.2A2.2 2.2 0 0 1 10.5 5.5zm-.9 0a1.3 1.3 0 1 0-1.3 1.3A1.3 1.3 0 0 0 9.6 5.5zm.9 0c0 1.8-1.2 4-3 5l-.4-.6c1.4-.9 2.2-2.4 2.2-4.4z" fill="black" />
+          </g>
+        </svg>
+      );
+    case 'indrive':
+      return (
+        <svg viewBox="0 0 24 24" className={className} xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#00E676" />
+          <g transform="translate(7.2, 7)">
+            <rect x="1" y="4" width="1.6" height="6" rx="0.4" fill="black" />
+            <circle cx="1.8" cy="1.8" r="0.9" fill="black" />
+            <rect x="4" y="4" width="1.6" height="6" rx="0.4" fill="black" />
+            <path d="M4.5 4.8c.8-1 2.2-1 3 0v5.2" stroke="black" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+            <rect x="6.9" y="5.5" width="1.6" height="4.5" rx="0.4" fill="black" />
+          </g>
+        </svg>
+      );
+    case 'lalamove':
+      return (
+        <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#FF6600" />
+          <path d="M8 8h2v5h4v2H8V8z" fill="white" />
+          <path d="M11 9.5h3.5M11.5 11.5h4" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      );
+    case 'shopee':
+      return (
+        <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#EE4D2D" />
+          <g transform="translate(3.6, 3.6) scale(0.7)">
+            <path d="M15.9414 17.9633c.229-1.879-.981-3.077-4.1758-4.0969-1.548-.528-2.277-1.22-2.26-2.1719.065-1.056 1.048-1.825 2.352-1.85a5.2898 5.2898 0 0 1 2.8838.89c.116.072.197.06.263-.039.09-.145.315-.494.39-.62.051-.081.061-.187-.068-.281-.185-.1369-.704-.4149-.983-.5319a6.4697 6.4697 0 0 0-2.5118-.514c-1.909.008-3.4129 1.215-3.5389 2.826-.082 1.1629.494 2.1078 1.73 2.8278.262.152 1.6799.716 2.2438.892 1.774.552 2.695 1.5419 2.478 2.6969-.197 1.047-1.299 1.7239-2.818 1.7439-1.2039-.046-2.2878-.537-3.1278-1.19l-.141-.11c-.104-.08-.218-.075-.287.03-.05.077-.376.547-.458.67-.077.108-.035.168.045.234.35.293.817.613 1.134.775a6.7097 6.7097 0 0 0 2.8289.727 4.9048 4.9048 0 0 0 2.0759-.354c1.095-.465 1.8029-1.394 1.9449-2.554zM11.9986 1.4009c-2.068 0-3.7539 1.95-3.8329 4.3899h7.6657c-.08-2.44-1.765-4.3899-3.8328-4.3899zm7.8516 22.5981-.08.001-15.7843-.002c-1.074-.04-1.863-.91-1.971-1.991l-.01-.195L1.298 6.2858a.459.459 0 0 1 .45-.494h4.9748C6.8448 2.568 9.1607 0 11.9996 0c2.8388 0 5.1537 2.5689 5.2757 5.7898h4.9678a.459.459 0 0 1 .458.483l-.773 15.5883-.007.131c-.094 1.094-.979 1.9769-2.0709 2.0059z" fill="white" />
+          </g>
+        </svg>
+      );
+    case 'loggi':
+      return (
+        <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="#00B0FF" />
+          <path d="M12 7 L16 9.3 L12 11.6 L8 9.3 Z" fill="white" fillOpacity="0.9" />
+          <path d="M8 9.3 L12 11.6 L12 16.2 L8 13.9 Z" fill="white" fillOpacity="0.6" />
+          <path d="M12 11.6 L16 9.3 L16 13.9 L12 16.2 Z" fill="white" fillOpacity="0.75" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+};
+
+// Parser para Lançamentos
+const parseEntry = (entry: any) => {
+  const parts = (entry.description || '').split(' - ');
+  const isGain = entry.type === 'gain';
+  
+  let title = isGain ? 'Ganho' : (parts[0] || 'Despesa');
+  let platformId = '';
+  let subText = '';
+  
+  if (isGain) {
+    const platformCandidate = parts[1] ? parts[1].trim() : '';
+    const lowerCandidate = platformCandidate.toLowerCase();
+    
+    const platforms = ['ifood', 'aiqfome', 'uber', '99', 'indrive', 'lalamove', 'shopee', 'loggi'];
+    const matched = platforms.find(p => lowerCandidate.includes(p));
+    
+    if (matched) {
+      platformId = matched;
+      title = platformCandidate;
+      if (parts.length > 2) {
+        subText = parts.slice(2).join(' - ');
+      }
+    } else {
+      if (parts.length > 1) {
+        subText = parts.slice(1).join(' - ');
+      }
+    }
+  } else {
+    let paymentMethodVal = 'Dinheiro';
+    let notesVal = '';
+    if (parts.length === 2) {
+      const possiblePayment = parts[1].trim();
+      const lowerPossible = possiblePayment.toLowerCase();
+      if (['dinheiro', 'cartão de crédito', 'cartão de débito', 'pix'].includes(lowerPossible)) {
+        paymentMethodVal = possiblePayment;
+      } else {
+        notesVal = possiblePayment;
+      }
+    } else if (parts.length >= 3) {
+      paymentMethodVal = parts[1].trim();
+      notesVal = parts.slice(2).join(' - ');
+    }
+    
+    const subParts = [];
+    if (paymentMethodVal && paymentMethodVal !== 'Dinheiro') {
+      subParts.push(paymentMethodVal);
+    }
+    if (notesVal) {
+      subParts.push(notesVal);
+    }
+    subText = subParts.join(' · ');
+  }
+  
+  return { title, platformId, subText };
+};
+
+// Cores Oficiais das Chaves
+const getStripeColor = (entry: any, platformId: string) => {
+  if (entry.type === 'gain') {
+    const platformColors: Record<string, string> = {
+      ifood: '#EA1D2C',
+      aiqfome: '#FF0066',
+      uber: '#000000',
+      99: '#FFB300',
+      indrive: '#00E676',
+      lalamove: '#FF6600',
+      shopee: '#EE4D2D',
+      loggi: '#00B0FF'
+    };
+    return platformColors[platformId] || '#10B981';
+  } else {
+    const desc = (entry.description || '').toLowerCase();
+    if (desc.includes('combustível') || desc.includes('gasolina') || desc.includes('abastecer')) {
+      return '#10B981';
+    }
+    if (desc.includes('alimentação') || desc.includes('almoço') || desc.includes('lanche') || desc.includes('comer')) {
+      return '#EF4444';
+    }
+    if (desc.includes('manutenção') || desc.includes('oficina') || desc.includes('óleo') || desc.includes('conserto')) {
+      return '#6366F1';
+    }
+    if (desc.includes('estacionamento') || desc.includes('parar') || desc.includes('pedágio')) {
+      return '#3B82F6';
+    }
+    return '#F59E0B';
+  }
+};
+
 export default function Lancamentos() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -75,6 +248,18 @@ export default function Lancamentos() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<'Todos' | 'Ganhos' | 'Gastos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+
+  const platformFilters = [
+    { id: 'ifood', name: 'iFood', color: '#EA1D2C' },
+    { id: 'aiqfome', name: 'Aiqfome', color: '#FF0066' },
+    { id: 'uber', name: 'Uber', color: '#000000' },
+    { id: '99', name: '99', color: '#FFB300' },
+    { id: 'indrive', name: 'inDrive', color: '#00E676' },
+    { id: 'lalamove', name: 'Lalamove', color: '#FF6600' },
+    { id: 'shopee', name: 'Shopee', color: '#EE4D2D' },
+    { id: 'loggi', name: 'Loggi', color: '#00B0FF' }
+  ];
   const [periodFilter, setPeriodFilter] = useState<'semanal' | 'mensal' | 'personalizado'>('mensal');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -262,6 +447,10 @@ export default function Lancamentos() {
   const netProfit = totalGains - totalExpensesSum;
 
   const filteredEntries = periodFilteredEntries.filter(entry => {
+    if (selectedPlatform) {
+      const parsed = parseEntry(entry);
+      return parsed.platformId === selectedPlatform;
+    }
     if (activeFilter === 'Todos') return true;
     if (activeFilter === 'Ganhos') return entry.type === 'gain';
     if (activeFilter === 'Gastos') return entry.type === 'expense';
@@ -428,8 +617,12 @@ export default function Lancamentos() {
                   {[
                     { label: 'iFood', value: 'iFood' },
                     { label: 'Aiqfome', value: 'Aiqfome' },
+                    { label: 'Uber', value: 'Uber' },
                     { label: '99', value: '99' },
-                    { label: 'Maxine', value: 'Maxine' },
+                    { label: 'inDrive', value: 'inDrive' },
+                    { label: 'Lalamove', value: 'Lalamove' },
+                    { label: 'Shopee', value: 'Shopee' },
+                    { label: 'Loggi', value: 'Loggi' },
                     { label: 'Outros', value: 'Outros' }
                   ].map((src) => (
                     <button
@@ -741,6 +934,54 @@ export default function Lancamentos() {
                 </div>
               )}
 
+              {/* Filtros Rápidos por Plataforma */}
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold text-muted uppercase tracking-wider">Filtrar por Plataforma</span>
+                  {selectedPlatform && (
+                    <button 
+                      onClick={() => setSelectedPlatform(null)}
+                      className="text-[11px] font-extrabold text-primary hover:underline cursor-pointer"
+                    >
+                      Limpar filtro
+                    </button>
+                  )}
+                </div>
+                <div className="flex overflow-x-auto gap-3 py-1.5 -mx-4 px-4 hide-scrollbar">
+                  {platformFilters.map((platform) => {
+                    const isSelected = selectedPlatform === platform.id;
+                    return (
+                      <button
+                        key={platform.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedPlatform(prev => prev === platform.id ? null : platform.id);
+                          setActiveFilter('Todos');
+                        }}
+                        className="flex flex-col items-center space-y-1.5 flex-shrink-0 cursor-pointer group active:scale-95 transition-all"
+                      >
+                        <div 
+                          className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all border ${
+                            isSelected 
+                              ? 'bg-card border-2 shadow-md scale-105' 
+                              : 'bg-card border-border/80 hover:border-border/100'
+                          }`}
+                          style={{ 
+                            borderColor: isSelected ? platform.color : undefined,
+                            boxShadow: isSelected ? `0 4px 14px ${platform.color}15` : undefined
+                          }}
+                        >
+                          <PlatformLogo id={platform.id} className="w-9 h-9" />
+                        </div>
+                        <span className={`text-[11px] font-black ${isSelected ? 'text-foreground' : 'text-muted'} transition-colors`}>
+                          {platform.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Filtration pills - Categorias (Sticky top-0 z-30) */}
               <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm py-2 -mx-4 px-4 border-b border-border/10 flex overflow-x-auto gap-1.5 hide-scrollbar">
                 {filterOptions.map((filter) => {
@@ -748,9 +989,12 @@ export default function Lancamentos() {
                   return (
                     <button
                       key={filter}
-                      onClick={() => setActiveFilter(filter)}
+                      onClick={() => {
+                        setActiveFilter(filter);
+                        setSelectedPlatform(null); // Clear platform filter when selecting category
+                      }}
                       className={`px-3 py-1.5 text-[11px] font-extrabold rounded-full whitespace-nowrap border transition-all active:scale-95 cursor-pointer ${
-                        isActive
+                        isActive && !selectedPlatform
                           ? 'bg-primary text-white border-primary shadow-sm'
                           : 'bg-card text-muted border-border hover:bg-card-secondary/80'
                       }`}
@@ -785,62 +1029,52 @@ export default function Lancamentos() {
                     const styling = getCategoryIcon(entry.description, entry.type);
                     const CategoryIcon = styling.Icon;
 
-                    const parts = (entry.description || '').split(' - ');
-                    const categoryName = entry.type === 'gain' ? 'Ganho' : (parts[0] || 'Despesa');
-                    let paymentMethodVal = 'Dinheiro';
-                    let notesVal = '';
-
-                    if (parts.length === 2) {
-                      const possiblePayment = parts[1].trim();
-                      const lowerPossible = possiblePayment.toLowerCase();
-                      if (['dinheiro', 'cartão de crédito', 'cartão de débito', 'pix'].includes(lowerPossible)) {
-                        paymentMethodVal = possiblePayment;
-                      } else {
-                        notesVal = possiblePayment;
-                      }
-                    } else if (parts.length >= 3) {
-                      paymentMethodVal = parts[1].trim();
-                      notesVal = parts.slice(2).join(' - ');
-                    }
+                    const { title, platformId, subText } = parseEntry(entry);
+                    const stripeColor = getStripeColor(entry, platformId);
+                    const hasPlatform = !!platformId;
 
                     return (
                       <div 
                         key={entry.id}
-                        className="bg-card border border-border rounded-[16px] p-3 flex justify-between items-center active:scale-[0.99] transition-all"
+                        className="relative bg-card border border-border rounded-[16px] p-3.5 flex justify-between items-center active:scale-[0.99] transition-all overflow-hidden"
+                        style={{ borderLeft: `4px solid ${stripeColor}` }}
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-10 h-10 rounded-xl ${styling.bg} flex items-center justify-center`}>
-                            <CategoryIcon size={18} className={styling.color} />
+                        <div className="flex items-center space-x-3.5">
+                          <div className="w-12 h-12 rounded-xl bg-card-secondary/80 border border-border flex items-center justify-center flex-shrink-0">
+                            {entry.type === 'gain' && hasPlatform ? (
+                              <PlatformLogo id={platformId} className="w-9 h-9" />
+                            ) : (
+                              <CategoryIcon size={22} className={styling.color} />
+                            )}
                           </div>
-                          <div className="space-y-0.5">
+                          <div className="space-y-1">
                             <div className="flex items-center space-x-2">
-                              <span className="text-[13px] font-bold text-foreground">
-                                {categoryName}
+                              <span className="text-[15px] font-black text-foreground tracking-tight">
+                                {title}
                               </span>
                             </div>
-                            <span className="text-[11px] text-muted block">
+                            <span className="text-[12px] font-extrabold text-muted block">
                               {formatDisplayDate(entry.date)} {formatDisplayTime(entry.date)}
                             </span>
-                            {(paymentMethodVal !== 'Dinheiro' || notesVal) && (
-                              <span className="text-[10px] text-muted/70 block">
-                                {paymentMethodVal !== 'Dinheiro' && paymentMethodVal}
-                                {notesVal && ` · ${notesVal}`}
+                            {subText && (
+                              <span className="text-[11px] font-bold text-muted/70 block">
+                                {subText}
                               </span>
                             )}
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-1.5">
-                          <span className={`text-[14px] font-extrabold font-heading ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-[16px] font-black font-heading ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
                             {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
                           <button 
                             onClick={() => setDeleteId(entry.id)}
-                            className="p-1.5 text-muted hover:text-[#EF4444] rounded-lg transition-colors cursor-pointer"
+                            className="p-2 text-muted hover:text-[#EF4444] rounded-xl transition-colors cursor-pointer"
                             title="Apagar lançamento"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={16} strokeWidth={2.5} />
                           </button>
                         </div>
                       </div>
