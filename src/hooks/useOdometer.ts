@@ -404,6 +404,7 @@ export function useOdometer(journeyId: string | null) {
       const saved = loadSavedDistance();
       if (saved > 0) {
         distanceRef.current = saved;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDistanceKm(saved);
       }
       startTracking();

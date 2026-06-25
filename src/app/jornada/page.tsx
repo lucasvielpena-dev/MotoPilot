@@ -241,11 +241,11 @@ export default function Jornada() {
                 setJourneyError(null);
                 const result = await finishJourney();
                 setIsFinishing(false);
-                if ('error' in result) {
-                  setJourneyError(result.error?.message || 'Erro ao encerrar.');
-                  return;
+                if (result && result.data) {
+                  router.push(`/jornada/resumo?id=${result.data.id}`);
+                } else {
+                  router.push('/');
                 }
-                router.push('/');
               }}
               disabled={isFinishing}
               className="w-full py-3.5 bg-primary-muted text-white font-extrabold text-[14px] rounded-[20px] flex items-center justify-center space-x-2 shadow-lg hover:bg-primary/80 transition-all active:scale-[0.97] cursor-pointer disabled:opacity-50"

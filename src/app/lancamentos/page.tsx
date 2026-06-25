@@ -19,7 +19,8 @@ import {
   ChevronUp,
   DollarSign,
   Bike,
-  Route
+  Route,
+  Clock
 } from 'lucide-react';
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
@@ -118,6 +119,8 @@ const parseEntry = (entry: any) => {
   let title = isGain ? 'Ganho' : (parts[0] || 'Despesa');
   let platformId = '';
   let subText = '';
+  let duration = '';
+  let cleanNotes = '';
   
   if (isGain) {
     const platformCandidate = parts[1] ? parts[1].trim() : '';
@@ -129,12 +132,25 @@ const parseEntry = (entry: any) => {
     if (matched) {
       platformId = matched;
       title = platformCandidate;
-      if (parts.length > 2) {
-        subText = parts.slice(2).join(' - ');
+      
+      const remainingParts = parts.slice(2);
+      const durationIdx = remainingParts.findIndex((p: string) => p.trim().endsWith(' min'));
+      if (durationIdx !== -1) {
+        duration = remainingParts[durationIdx].replace(' min', '').trim();
+        remainingParts.splice(durationIdx, 1);
       }
+      cleanNotes = remainingParts.join(' - ');
+      subText = cleanNotes;
     } else {
       if (parts.length > 1) {
-        subText = parts.slice(1).join(' - ');
+        const remainingParts = parts.slice(1);
+        const durationIdx = remainingParts.findIndex((p: string) => p.trim().endsWith(' min'));
+        if (durationIdx !== -1) {
+          duration = remainingParts[durationIdx].replace(' min', '').trim();
+          remainingParts.splice(durationIdx, 1);
+        }
+        cleanNotes = remainingParts.join(' - ');
+        subText = cleanNotes;
       }
     }
   } else {
@@ -163,7 +179,7 @@ const parseEntry = (entry: any) => {
     subText = subParts.join(' · ');
   }
   
-  return { title, platformId, subText };
+  return { title, platformId, subText, duration, cleanNotes };
 };
 
 // Cores Oficiais das Chaves
@@ -219,6 +235,8 @@ export default function Lancamentos() {
   const [saveSuccessType, setSaveSuccessType] = useState<'gasto' | 'ganhos' | null>(null);
   const [ridesCount, setRidesCount] = useState('');
   const [kmTotal, setKmTotal] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState('');
+  const [customNotes, setCustomNotes] = useState('');
   const [autoFilledKm, setAutoFilledKm] = useState(false);
 
   const amountRef = useRef<HTMLInputElement>(null);
@@ -381,7 +399,12 @@ export default function Lancamentos() {
     if (isNaN(parsedAmount) || parsedAmount <= 0) return;
 
     setLoading(true);
-    const desc = notes ? `Ganho - ${notes}` : 'Ganho';
+    const descParts = ['Ganho'];
+    if (notes) descParts.push(notes);
+    if (customNotes) descParts.push(customNotes);
+    if (durationMinutes) descParts.push(`${durationMinutes} min`);
+    const desc = descParts.join(' - ');
+
     const parsedRides = ridesCount ? parseInt(ridesCount) : null;
     const parsedKm = kmTotal ? parseFloat(kmTotal) : null;
     const res = await addEntry('gain', parsedAmount, desc, activeJourneyId, parsedRides, parsedKm);
@@ -394,6 +417,8 @@ export default function Lancamentos() {
       setShowNotesField(false);
       setRidesCount('');
       setKmTotal('');
+      setDurationMinutes('');
+      setCustomNotes('');
       setAutoFilledKm(false);
     }
   };
@@ -652,11 +677,11 @@ export default function Lancamentos() {
               {/* Seção Detalhes do Ganho */}
               <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
                 <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Detalhes do Ganho</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
-                    <div className="flex items-center space-x-1.5">
-                      <Bike size={12} className="text-muted" />
-                      <label className="text-[10px] font-extrabold text-muted uppercase tracking-wider">Corridas</label>
+                    <div className="flex items-center space-x-1">
+                      <Bike size={11} className="text-muted" />
+                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Corridas</label>
                     </div>
                     <input
                       type="number"
@@ -664,14 +689,14 @@ export default function Lancamentos() {
                       min="0"
                       value={ridesCount}
                       onChange={e => setRidesCount(e.target.value)}
-                      className="w-full py-2.5 px-3 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50"
+                      className="w-full py-2 px-2.5 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50 text-center"
                       placeholder="0"
                     />
                   </div>
                   <div className="space-y-1">
-                    <div className="flex items-center space-x-1.5">
-                      <Route size={12} className="text-muted" />
-                      <label className="text-[10px] font-extrabold text-muted uppercase tracking-wider">Quilômetros</label>
+                    <div className="flex items-center space-x-1">
+                      <Route size={11} className="text-muted" />
+                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Km</label>
                     </div>
                     <div className="relative">
                       <input
@@ -684,16 +709,30 @@ export default function Lancamentos() {
                           setKmTotal(e.target.value);
                           setAutoFilledKm(false);
                         }}
-                        className="w-full py-2.5 px-3 pr-8 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50"
+                        className="w-full py-2 px-2.5 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50 text-center"
                         placeholder="0"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted">km</span>
                     </div>
-                    {autoFilledKm && (
-                      <span className="text-[9px] font-bold text-primary">Preenchido automaticamente via GPS</span>
-                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-1">
+                      <Clock size={11} className="text-muted" />
+                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Minutos</label>
+                    </div>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="0"
+                      value={durationMinutes}
+                      onChange={e => setDurationMinutes(e.target.value)}
+                      className="w-full py-2 px-2.5 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50 text-center"
+                      placeholder="0"
+                    />
                   </div>
                 </div>
+                {autoFilledKm && (
+                  <span className="text-[9px] font-bold text-primary mt-1 block">Quilômetros preenchidos via GPS da jornada</span>
+                )}
                 {ridesCount && amount && parseFloat(amount) > 0 && parseInt(ridesCount) > 0 && (
                   <div className="bg-primary/5 border border-primary/20 rounded-xl p-2.5">
                     <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider">Média por corrida</span>
@@ -781,10 +820,10 @@ export default function Lancamentos() {
                   {showNotesField ? (
                     <input
                       type="text"
-                      value={notes}
-                      onChange={e => setNotes(e.target.value)}
+                      value={customNotes}
+                      onChange={e => setCustomNotes(e.target.value)}
                       className="w-full py-2.5 px-3 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50 animate-in fade-in duration-200"
-                      placeholder="Ex: corrida 99, iFood, etc."
+                      placeholder="Ex: Entrega extra, taxa extra, etc."
                       autoFocus
                     />
                   ) : (
@@ -1131,59 +1170,80 @@ export default function Lancamentos() {
                     const styling = getCategoryIcon(entry.description, entry.type);
                     const CategoryIcon = styling.Icon;
 
-                    const { title, platformId, subText } = parseEntry(entry);
+                    const { title, platformId, subText, duration } = parseEntry(entry);
                     const stripeColor = getStripeColor(entry, platformId);
                     const hasPlatform = !!platformId;
 
                     return (
                       <div 
                         key={entry.id}
-                        className="relative bg-card border border-border rounded-[16px] p-3.5 flex justify-between items-center active:scale-[0.99] transition-all overflow-hidden"
+                        className="relative bg-card border border-border rounded-[16px] p-3.5 flex justify-between items-center active:scale-[0.99] transition-all overflow-hidden hover:border-border/80"
                         style={{ borderLeft: `4px solid ${stripeColor}` }}
                       >
                         <div className="flex items-center space-x-3.5">
-                          <div className="w-12 h-12 rounded-xl bg-card-secondary/80 border border-border flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-card-secondary/80 border border-border flex items-center justify-center flex-shrink-0 shadow-sm">
                             {entry.type === 'gain' && hasPlatform ? (
-                              <PlatformLogo id={platformId} className="w-9 h-9" />
+                              <PlatformLogo id={platformId} className="w-6 h-6" />
                             ) : (
-                              <CategoryIcon size={22} className={styling.color} />
+                              <CategoryIcon size={18} className={styling.color} />
                             )}
                           </div>
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             <div className="flex items-center space-x-2">
-                              <span className="text-[15px] font-black text-foreground tracking-tight">
+                              <span className="text-[13px] font-black text-foreground tracking-tight">
                                 {title}
                               </span>
                             </div>
-                            <span className="text-[12px] font-extrabold text-muted block">
-                              {formatDisplayDate(entry.date)} {formatDisplayTime(entry.date)}
-                            </span>
+                            
+                            {/* Visual Financeiro Moderno com chips de informações */}
+                            <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-muted">
+                              <span>{formatDisplayTime(entry.date)}</span>
+                              <span>·</span>
+                              <span>{formatDisplayDate(entry.date)}</span>
+                              
+                              {entry.type === 'gain' && entry.km_total && entry.km_total > 0 && (
+                                <>
+                                  <span>·</span>
+                                  <span className="text-foreground">{entry.km_total.toFixed(1).replace('.', ',')} km</span>
+                                  <span>·</span>
+                                  <span className="text-primary-muted">R$ {(entry.amount / entry.km_total).toFixed(2).replace('.', ',')}/km</span>
+                                </>
+                              )}
+
+                              {entry.type === 'gain' && duration && (
+                                <>
+                                  <span>·</span>
+                                  <span className="text-emerald-500 font-extrabold">{duration} min</span>
+                                </>
+                              )}
+                              
+                              {entry.type === 'gain' && entry.rides_count && entry.rides_count > 0 && (
+                                <>
+                                  <span>·</span>
+                                  <span>{entry.rides_count} ent.</span>
+                                </>
+                              )}
+                            </div>
+                            
                             {subText && (
-                              <span className="text-[11px] font-bold text-muted/70 block">
+                              <span className="text-[10px] font-semibold text-muted/80 block mt-0.5 italic">
                                 {subText}
                               </span>
-                            )}
-                            {entry.type === 'gain' && (entry.rides_count || entry.km_total) && (
-                              <div className="flex items-center space-x-2 text-[10px] font-bold text-muted/60">
-                                {entry.rides_count && <span>{entry.rides_count} corridas</span>}
-                                {entry.rides_count && entry.km_total && <span>·</span>}
-                                {entry.km_total && <span>{entry.km_total} km</span>}
-                              </div>
                             )}
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-2">
-                          <span className={`text-[16px] font-black font-heading ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+                        <div className="flex items-center space-x-1 pl-2">
+                          <span className={`text-[14px] font-black font-heading tracking-tight ${entry.type === 'gain' ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
                             {entry.type === 'gain' ? '+' : '-'}R$ {entry.amount.toFixed(2).replace('.', ',')}
                           </span>
                           
                           <button 
                             onClick={() => setDeleteId(entry.id)}
-                            className="p-2 text-muted hover:text-[#EF4444] rounded-xl transition-colors cursor-pointer"
+                            className="p-1.5 text-muted hover:text-[#EF4444] rounded-xl transition-colors cursor-pointer active:scale-90"
                             title="Apagar lançamento"
                           >
-                            <Trash2 size={16} strokeWidth={2.5} />
+                            <Trash2 size={14} strokeWidth={2.5} />
                           </button>
                         </div>
                       </div>

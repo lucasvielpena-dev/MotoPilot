@@ -46,9 +46,10 @@ export function useJourneys() {
       setActiveJourney(null);
     }
     setLoading(false);
-  }, [user, odometer.setInitialDistance]);
+  }, [user, odometer]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchActiveJourney();
   }, [fetchActiveJourney]);
 

@@ -11,12 +11,19 @@ import {
   Moon,
   Wrench,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  Plus,
+  Trash2,
+  CheckCircle,
+  Trophy
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoals } from '@/hooks/useGoals';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
+import { useMaintenance } from '@/hooks/useMaintenance';
+import { useAchievements } from '@/hooks/useAchievements';
+import { useFinancialStats } from '@/hooks/useFinancialStats';
 import { supabase } from '@/lib/supabase/client';
 
 export default function Perfil() {
@@ -24,17 +31,43 @@ export default function Perfil() {
   const { dailyGoal, weeklyGoal, monthlyGoal, updateGoal, updateGoalDirect } = useGoals();
   const { historicalJourneys } = useJourneys();
   const { entries, fetchRecentEntries } = useEntries();
+  
+  // Modais
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [goalType, setGoalType] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [newGoal, setNewGoal] = useState('');
-  const [loading, setLoading] = useState(false);
+  
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+  const [vehicle, setVehicle] = useState({
+    name: 'Minha Moto',
+    plate: 'AAA-0000',
+    type: 'moto'
+  });
+  const [tempName, setTempName] = useState('');
+  const [tempPlate, setTempPlate] = useState('');
+  const [tempType, setTempType] = useState('moto');
 
-  // Tema Claro / Escuro / iFood
+  // Modais e estados de Manutenção
+  const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
+  const [newMaintenanceName, setNewMaintenanceName] = useState('');
+  const [newMaintenanceInterval, setNewMaintenanceInterval] = useState('');
+  const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
+  const [tempOdometer, setTempOdometer] = useState('');
+
+  const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark' | 'ifood'>('dark');
 
+  // Carrega configurações de tema e veículo
   useEffect(() => {
-    const saved = (localStorage.getItem('theme') || 'dark') as 'light' | 'dark' | 'ifood';
-    setTheme(saved);
+    const savedTheme = (localStorage.getItem('theme') || 'dark') as 'light' | 'dark' | 'ifood';
+    setTheme(savedTheme);
+
+    const savedVehicle = localStorage.getItem('active_vehicle');
+    if (savedVehicle) {
+      try {
+        setVehicle(JSON.parse(savedVehicle));
+      } catch {}
+    }
   }, []);
 
   const changeTheme = (newTheme: 'light' | 'dark' | 'ifood') => {
@@ -47,46 +80,26 @@ export default function Perfil() {
     fetchRecentEntries(500);
   }, [fetchRecentEntries]);
 
-  // Estados do Veículo
-  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
-  const [vehicle, setVehicle] = useState({
-    name: '',
-    plate: '',
-    type: 'moto'
-  });
-  const [tempName, setTempName] = useState('');
-  const [tempPlate, setTempPlate] = useState('');
-  const [tempType, setTempType] = useState('moto');
+  // Consome estatísticas financeiras centralizadas
+  const stats = useFinancialStats(entries, historicalJourneys || [], null, dailyGoal);
 
-  // Estados de Revisão
-  const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
-  const [maintenance, setMaintenance] = useState({
-    currentOdometer: 0,
-    intervalKm: 3000,
-    lastServiceKm: 0
-  });
-  const [tempOdometer, setTempOdometer] = useState('');
-  const [tempInterval, setTempInterval] = useState('');
+  // Consome hook de manutenção inteligente
+  const { 
+    currentOdometer, 
+    maintenanceItems, 
+    addItem: addMaintenanceItem, 
+    removeItem: removeMaintenanceItem, 
+    resetItem: resetMaintenanceItem, 
+    saveOdometer 
+  } = useMaintenance(stats.totalDistance);
 
-  // Carrega dados do veículo e manutenção do localStorage
-  useEffect(() => {
-    const savedVehicle = localStorage.getItem('active_vehicle');
-    if (savedVehicle) {
-      try {
-        setVehicle(JSON.parse(savedVehicle));
-      } catch (e) {
-        console.error('Erro ao ler veículo:', e);
-      }
-    }
-    const savedMaintenance = localStorage.getItem('vehicle_maintenance');
-    if (savedMaintenance) {
-      try {
-        setMaintenance(JSON.parse(savedMaintenance));
-      } catch (e) {
-        console.error('Erro ao ler manutenção:', e);
-      }
-    }
-  }, []);
+  // Consome hook de conquistas
+  const { achievements, totalUnlocked, totalCount } = useAchievements(
+    entries,
+    historicalJourneys || [],
+    stats.todayNetProfit,
+    dailyGoal
+  );
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -122,34 +135,25 @@ export default function Perfil() {
     setIsVehicleModalOpen(false);
   };
 
-  const handleOpenMaintenanceModal = () => {
-    setTempOdometer(String(maintenance.currentOdometer || totalKm.toFixed(0)));
-    setTempInterval(String(maintenance.intervalKm));
-    setIsMaintenanceModalOpen(true);
-  };
-
-  const handleSaveMaintenance = (e: React.FormEvent) => {
+  const handleSaveOdometer = (e: React.FormEvent) => {
     e.preventDefault();
-    const newMaintenance = {
-      currentOdometer: parseFloat(tempOdometer) || 0,
-      intervalKm: parseFloat(tempInterval) || 3000,
-      lastServiceKm: maintenance.lastServiceKm
-    };
-    setMaintenance(newMaintenance);
-    localStorage.setItem('vehicle_maintenance', JSON.stringify(newMaintenance));
-    setIsMaintenanceModalOpen(false);
+    const km = parseFloat(tempOdometer);
+    if (!isNaN(km) && km >= 0) {
+      saveOdometer(km);
+    }
+    setIsOdometerModalOpen(false);
   };
 
-  // Cumulative driver stats
-  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalDeliveries = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
-  const totalKm = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
-
-  // Calcula km até próxima revisão
-  const effectiveOdometer = maintenance.currentOdometer > 0 ? maintenance.currentOdometer : totalKm;
-  const nextServiceKm = maintenance.lastServiceKm + maintenance.intervalKm;
-  const kmUntilService = Math.max(0, nextServiceKm - effectiveOdometer);
-  const serviceUrgency = kmUntilService <= 200 ? 'urgent' : kmUntilService <= 500 ? 'warning' : 'ok';
+  const handleAddMaintenance = (e: React.FormEvent) => {
+    e.preventDefault();
+    const interval = parseFloat(newMaintenanceInterval);
+    if (newMaintenanceName.trim() && !isNaN(interval) && interval > 0) {
+      addMaintenanceItem(newMaintenanceName.trim(), interval, currentOdometer);
+      setNewMaintenanceName('');
+      setNewMaintenanceInterval('');
+      setIsMaintenanceModalOpen(false);
+    }
+  };
 
   const getVehicleEmoji = (type: string) => {
     switch (type) {
@@ -160,20 +164,26 @@ export default function Perfil() {
     }
   };
 
+  const getUrgencyStyles = (urgency: 'ok' | 'warning' | 'urgent') => {
+    if (urgency === 'urgent') return { text: 'text-red-500', bg: 'bg-red-500/10', bar: 'bg-red-500' };
+    if (urgency === 'warning') return { text: 'text-amber-500', bg: 'bg-amber-500/10', bar: 'bg-amber-500' };
+    return { text: 'text-emerald-500', bg: 'bg-emerald-500/10', bar: 'bg-emerald-500' };
+  };
+
   return (
-    <div className="p-3 space-y-4 pb-28">
+    <div className="p-1 space-y-5 pb-28 animate-fade-in-up">
       <header className="flex justify-between items-center mb-2">
         <h1 className="text-[18px] font-black tracking-tight text-foreground font-heading">Perfil</h1>
-        <button className="text-muted hover:text-foreground transition-colors">
-          <Settings size={22} />
+        <button onClick={handleLogout} className="text-muted hover:text-red-500 transition-colors" title="Sair">
+          <LogOut size={20} />
         </button>
       </header>
 
       {/* Info do Usuário */}
-      <section className="flex items-center space-x-3 bg-card border border-border p-4 rounded-[20px] shadow-premium animate-fade-in-up">
+      <section className="flex items-center space-x-3 bg-card border border-border p-4 rounded-[20px] shadow-premium">
         <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center relative flex-shrink-0">
           <UserCircle size={32} className="text-primary" />
-          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-card flex items-center justify-center animate-pulse" title="Online"></span>
+          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-card flex items-center justify-center animate-pulse"></span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2">
@@ -185,87 +195,176 @@ export default function Perfil() {
             </span>
           </div>
           <p className="text-[11px] text-muted truncate mt-0.5">{user?.email}</p>
-          <div className="mt-1.5 inline-flex items-center space-x-1 px-2 py-0.5 bg-foreground/5 rounded-full text-[10px] font-bold text-muted">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Piloto Online</span>
-          </div>
         </div>
       </section>
 
       {/* Grid de Estatísticas Cumulativas */}
-      <section className="grid grid-cols-3 gap-2 animate-fade-in-up delay-75">
+      <section className="grid grid-cols-3 gap-2">
         <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
           <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Total Km</span>
           <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
-            {totalKm.toFixed(0).replace('.', ',')} km
+            {stats.totalDistance.toFixed(0).replace('.', ',')} km
           </span>
         </div>
         <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
           <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Entregas</span>
           <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
-            {totalDeliveries}
+            {stats.deliveriesCount}
           </span>
         </div>
         <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
           <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Ganhos</span>
           <span className="text-[13px] font-black text-foreground block mt-0.5 font-heading">
-            R$ {totalGains.toFixed(0)}
+            R$ {stats.totalGains.toFixed(0)}
           </span>
         </div>
       </section>
 
-      {/* Veículo Ativo com Detalhes */}
-      <section className="bg-card border border-border rounded-[20px] p-4 animate-fade-in-up delay-100">
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="text-[11px] font-extrabold text-muted uppercase tracking-wider">Veículo de Trabalho</h3>
-          <button 
-            onClick={handleOpenVehicleModal}
-            className="text-[12px] font-extrabold text-primary hover:underline active:scale-95 transition-transform"
-          >
-            Editar
-          </button>
-        </div>
-        <div className="flex items-center space-x-3 mb-3">
-          <div className="w-11 h-11 bg-card-secondary rounded-xl flex items-center justify-center border border-border/60">
-            <span className="text-[22px]">{getVehicleEmoji(vehicle.type)}</span>
+      {/* SISTEMA DE MANUTENÇÃO INTELIGENTE */}
+      <section className="bg-card border border-border rounded-[20px] p-4 shadow-sm space-y-3.5">
+        <div className="flex justify-between items-center">
+          <div className="space-y-0.5">
+            <h3 className="text-[12px] font-black text-foreground font-heading">Manutenção do Veículo</h3>
+            <span className="text-[10px] font-bold text-muted">Odômetro: {currentOdometer.toFixed(0)} km</span>
           </div>
-          <div>
-            <h4 className="text-[14px] font-extrabold text-foreground font-heading">{vehicle.name}</h4>
-            <span className="text-[10px] font-bold text-muted tracking-widest bg-card-secondary/60 px-1.5 py-0.5 rounded-md border border-border/60 uppercase inline-block mt-0.5">
+          <div className="flex space-x-1.5">
+            <button 
+              onClick={() => { setTempOdometer(String(currentOdometer)); setIsOdometerModalOpen(true); }}
+              className="text-[10px] font-extrabold bg-card border border-border px-2 py-1 rounded-lg text-foreground hover:bg-card-secondary active:scale-95 transition-all"
+            >
+              Ajustar Km
+            </button>
+            <button 
+              onClick={handleOpenVehicleModal}
+              className="text-[10px] font-extrabold bg-card border border-border px-2 py-1 rounded-lg text-primary hover:bg-primary/5 active:scale-95 transition-all"
+            >
+              Editar Veículo
+            </button>
+          </div>
+        </div>
+
+        {/* Info do Veículo */}
+        <div className="flex items-center space-x-2.5 bg-card-secondary/40 border border-border/40 p-2.5 rounded-xl">
+          <span className="text-[20px]">{getVehicleEmoji(vehicle.type)}</span>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-[12px] font-extrabold text-foreground leading-tight">{vehicle.name}</h4>
+            <span className="text-[9px] font-black text-muted tracking-wider bg-card border border-border px-1.5 py-0.5 rounded uppercase mt-0.5 inline-block">
               {vehicle.plate}
             </span>
           </div>
         </div>
 
-        <div className="border-t border-border/60 pt-3 grid grid-cols-2 gap-2 text-[11px]">
-          <div className="space-y-0.5">
-            <span className="text-muted block font-semibold">Odômetro atual</span>
-            <span className="text-foreground font-extrabold font-heading">{effectiveOdometer.toFixed(0).replace('.', ',')} km</span>
-          </div>
-          <div className="space-y-0.5 border-l border-border/60 pl-3">
-            <span className="text-muted block font-semibold">Próxima revisão</span>
-            <span className={`font-extrabold font-heading ${
-              serviceUrgency === 'urgent' ? 'text-[#EF4444]' :
-              serviceUrgency === 'warning' ? 'text-[#F59E0B]' :
-              'text-[#10B981]'
-            }`}>
-              Em {kmUntilService.toFixed(0).replace('.', ',')} km
-            </span>
-          </div>
+        {/* Lista de Itens de Manutenção */}
+        <div className="space-y-3 pt-1">
+          {maintenanceItems.map((item: any) => {
+            const styles = getUrgencyStyles(item.urgency);
+            return (
+              <div key={item.id} className="bg-card-secondary/20 border border-border/50 rounded-xl p-3 space-y-2 relative overflow-hidden">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h5 className="text-[12px] font-bold text-foreground">{item.name}</h5>
+                    <span className="text-[9px] text-muted block">Intervalo: {item.intervalKm} km</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded ${styles.bg} ${styles.text}`}>
+                      {item.kmRemaining <= 0 ? 'Fazer Já!' : `Em ${item.kmRemaining.toFixed(0)} km`}
+                    </span>
+                    
+                    {/* Botão Resetar (Feito!) */}
+                    <button
+                      onClick={() => resetMaintenanceItem(item.id)}
+                      className="p-1 text-emerald-500 hover:bg-emerald-500/10 rounded-lg active:scale-90 transition-all cursor-pointer"
+                      title="Marcar como feito"
+                    >
+                      <CheckCircle size={15} />
+                    </button>
+                    
+                    {/* Botão Excluir (Se não for padrão) */}
+                    {!['oleo', 'relacao', 'pneus', 'pastilhas'].includes(item.id) && (
+                      <button
+                        onClick={() => removeMaintenanceItem(item.id)}
+                        className="p-1 text-red-500 hover:bg-red-500/10 rounded-lg active:scale-90 transition-all cursor-pointer"
+                        title="Remover item"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Progresso de Vida Útil */}
+                <div className="space-y-1">
+                  <div className="w-full bg-card-secondary h-1.5 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-700 ${styles.bar}`}
+                      style={{ width: `${item.progress}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[8px] font-bold text-muted">
+                    <span>Último: {item.lastServiceKm.toFixed(0)} km</span>
+                    <span>Próximo: {item.nextServiceKm.toFixed(0)} km</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         <button
-          onClick={handleOpenMaintenanceModal}
-          className="w-full mt-3 py-2.5 bg-card-secondary/50 hover:bg-card-secondary border border-border/60 rounded-xl text-[12px] font-bold text-foreground flex items-center justify-center space-x-2 transition-all active:scale-[0.98] cursor-pointer"
+          onClick={() => setIsMaintenanceModalOpen(true)}
+          className="w-full py-2.5 bg-card-secondary/40 border border-dashed border-border hover:bg-card-secondary rounded-xl text-[11px] font-extrabold text-foreground flex items-center justify-center space-x-1.5 transition-all active:scale-[0.98] cursor-pointer"
         >
-          <Wrench size={14} className="text-muted" />
-          <span>Configurar Revisão</span>
+          <Plus size={13} />
+          <span>Adicionar Nova Revisão</span>
         </button>
       </section>
 
-      {/* Ajustes e Preferências */}
-      <section className="space-y-2 pt-1 animate-fade-in-up delay-150">
-        <h3 className="text-[11px] font-extrabold text-muted px-1 uppercase tracking-wider">Metas</h3>
+      {/* SISTEMA DE CONQUISTAS */}
+      <section className="bg-card border border-border rounded-[20px] p-4 shadow-sm space-y-3">
+        <div className="flex justify-between items-center border-b border-border/50 pb-2">
+          <div className="flex items-center space-x-2">
+            <Trophy size={16} className="text-[#F59E0B]" />
+            <h3 className="text-[12px] font-black text-foreground font-heading">Conquistas do Piloto</h3>
+          </div>
+          <span className="text-[10px] font-extrabold text-muted bg-card-secondary/60 px-2 py-0.5 rounded-full border border-border/60">
+            {totalUnlocked} / {totalCount}
+          </span>
+        </div>
+
+        {/* Lista de Conquistas */}
+        <div className="grid grid-cols-1 gap-2.5 pt-1">
+          {achievements.map((ach) => (
+            <div 
+              key={ach.id} 
+              className={`flex items-center space-x-3 p-2.5 rounded-xl border transition-all ${
+                ach.unlocked 
+                  ? 'bg-card border-border/80 opacity-100 hover:scale-[1.01]' 
+                  : 'bg-card-secondary/10 border-border/20 opacity-50'
+              }`}
+            >
+              <div className="text-[24px] select-none">{ach.unlocked ? ach.icon : '🔒'}</div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[12px] font-extrabold text-foreground truncate leading-tight">{ach.title}</h4>
+                <p className="text-[10px] text-muted leading-tight mt-0.5">{ach.description}</p>
+                {/* Barra de Progresso da Conquista */}
+                {!ach.unlocked && (
+                  <div className="mt-1.5 space-y-0.5">
+                    <div className="w-full bg-card-secondary h-1 rounded-full overflow-hidden">
+                      <div className="h-full bg-primary" style={{ width: `${ach.progress}%` }} />
+                    </div>
+                    <span className="text-[8px] font-bold text-muted/80 block">{ach.targetVal}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Ajustes e Preferências de Metas */}
+      <section className="space-y-2">
+        <h3 className="text-[11px] font-extrabold text-muted px-1 uppercase tracking-wider">Ajuste de Metas</h3>
         
         <div className="bg-card border border-border rounded-[20px] overflow-hidden">
           {/* Meta Diária */}
@@ -281,7 +380,7 @@ export default function Perfil() {
             </div>
             <button 
               onClick={() => { setGoalType('daily'); setNewGoal(String(dailyGoal)); setIsGoalModalOpen(true); }} 
-              className="text-[12px] font-extrabold text-primary hover:underline"
+              className="text-[12px] font-extrabold text-primary hover:underline cursor-pointer"
             >
               Editar
             </button>
@@ -300,7 +399,7 @@ export default function Perfil() {
             </div>
             <button 
               onClick={() => { setGoalType('weekly'); setNewGoal(String(weeklyGoal)); setIsGoalModalOpen(true); }} 
-              className="text-[12px] font-extrabold text-primary hover:underline"
+              className="text-[12px] font-extrabold text-primary hover:underline cursor-pointer"
             >
               Editar
             </button>
@@ -319,7 +418,7 @@ export default function Perfil() {
             </div>
             <button 
               onClick={() => { setGoalType('monthly'); setNewGoal(String(monthlyGoal)); setIsGoalModalOpen(true); }} 
-              className="text-[12px] font-extrabold text-primary hover:underline"
+              className="text-[12px] font-extrabold text-primary hover:underline cursor-pointer"
             >
               Editar
             </button>
@@ -327,14 +426,14 @@ export default function Perfil() {
         </div>
       </section>
 
-      {/* Tema */}
-      <section className="space-y-2 pt-1 animate-fade-in-up delay-175">
+      {/* Preferência de Temas */}
+      <section className="space-y-2">
         <h3 className="text-[11px] font-extrabold text-muted px-1 uppercase tracking-wider">Aparência</h3>
         
         <div className="bg-card border border-border rounded-[20px] p-3.5">
           <div className="flex items-center space-x-3 mb-3">
             <div className="p-2 bg-card-secondary/60 rounded-xl">
-              <Settings size={14} className="text-muted" />
+              <Sun size={14} className="text-muted" />
             </div>
             <div>
               <p className="text-[13px] font-extrabold text-foreground">Tema do Aplicativo</p>
@@ -364,23 +463,83 @@ export default function Perfil() {
         </div>
       </section>
 
-      {/* Ações */}
-      <section className="space-y-2 pt-1 animate-fade-in-up delay-200">
-        <button 
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center space-x-2 bg-card hover:bg-card-secondary text-red-500 font-extrabold py-3.5 rounded-[20px] border border-border transition-colors active:scale-[0.98] text-[14px] shadow-sm cursor-pointer"
-        >
-          <LogOut size={20} />
-          <span>Sair da Conta</span>
-        </button>
-      </section>
+      {/* Modal Ajustar Odometer */}
+      {isOdometerModalOpen && (
+        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
+            <div className="flex justify-between items-center p-4 border-b border-border">
+              <h3 className="text-[15px] font-extrabold text-foreground font-heading">Ajustar Odômetro Manual</h3>
+              <button onClick={() => setIsOdometerModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSaveOdometer} className="p-4 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Novo Odômetro Total (km)</label>
+                <input 
+                  type="number"
+                  step="1"
+                  required
+                  value={tempOdometer}
+                  onChange={e => setTempOdometer(e.target.value)}
+                  className="w-full py-3 px-4 bg-card-secondary border border-border rounded-xl focus:outline-none focus:border-primary text-[18px] font-black text-foreground"
+                />
+              </div>
+              <button type="submit" className="w-full py-3 bg-primary text-white font-extrabold rounded-xl transition-all active:scale-[0.98] text-[13px] cursor-pointer">
+                Salvar
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
-      {/* Modal de Meta */}
+      {/* Modal Adicionar Nova Revisão */}
+      {isMaintenanceModalOpen && (
+        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
+            <div className="flex justify-between items-center p-4 border-b border-border">
+              <h3 className="text-[15px] font-extrabold text-foreground font-heading">Nova Revisão</h3>
+              <button onClick={() => setIsMaintenanceModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleAddMaintenance} className="p-4 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Nome do Item</label>
+                <input 
+                  type="text"
+                  required
+                  value={newMaintenanceName}
+                  onChange={e => setNewMaintenanceName(e.target.value)}
+                  placeholder="Ex: Troca de Fluido de Freio"
+                  className="w-full py-2.5 px-3 bg-card-secondary border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Intervalo (km)</label>
+                <input 
+                  type="number"
+                  required
+                  value={newMaintenanceInterval}
+                  onChange={e => setNewMaintenanceInterval(e.target.value)}
+                  placeholder="Ex: 5000"
+                  className="w-full py-2.5 px-3 bg-card-secondary border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground"
+                />
+              </div>
+              <button type="submit" className="w-full py-3 bg-primary text-white font-extrabold rounded-xl transition-all active:scale-[0.98] text-[13px] cursor-pointer">
+                Adicionar
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Editar Metas */}
       {isGoalModalOpen && (
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
           <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
-            <div className="flex justify-between items-center p-4 border-b border-border/60">
-              <h3 className="text-[16px] font-extrabold text-foreground font-heading">
+            <div className="flex justify-between items-center p-4 border-b border-border">
+              <h3 className="text-[15px] font-extrabold text-foreground font-heading">
                 {goalType === 'daily' ? 'Meta Diária' : goalType === 'weekly' ? 'Meta Semanal' : 'Meta Mensal'}
               </h3>
               <button onClick={() => setIsGoalModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
@@ -390,14 +549,14 @@ export default function Perfil() {
             
             <form onSubmit={handleUpdateGoal} className="p-4 space-y-4">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-extrabold text-muted block uppercase tracking-wider">Novo valor (R$)</label>
+                <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Novo valor (R$)</label>
                 <input 
                   type="number" 
                   step="0.01"
                   required
                   value={newGoal}
                   onChange={e => setNewGoal(e.target.value)}
-                  className="w-full py-3 px-4 bg-card-secondary/50 border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-[18px] font-black text-foreground"
+                  className="w-full py-3 px-4 bg-card-secondary border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-[18px] font-black text-foreground"
                   placeholder="0,00"
                   autoFocus
                 />
@@ -407,14 +566,14 @@ export default function Perfil() {
                 <button 
                   type="button"
                   onClick={() => setIsGoalModalOpen(false)}
-                  className="flex-1 py-3 font-bold text-foreground bg-card-secondary/50 border border-border rounded-xl hover:bg-card-secondary transition-all active:scale-[0.98] text-[13px] cursor-pointer"
+                  className="flex-1 py-3 font-bold text-foreground bg-card-secondary border border-border rounded-xl active:scale-[0.98] transition-all text-[13px] cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
                   disabled={loading}
-                  className="flex-1 py-3 font-bold text-white bg-primary rounded-xl hover:bg-primary/95 active:scale-[0.98] transition-transform disabled:opacity-50 text-[13px] cursor-pointer"
+                  className="flex-1 py-3 font-bold text-white bg-primary rounded-xl active:scale-[0.98] transition-transform disabled:opacity-50 text-[13px] cursor-pointer"
                 >
                   {loading ? 'Salvando...' : 'Salvar'}
                 </button>
@@ -427,17 +586,17 @@ export default function Perfil() {
       {/* Modal de Alterar Veículo */}
       {isVehicleModalOpen && (
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
-            <div className="flex justify-between items-center p-5 border-b border-border">
-              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Editar Veículo</h3>
+          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
+            <div className="flex justify-between items-center p-4 border-b border-border">
+              <h3 className="text-[15px] font-extrabold text-foreground font-heading">Editar Veículo</h3>
               <button onClick={() => setIsVehicleModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
             
-            <form onSubmit={handleUpdateVehicle} className="p-5 space-y-4">
+            <form onSubmit={handleUpdateVehicle} className="p-4 space-y-4">
               <div className="space-y-1">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider mb-2">Tipo de Veículo</label>
+                <label className="text-[10px] font-bold text-muted block uppercase tracking-wider mb-1.5">Tipo de Veículo</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { id: 'moto', label: '🏍️ Moto' },
@@ -448,9 +607,9 @@ export default function Perfil() {
                       key={t.id}
                       type="button"
                       onClick={() => setTempType(t.id)}
-                      className={`py-3 rounded-xl border text-[13px] font-bold transition-all cursor-pointer ${
+                      className={`py-2 rounded-xl border text-[11px] font-bold transition-all cursor-pointer ${
                         tempType === t.id 
-                          ? 'border-primary bg-primary-soft text-primary' 
+                          ? 'border-primary bg-primary/10 text-primary shadow-sm' 
                           : 'border-border bg-card text-muted hover:text-foreground'
                       }`}
                     >
@@ -461,89 +620,34 @@ export default function Perfil() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Modelo / Marca</label>
+                <label className="text-[10px] font-bold text-muted block uppercase tracking-wider">Modelo / Marca</label>
                 <input 
                   type="text" 
                   required
                   value={tempName}
                   onChange={e => setTempName(e.target.value)}
-                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[14px] font-bold text-foreground"
+                  className="w-full p-2.5 bg-card-secondary border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-[13px] font-bold text-foreground"
                   placeholder="Ex: Honda CG 160"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Placa</label>
+                <label className="text-[10px] font-bold text-muted block uppercase tracking-wider">Placa</label>
                 <input 
                   type="text" 
                   required
                   value={tempPlate}
                   onChange={e => setTempPlate(e.target.value)}
-                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[14px] font-bold font-mono text-foreground uppercase"
+                  className="w-full p-2.5 bg-card-secondary border border-border rounded-xl focus:outline-none focus:border-primary transition-colors text-[13px] font-bold font-mono text-foreground uppercase"
                   placeholder="Ex: ABC-1234"
                 />
               </div>
 
               <button 
                 type="submit" 
-                className="w-full py-4 mt-2 font-bold text-white bg-primary rounded-2xl hover:bg-primary/95 active:scale-[0.98] transition-transform text-[14px] cursor-pointer shadow-md"
+                className="w-full py-3 mt-1 font-bold text-white bg-primary rounded-xl active:scale-[0.98] transition-transform text-[13px] cursor-pointer shadow-md"
               >
                 Salvar Veículo
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Configurar Revisão */}
-      {isMaintenanceModalOpen && (
-        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
-            <div className="flex justify-between items-center p-5 border-b border-border">
-              <h3 className="text-[18px] font-extrabold text-foreground font-heading">Configurar Revisão</h3>
-              <button onClick={() => setIsMaintenanceModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer">
-                <X size={24} />
-              </button>
-            </div>
-            
-            <form onSubmit={handleSaveMaintenance} className="p-5 space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Odômetro Atual (km)</label>
-                <input 
-                  type="number" 
-                  required
-                  value={tempOdometer}
-                  onChange={e => setTempOdometer(e.target.value)}
-                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[16px] font-black text-foreground"
-                  placeholder="Ex: 45000"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-bold text-muted block uppercase tracking-wider">Intervalo para Revisão (km)</label>
-                <input 
-                  type="number" 
-                  required
-                  value={tempInterval}
-                  onChange={e => setTempInterval(e.target.value)}
-                  className="w-full p-4 bg-card-secondary border border-border rounded-2xl focus:outline-none focus:border-primary transition-colors text-[16px] font-black text-foreground"
-                  placeholder="Ex: 3000"
-                />
-              </div>
-
-              {kmUntilService <= 500 && (
-                <div className="p-3 bg-[#F59E0B]/10 border border-[#F59E0B]/20 rounded-xl">
-                  <span className="text-[12px] font-bold text-[#F59E0B]">
-                    ⚠️ Sua próxima revisão está agendada para {kmUntilService.toFixed(0).replace('.', ',')} km!
-                  </span>
-                </div>
-              )}
-
-              <button 
-                type="submit" 
-                className="w-full py-4 mt-2 font-bold text-white bg-primary rounded-2xl hover:bg-primary/95 active:scale-[0.98] transition-transform text-[14px] cursor-pointer shadow-md"
-              >
-                Salvar Configuração
               </button>
             </form>
           </div>
