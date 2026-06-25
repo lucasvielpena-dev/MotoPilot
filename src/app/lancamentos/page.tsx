@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
-import { useOdometer } from '@/hooks/useOdometer';
 import { supabase } from '@/lib/supabase/client';
 
 // Helper para Logos de Plataformas
@@ -255,7 +254,7 @@ export default function Lancamentos() {
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<'Todos' | 'Ganhos' | 'Gastos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
-  const { distanceKm } = useOdometer(activeJourneyId);
+  const [journeyDistanceKm, setJourneyDistanceKm] = useState<number>(0);
 
   const platformFilters = [
     { id: 'ifood', name: 'iFood', color: '#EA1D2C' },
@@ -325,14 +324,33 @@ export default function Lancamentos() {
     fetchActiveJourneyId();
   }, [fetchActiveJourneyId]);
 
+  // Fetch active journey distance for auto-fill
+  useEffect(() => {
+    const fetchJourneyDistance = async () => {
+      if (!activeJourneyId) {
+        setJourneyDistanceKm(0);
+        return;
+      }
+      const { data } = await supabase
+        .from('journeys')
+        .select('distance_km')
+        .eq('id', activeJourneyId)
+        .maybeSingle();
+      if (data?.distance_km) {
+        setJourneyDistanceKm(Number(data.distance_km));
+      }
+    };
+    fetchJourneyDistance();
+  }, [activeJourneyId]);
+
   // Auto-fill km when there's an active journey with GPS tracking
   useEffect(() => {
-    if (activeJourneyId && distanceKm > 0 && expenseTab === 'ganhos') {
-      const kmRounded = Math.round(distanceKm * 100) / 100;
+    if (activeJourneyId && journeyDistanceKm > 0 && expenseTab === 'ganhos') {
+      const kmRounded = Math.round(journeyDistanceKm * 100) / 100;
       setKmTotal(kmRounded > 0 ? String(kmRounded) : '');
       setAutoFilledKm(kmRounded > 0);
     }
-  }, [activeJourneyId, distanceKm, expenseTab]);
+  }, [activeJourneyId, journeyDistanceKm, expenseTab]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
