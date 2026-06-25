@@ -29,14 +29,18 @@ CREATE TABLE public.entries (
     type TEXT CHECK (type IN ('gain', 'expense')) NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     description TEXT,
+    rides_count INTEGER DEFAULT NULL,
+    km_total DECIMAL(10,2) DEFAULT NULL,
     date TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Tabela de Metas Diárias
+-- Tabela de Metas Diárias, Semanais e Mensais
 CREATE TABLE public.goals (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     daily_goal DECIMAL(10,2) NOT NULL,
+    weekly_goal DECIMAL(10,2),
+    monthly_goal DECIMAL(10,2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(user_id)

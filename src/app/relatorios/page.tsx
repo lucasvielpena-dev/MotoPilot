@@ -132,6 +132,8 @@ export default function Relatorios() {
 
   const totalHours = historicalJourneys.reduce((acc, curr) => acc + curr.duration_minutes, 0) / 60;
   const totalDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
+  const totalRides = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 0), 0);
+  const totalKmEntries = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.km_total || 0), 0);
 
   const earningsPerHour = totalHours > 0 ? totalGains / totalHours : 0;
   const earningsPerKm = totalDistance > 0 ? totalGains / totalDistance : 0;
@@ -148,20 +150,28 @@ export default function Relatorios() {
 
   const platformStats = useMemo(() => {
     const platformKnown = ['ifood', 'aiqfome', 'uber', '99', 'indrive', 'lalamove', 'shopee', 'loggi'];
-    const stats: Record<string, { total: number; count: number }> = {};
+    const stats: Record<string, { total: number; count: number; rides: number; km: number }> = {};
     
     entries.filter(e => e.type === 'gain').forEach(e => {
       const desc = (e.description || '').toLowerCase();
       const matched = platformKnown.find(p => desc.includes(p));
       if (matched) {
-        if (!stats[matched]) stats[matched] = { total: 0, count: 0 };
+        if (!stats[matched]) stats[matched] = { total: 0, count: 0, rides: 0, km: 0 };
         stats[matched].total += e.amount;
         stats[matched].count += 1;
+        stats[matched].rides += e.rides_count || 0;
+        stats[matched].km += e.km_total || 0;
       }
     });
 
     return Object.entries(stats)
-      .map(([id, data]) => ({ id, ...data, avg: data.total / data.count }))
+      .map(([id, data]) => ({ 
+        id, 
+        ...data, 
+        avg: data.count > 0 ? data.total / data.count : 0,
+        avgPerRide: data.rides > 0 ? data.total / data.rides : 0,
+        avgPerKm: data.km > 0 ? data.total / data.km : 0
+      }))
       .sort((a, b) => b.total - a.total);
   }, [entries]);
 
@@ -263,6 +273,20 @@ export default function Relatorios() {
               <p className="text-[15px] font-extrabold text-foreground mt-1 font-heading">{totalDistance.toFixed(1).replace('.', ',')} km</p>
             </div>
           </section>
+
+          {/* Stats Grid - Corridas e Km dos ganhos */}
+          {totalRides > 0 && (
+            <section className="grid grid-cols-2 gap-3">
+              <div className="bg-card border border-border rounded-[16px] p-3 flex flex-col justify-between min-h-[80px] shadow-sm">
+                <p className="text-[10px] font-bold text-muted uppercase">Total corridas</p>
+                <p className="text-[15px] font-extrabold text-foreground mt-1 font-heading">{totalRides}</p>
+              </div>
+              <div className="bg-card border border-border rounded-[16px] p-3 flex flex-col justify-between min-h-[80px] shadow-sm">
+                <p className="text-[10px] font-bold text-muted uppercase">Média por corrida</p>
+                <p className="text-[15px] font-extrabold text-foreground mt-1 font-heading">R$ {totalRides > 0 ? (totalGains / totalRides).toFixed(2).replace('.', ',') : '0,00'}</p>
+              </div>
+            </section>
+          )}
 
           {/* Cálculos automáticos */}
           <section className="grid grid-cols-3 gap-2">
@@ -371,10 +395,26 @@ export default function Relatorios() {
                         </div>
                         <div className="text-right">
                           <span className="text-[14px] font-black text-[#10B981] font-heading">R$ {platform.total.toFixed(0)}</span>
-                          <span className="text-[9px] text-muted block">{platform.count} entregas</span>
+                          <span className="text-[9px] text-muted block">{platform.count} lançamentos</span>
                         </div>
                       </div>
-                      <div className="w-full bg-card h-1.5 rounded-full overflow-hidden">
+                      {platform.rides > 0 && (
+                        <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-border/40">
+                          <div>
+                            <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Corridas</span>
+                            <span className="text-[12px] font-black text-foreground font-heading">{platform.rides}</span>
+                          </div>
+                          <div>
+                            <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Km</span>
+                            <span className="text-[12px] font-black text-foreground font-heading">{platform.km.toFixed(1).replace('.', ',')}</span>
+                          </div>
+                          <div>
+                            <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Média/Corrida</span>
+                            <span className="text-[12px] font-black text-foreground font-heading">R$ {platform.avgPerRide.toFixed(2).replace('.', ',')}</span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="w-full bg-card h-1.5 rounded-full overflow-hidden mt-2">
                         <div 
                           className="h-full rounded-full transition-all duration-700"
                           style={{ width: `${barWidth}%`, backgroundColor: index === 0 ? '#10B981' : index === 1 ? '#22C55E' : '#71717A' }}

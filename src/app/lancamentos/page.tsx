@@ -17,10 +17,13 @@ import {
   Upload,
   FileSpreadsheet,
   ChevronUp,
-  DollarSign
+  DollarSign,
+  Bike,
+  Route
 } from 'lucide-react';
 import { useEntries } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
+import { useOdometer } from '@/hooks/useOdometer';
 import { supabase } from '@/lib/supabase/client';
 
 // Helper para Logos de Plataformas
@@ -215,6 +218,9 @@ export default function Lancamentos() {
   const [loading, setLoading] = useState(false);
   const [showNotesField, setShowNotesField] = useState(false);
   const [saveSuccessType, setSaveSuccessType] = useState<'gasto' | 'ganhos' | null>(null);
+  const [ridesCount, setRidesCount] = useState('');
+  const [kmTotal, setKmTotal] = useState('');
+  const [autoFilledKm, setAutoFilledKm] = useState(false);
 
   const amountRef = useRef<HTMLInputElement>(null);
 
@@ -249,6 +255,7 @@ export default function Lancamentos() {
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<'Todos' | 'Ganhos' | 'Gastos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const { distanceKm } = useOdometer(activeJourneyId);
 
   const platformFilters = [
     { id: 'ifood', name: 'iFood', color: '#EA1D2C' },
@@ -318,6 +325,15 @@ export default function Lancamentos() {
     fetchActiveJourneyId();
   }, [fetchActiveJourneyId]);
 
+  // Auto-fill km when there's an active journey with GPS tracking
+  useEffect(() => {
+    if (activeJourneyId && distanceKm > 0 && expenseTab === 'ganhos') {
+      const kmRounded = Math.round(distanceKm * 100) / 100;
+      setKmTotal(kmRounded > 0 ? String(kmRounded) : '');
+      setAutoFilledKm(kmRounded > 0);
+    }
+  }, [activeJourneyId, distanceKm, expenseTab]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsedAmount = parseFloat(amount);
@@ -348,7 +364,9 @@ export default function Lancamentos() {
 
     setLoading(true);
     const desc = notes ? `Ganho - ${notes}` : 'Ganho';
-    const res = await addEntry('gain', parsedAmount, desc, activeJourneyId);
+    const parsedRides = ridesCount ? parseInt(ridesCount) : null;
+    const parsedKm = kmTotal ? parseFloat(kmTotal) : null;
+    const res = await addEntry('gain', parsedAmount, desc, activeJourneyId, parsedRides, parsedKm);
     setLoading(false);
 
     if (!res.error) {
@@ -356,6 +374,9 @@ export default function Lancamentos() {
       setAmount('');
       setNotes('');
       setShowNotesField(false);
+      setRidesCount('');
+      setKmTotal('');
+      setAutoFilledKm(false);
     }
   };
 
@@ -608,6 +629,69 @@ export default function Lancamentos() {
                     placeholder="0,00"
                   />
                 </div>
+              </div>
+
+              {/* Seção Detalhes do Ganho */}
+              <div className="bg-card border border-border rounded-[20px] p-3.5 space-y-3">
+                <label className="text-[10px] font-extrabold text-muted block uppercase tracking-wider">Detalhes do Ganho</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-1.5">
+                      <Bike size={12} className="text-muted" />
+                      <label className="text-[10px] font-extrabold text-muted uppercase tracking-wider">Corridas</label>
+                    </div>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="0"
+                      value={ridesCount}
+                      onChange={e => setRidesCount(e.target.value)}
+                      className="w-full py-2.5 px-3 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-1.5">
+                      <Route size={12} className="text-muted" />
+                      <label className="text-[10px] font-extrabold text-muted uppercase tracking-wider">Quilômetros</label>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        step="0.1"
+                        min="0"
+                        value={kmTotal}
+                        onChange={e => {
+                          setKmTotal(e.target.value);
+                          setAutoFilledKm(false);
+                        }}
+                        className="w-full py-2.5 px-3 pr-8 bg-card-secondary/40 border border-border rounded-xl focus:outline-none focus:border-primary text-[13px] font-bold text-foreground placeholder:text-muted/50"
+                        placeholder="0"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted">km</span>
+                    </div>
+                    {autoFilledKm && (
+                      <span className="text-[9px] font-bold text-primary">Preenchido automaticamente via GPS</span>
+                    )}
+                  </div>
+                </div>
+                {ridesCount && amount && parseFloat(amount) > 0 && parseInt(ridesCount) > 0 && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-2.5">
+                    <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider">Média por corrida</span>
+                    <p className="text-[14px] font-black text-foreground font-heading">
+                      R$ {(parseFloat(amount) / parseInt(ridesCount)).toFixed(2).replace('.', ',')}
+                    </p>
+                  </div>
+                )}
+                {kmTotal && amount && parseFloat(amount) > 0 && parseFloat(kmTotal) > 0 && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-2.5">
+                    <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider">Valor por km</span>
+                    <p className="text-[14px] font-black text-foreground font-heading">
+                      R$ {(parseFloat(amount) / parseFloat(kmTotal)).toFixed(2).replace('.', ',')}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Atalhos de origem do ganho */}
@@ -1060,6 +1144,13 @@ export default function Lancamentos() {
                               <span className="text-[11px] font-bold text-muted/70 block">
                                 {subText}
                               </span>
+                            )}
+                            {entry.type === 'gain' && (entry.rides_count || entry.km_total) && (
+                              <div className="flex items-center space-x-2 text-[10px] font-bold text-muted/60">
+                                {entry.rides_count && <span>{entry.rides_count} corridas</span>}
+                                {entry.rides_count && entry.km_total && <span>·</span>}
+                                {entry.km_total && <span>{entry.km_total} km</span>}
+                              </div>
                             )}
                           </div>
                         </div>

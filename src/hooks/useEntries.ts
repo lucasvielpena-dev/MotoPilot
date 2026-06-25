@@ -11,6 +11,8 @@ export type Entry = {
   type: 'gain' | 'expense';
   amount: number;
   description: string | null;
+  rides_count: number | null;
+  km_total: number | null;
   date: string;
 };
 
@@ -37,20 +39,34 @@ export function useEntries() {
     setLoading(false);
   }, [user]);
 
-  const addEntry = async (type: 'gain' | 'expense', amount: number, description: string, journeyId?: string | null) => {
+  const addEntry = async (
+    type: 'gain' | 'expense', 
+    amount: number, 
+    description: string, 
+    journeyId?: string | null,
+    ridesCount?: number | null,
+    kmTotal?: number | null
+  ) => {
     if (!user) return { error: { message: 'Usuário não logado' } };
+
+    const insertData: any = {
+      user_id: user.id,
+      journey_id: journeyId ?? null,
+      type,
+      amount,
+      description
+    };
+
+    if (ridesCount !== undefined && ridesCount !== null) {
+      insertData.rides_count = ridesCount;
+    }
+    if (kmTotal !== undefined && kmTotal !== null) {
+      insertData.km_total = kmTotal;
+    }
 
     const { data, error } = await supabase
       .from('entries')
-      .insert([
-        {
-          user_id: user.id,
-          journey_id: journeyId ?? null,
-          type,
-          amount,
-          description
-        }
-      ])
+      .insert([insertData])
       .select()
       .single();
 
