@@ -115,7 +115,7 @@ const PLATFORM_NAMES: Record<string, string> = {
 export default function Relatorios() {
   const router = useRouter();
   const { entries, fetchRecentEntries } = useEntries();
-  const { historicalJourneys, fetchHistoricalJourneys } = useJourneys();
+  const { activeJourney, historicalJourneys, fetchHistoricalJourneys } = useJourneys();
   const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal } = useGoals();
   
   const [activeTab, setActiveTab] = useState<'geral' | 'comparativos'>('geral');
@@ -131,11 +131,13 @@ export default function Relatorios() {
   const netProfit = totalGains - totalExpenses;
 
   const totalHours = historicalJourneys.reduce((acc, curr) => acc + curr.duration_minutes, 0) / 60;
+  const activeJourneyHours = activeJourney ? (Date.now() - new Date(activeJourney.started_at).getTime()) / 3600000 : 0;
+  const totalHoursWithActive = totalHours + activeJourneyHours;
   const totalDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
-  const totalRides = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 0), 0);
+  const totalRides = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
   const totalKmEntries = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.km_total || 0), 0);
 
-  const earningsPerHour = totalHours > 0 ? totalGains / totalHours : 0;
+  const earningsPerHour = totalHoursWithActive > 0 ? totalGains / totalHoursWithActive : 0;
   const earningsPerKm = totalDistance > 0 ? totalGains / totalDistance : 0;
   const profitPerKm = totalDistance > 0 ? netProfit / totalDistance : 0;
 

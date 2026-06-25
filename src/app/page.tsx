@@ -189,10 +189,12 @@ export default function Home() {
   const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
   const totalExpenses = entries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const netProfit = totalGains - totalExpenses;
-  const deliveriesCount = entries.filter(e => e.type === 'gain').length;
+  const deliveriesCount = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
 
   const totalCompletedHours = (historicalJourneys || []).reduce((acc, curr) => acc + (curr.duration_minutes || 0), 0) / 60;
-  const avgHourlyEarnings = totalCompletedHours > 0 ? totalGains / totalCompletedHours : 52.50;
+  const activeJourneyHours = activeJourney ? (Date.now() - new Date(activeJourney.started_at).getTime()) / 3600000 : 0;
+  const totalHours = totalCompletedHours + activeJourneyHours;
+  const avgHourlyEarnings = totalHours > 0 ? totalGains / totalHours : 0;
 
   // Calculos das Metas
   const now = new Date();

@@ -111,7 +111,7 @@ export default function Jornada() {
   const activeGains = activeEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
   const activeExpenses = activeEntries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const activeNetProfit = activeGains - activeExpenses;
-  const activeDeliveriesCount = activeEntries.filter(e => e.type === 'gain').length;
+  const activeDeliveriesCount = activeEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
 
   const totalCompletedHours = historicalJourneys.reduce((acc, curr) => acc + curr.duration_minutes, 0) / 60;
   const totalCompletedDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
@@ -135,7 +135,7 @@ export default function Jornada() {
     const gains = jEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
     const expenses = jEntries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
     const profit = gains - expenses;
-    const deliveries = jEntries.filter(e => e.type === 'gain').length;
+    const deliveries = jEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
     return { gains, expenses, profit, deliveries };
   };
 

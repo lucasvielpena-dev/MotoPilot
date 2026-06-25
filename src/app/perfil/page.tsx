@@ -142,7 +142,7 @@ export default function Perfil() {
 
   // Cumulative driver stats
   const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalDeliveries = entries.filter(e => e.type === 'gain').length;
+  const totalDeliveries = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
   const totalKm = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
 
   // Calcula km até próxima revisão
