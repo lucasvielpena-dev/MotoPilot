@@ -2,12 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bike, X, CircleUserRound, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
 import { useGoals } from '@/hooks/useGoals';
-import { supabase } from '@/lib/supabase/client';
 
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { ProfitCard } from '@/components/dashboard/ProfitCard';
@@ -30,7 +28,6 @@ export default function Home() {
   
   const [elapsedTime, setElapsedTime] = useState('0h 0m');
   const [showAmount, setShowAmount] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
@@ -88,13 +85,9 @@ export default function Home() {
     }
   }, [finishJourney, router]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
-
   return (
     <div className="space-y-3 pb-28 pt-2 px-4 animate-fade-in-up">
-      <DashboardHeader onOpenMenu={() => setIsMenuOpen(true)} />
+      <DashboardHeader />
 
       <JourneyCard
         activeJourney={activeJourney}
@@ -122,55 +115,6 @@ export default function Home() {
         insights={stats.insights}
         hasData={stats.hasData}
       />
-
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[100] flex">
-          <div 
-            onClick={() => setIsMenuOpen(false)}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-          />
-          <div className="relative w-72 max-w-xs bg-card border-r border-border h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
-            <div className="flex justify-between items-center border-b border-border pb-4">
-              <div className="flex items-center space-x-2">
-                <Bike size={22} strokeWidth={3} className="text-primary-muted" />
-                <span className="text-[16px] font-extrabold text-foreground font-heading">Menu MotoPilot</span>
-              </div>
-              <button 
-                onClick={() => setIsMenuOpen(false)}
-                className="text-muted hover:text-foreground cursor-pointer"
-              >
-                <X size={24} strokeWidth={3} />
-              </button>
-            </div>
-
-            <div className="flex-1 flex flex-col justify-between py-4">
-              <div className="space-y-1">
-                <button 
-                  onClick={() => { setIsMenuOpen(false); router.push('/perfil'); }}
-                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
-                >
-                  <CircleUserRound size={20} strokeWidth={3} className="text-foreground/60" />
-                  <span>Meu Perfil</span>
-                </button>
-                <button 
-                  onClick={() => { setIsMenuOpen(false); router.push('/relatorios'); }}
-                  className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
-                >
-                  <Settings size={20} strokeWidth={3} className="text-foreground/60" />
-                  <span>Relatórios</span>
-                </button>
-              </div>
-              <button 
-                onClick={() => { setIsMenuOpen(false); handleLogout(); }}
-                className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-red-500/60 rounded-xl hover:bg-red-500/10 hover:text-red-500/80 transition-colors text-left cursor-pointer border border-red-500/10 bg-red-500/5"
-              >
-                <LogOut size={20} strokeWidth={3} />
-                <span>Sair da conta</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
