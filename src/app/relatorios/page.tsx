@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, TrendingUp, Clock, Fuel, Trophy, Target
@@ -176,7 +176,7 @@ export default function Relatorios() {
     });
     return Object.keys(dataMap).map(day => ({
       name: day,
-      value: dataMap[day] !== 0 ? dataMap[day] : Math.floor(Math.random() * 150) + 50
+      value: dataMap[day]
     }));
   };
 

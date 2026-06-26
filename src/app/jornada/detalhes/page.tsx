@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { ArrowLeft, Share2, Clock, Route, Package, TrendingUp, ListTodo } from 'lucide-react';
+import { ArrowLeft, Share2, Clock, Route, Package, TrendingUp } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import type { Journey } from '@/hooks/useJourneys';
 import type { Entry } from '@/hooks/useEntries';
@@ -70,6 +70,15 @@ function DetalhesJornadaConteudo() {
     return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const handleShare = async () => {
+    const text = `Jornada - ${formatJourneyDate(journey!.started_at)}\nDistância: ${journey!.distance_km.toFixed(1).replace('.', ',')} km\nTempo: ${Math.floor(journey!.duration_minutes / 60)}h ${journey!.duration_minutes % 60}m\nLucro: R$ ${profit.toFixed(2).replace('.', ',')}`;
+    if (navigator.share) {
+      await navigator.share({ title: 'MotoPilot', text });
+    } else {
+      await navigator.clipboard.writeText(text);
+    }
+  };
+
   return (
     <div className="space-y-3 pb-28 pt-2 px-4 animate-fade-in-up">
       {/* Header */}
@@ -78,7 +87,7 @@ function DetalhesJornadaConteudo() {
           <ArrowLeft size={22} strokeWidth={2.5} />
         </button>
         <h1 className="text-[16px] font-extrabold text-foreground font-heading">Detalhes</h1>
-        <button className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer">
+        <button onClick={handleShare} className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer">
           <Share2 size={22} strokeWidth={2.5} />
         </button>
       </header>

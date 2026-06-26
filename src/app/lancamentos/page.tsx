@@ -13,10 +13,6 @@ import {
   MoreHorizontal,
   Trash2,
   Plus,
-  ListTodo,
-  CloudUpload,
-  FileText,
-  ChevronUp,
   Wallet,
   Bike,
   Route,
@@ -289,7 +285,6 @@ export default function Lancamentos() {
   const [customEndDate, setCustomEndDate] = useState('');
   const [todayStr, setTodayStr] = useState('');
   const [yesterdayStr, setYesterdayStr] = useState('');
-  const [showFinancialSummary, setShowFinancialSummary] = useState(false);
 
   // Handle quick action fuel category
   useEffect(() => {
@@ -673,7 +668,7 @@ export default function Lancamentos() {
                   <div className="space-y-1">
                     <div className="flex items-center space-x-1">
                       <Bike size={11} className="text-muted" />
-                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Financeiro</label>
+                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Entregas</label>
                     </div>
                     <input
                       type="number"

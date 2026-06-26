@@ -1,7 +1,6 @@
 'use client';
 
 import { Lightbulb, TrendingUp, Trophy, TriangleAlert, Fuel } from 'lucide-react';
-import React from 'react';
 import { InsightCardData } from '@/hooks/useFinancialStats';
 
 interface InsightsSectionProps {

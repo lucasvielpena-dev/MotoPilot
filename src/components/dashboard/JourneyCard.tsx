@@ -1,7 +1,6 @@
 'use client';
 
 import { PlayCircle, Square, Clock, Route, TrendingUp, Package } from 'lucide-react';
-import React from 'react';
 
 interface JourneyCardProps {
   activeJourney: any;

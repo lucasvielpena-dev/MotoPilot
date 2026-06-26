@@ -82,7 +82,7 @@ export default function Jornada() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="text-[13px] font-extrabold text-foreground font-heading">Corrida ativa</span>
+              <span className="text-[13px] font-extrabold text-foreground font-heading">Jornada ativa</span>
             </div>
             <span className="text-[11px] font-bold text-muted">Início {activeStartTime}</span>
           </header>
@@ -150,7 +150,7 @@ export default function Jornada() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Square size={16} fill="white" />
-                <span>Finalizar Corrida</span>
+                <span>Finalizar Jornada</span>
               </div>
             )}
           </button>
@@ -159,7 +159,7 @@ export default function Jornada() {
         <>
           {/* Header Inativo */}
           <header className="flex items-center justify-center py-2">
-            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Corridas</h1>
+            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Jornadas</h1>
           </header>
 
           {/* Stats Gerais */}
@@ -179,7 +179,7 @@ export default function Jornada() {
               <span className="text-[9px] font-bold text-muted">total</span>
             </div>
             <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
-              <span className="text-[9px] font-bold text-muted uppercase block">Corridas</span>
+              <span className="text-[9px] font-bold text-muted uppercase block">Jornadas</span>
               <span className="text-[16px] font-black text-foreground font-heading block mt-0.5">
                 {historicalJourneys.length}
               </span>
@@ -187,7 +187,7 @@ export default function Jornada() {
             </div>
           </section>
 
-          {/* Lista de Corridas */}
+          {/* Lista de Jornadas */}
           <section>
             {historicalJourneys.length === 0 ? (
               <div className="bg-card border border-border rounded-[20px] p-8 text-center">
