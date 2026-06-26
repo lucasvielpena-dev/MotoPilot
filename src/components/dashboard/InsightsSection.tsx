@@ -1,7 +1,7 @@
 'use client';
 
 import { Lightbulb, TrendingUp, Trophy, TriangleAlert, Fuel } from 'lucide-react';
-import React, { useRef } from 'react';
+import React from 'react';
 import { InsightCardData } from '@/hooks/useFinancialStats';
 
 interface InsightsSectionProps {
@@ -43,8 +43,6 @@ const INSIGHT_THEMES = {
 };
 
 export function InsightsSection({ insights, hasData }: InsightsSectionProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   return (
     <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium card-premium space-y-3 animate-fade-in-up">
       <div className="flex items-center space-x-2">
@@ -59,52 +57,36 @@ export function InsightsSection({ insights, hasData }: InsightsSectionProps) {
           <p className="text-[11px] text-muted/60">Registre corridas para ver insights automáticos.</p>
         </div>
       ) : (
-        <div 
-          ref={scrollRef}
-          className="flex gap-2.5 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth hide-scrollbar"
-        >
-          {insights.map((insight, index) => {
+        <div className="grid grid-cols-2 gap-2">
+          {insights.slice(0, 4).map((insight, index) => {
             const theme = INSIGHT_THEMES[insight.type] || INSIGHT_THEMES.info;
             const IconComponent = theme.icon;
             
             return (
               <div 
                 key={index} 
-                className={`flex-shrink-0 w-[calc(50%-5px)] snap-start bg-card-secondary/50 border ${theme.borderColor} rounded-[16px] p-3.5 flex flex-col justify-between min-h-[120px] hover:bg-card-secondary/80 transition-all active:scale-[0.98] cursor-pointer`}
+                className={`bg-card-secondary/50 border ${theme.borderColor} rounded-[14px] p-3 flex flex-col justify-between hover:bg-card-secondary/80 transition-all active:scale-[0.98] cursor-pointer`}
               >
-                <div className="space-y-2">
-                  <div className={`w-9 h-9 rounded-lg ${theme.bgColor} flex items-center justify-center`}>
-                    <IconComponent size={22} className={theme.iconColor} strokeWidth={2.5} />
+                <div className="flex items-center justify-between">
+                  <div className={`w-7 h-7 rounded-md ${theme.bgColor} flex items-center justify-center`}>
+                    <IconComponent size={16} className={theme.iconColor} strokeWidth={2.5} />
                   </div>
-                  <span className="text-[11px] font-extrabold text-muted block leading-tight">
+                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">
                     {insight.title}
                   </span>
                 </div>
 
                 <div className="mt-2">
-                  <p className="text-[20px] font-black text-foreground tracking-tight leading-none font-heading">
+                  <p className="text-[17px] font-black text-foreground tracking-tight leading-none font-heading">
                     {insight.value}
                   </p>
-                  <p className="text-[10px] font-bold text-muted mt-1 leading-tight">
+                  <p className="text-[9px] font-bold text-muted mt-1 leading-tight">
                     {insight.description}
                   </p>
                 </div>
               </div>
             );
           })}
-        </div>
-      )}
-
-      {hasData && insights.length > 2 && (
-        <div className="flex justify-center space-x-1 pt-0.5">
-          {insights.map((_, index) => (
-            <div 
-              key={index} 
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                index === 0 ? 'bg-primary w-4' : 'bg-muted/30'
-              }`} 
-            />
-          ))}
         </div>
       )}
     </section>
