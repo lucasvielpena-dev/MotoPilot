@@ -15,14 +15,11 @@ import { useEntries } from '@/hooks/useEntries';
 import { useGoals } from '@/hooks/useGoals';
 import { supabase } from '@/lib/supabase/client';
 
-// Novos componentes refatorados seguindo responsabilidade única
+// Componentes do Dashboard
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { ProfitCard } from '@/components/dashboard/ProfitCard';
 import { JourneyCard } from '@/components/dashboard/JourneyCard';
-import { GoalsCard } from '@/components/dashboard/GoalsCard';
-import { ComparativeCard } from '@/components/dashboard/ComparativeCard';
 import { InsightsSection } from '@/components/dashboard/InsightsSection';
-import { RecentEntriesSection } from '@/components/dashboard/RecentEntriesSection';
 
 // Hook de cálculos centralizados
 import { useFinancialStats } from '@/hooks/useFinancialStats';
@@ -152,27 +149,6 @@ export default function Home() {
         insights={stats.insights}
         hasData={stats.hasData}
       />
-
-      {/* 4. Controle de Metas */}
-      <GoalsCard
-        weeklyGoal={weeklyGoal}
-        weekNetProfit={stats.weekNetProfit}
-        monthlyGoal={monthlyGoal}
-        monthNetProfit={stats.monthNetProfit}
-        showAmount={showAmount}
-      />
-
-      {/* 5. Comparativo Semanal */}
-      <ComparativeCard
-        weekNetProfit={stats.weekNetProfit}
-        weeklyGoal={weeklyGoal}
-        monthNetProfit={stats.monthNetProfit}
-        monthlyGoal={monthlyGoal}
-        showAmount={showAmount}
-      />
-
-      {/* 6. Lançamentos Recentes */}
-      <RecentEntriesSection entries={entries} />
 
       {/* Side Menu Drawer */}
       {isMenuOpen && (
