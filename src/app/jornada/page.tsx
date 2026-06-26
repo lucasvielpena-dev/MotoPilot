@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Clock, Route, Square } from 'lucide-react';
+import { Clock, Route, Square, MapPin, Zap } from 'lucide-react';
 import { useJourneys } from '@/hooks/useJourneys';
 
 const MiniMap = dynamic(() => import('@/components/MiniMap'), { ssr: false });
@@ -46,8 +46,8 @@ export default function Jornada() {
   if (loading) return null;
 
   const accuracyLabel = gpsStatus === 'active' && gpsAccuracy !== null
-    ? gpsAccuracy <= 15 ? 'GPS Alta' : gpsAccuracy <= 40 ? 'GPS Média' : 'GPS Baixa'
-    : 'GPS Inativo';
+    ? gpsAccuracy <= 15 ? 'Alta' : gpsAccuracy <= 40 ? 'Média' : 'Baixa'
+    : 'Inativo';
   const accuracyColor = gpsStatus === 'active' && gpsAccuracy !== null
     ? gpsAccuracy <= 15 ? 'bg-emerald-500' : gpsAccuracy <= 40 ? 'bg-amber-500' : 'bg-red-500'
     : 'bg-neutral-500';
@@ -69,22 +69,22 @@ export default function Jornada() {
     return `${start} às ${end}`;
   };
 
+  const gpsLabel = `${accuracyLabel}${gpsAccuracy !== null ? ` · ${gpsAccuracy}m` : ''}`;
+
   return (
     <div className="space-y-3 pb-28 pt-2 px-4 animate-fade-in-up">
       {activeJourney ? (
         <>
           {/* Header Ativo */}
-          <header className="flex items-center justify-center py-2">
+          <header className="flex items-center justify-between py-2">
             <div className="flex items-center space-x-2">
-              <span className="flex h-3 w-3 relative">
+              <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <div>
-                <h1 className="text-[14px] font-extrabold text-foreground font-heading">Corrida ativa</h1>
-                <p className="text-[10px] text-muted text-center">Iniciada às {activeStartTime}</p>
-              </div>
+              <span className="text-[13px] font-extrabold text-foreground font-heading">Corrida ativa</span>
             </div>
+            <span className="text-[11px] font-bold text-muted">Início {activeStartTime}</span>
           </header>
 
           {(trackerError || journeyError) && (
@@ -95,42 +95,40 @@ export default function Jornada() {
 
           {/* Mapa */}
           <section className="relative w-full rounded-[20px] overflow-hidden border border-border shadow-premium bg-card">
-            <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-md border border-border rounded-full px-2.5 py-1 shadow-sm flex items-center space-x-1.5 z-[400] text-[10px] font-bold">
+            <div className="absolute top-3 left-3 z-[400] flex items-center space-x-1.5 bg-card/90 backdrop-blur-md border border-border rounded-full px-2.5 py-1 shadow-sm">
               <span className={`w-1.5 h-1.5 rounded-full ${accuracyColor}`}></span>
-              <span className="text-foreground">{accuracyLabel} {gpsAccuracy !== null ? `(${gpsAccuracy}m)` : ''}</span>
+              <span className="text-[10px] font-bold text-foreground">{gpsLabel}</span>
             </div>
             <div className="w-full h-[280px] relative">
               <MiniMap isTracking={isTracking} className="h-full w-full" />
             </div>
           </section>
 
-          {/* Stats da Corrida */}
-          <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium">
-            {/* Distância + Velocidade */}
-            <div className="flex justify-between items-end mb-3">
-              <div>
-                <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Distância</span>
-                <div className="flex items-baseline space-x-1">
-                  <span className="text-2xl font-black text-foreground tracking-tight font-heading">{liveDistance.toFixed(1).replace('.', ',')}</span>
-                  <span className="text-xs font-bold text-muted">km</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Velocidade</span>
-                <div className="flex items-baseline justify-end space-x-1">
-                  <span className="text-2xl font-black text-primary tracking-tight font-heading">{speed !== null ? speed : '0'}</span>
-                  <span className="text-xs font-bold text-muted">km/h</span>
-                </div>
-              </div>
+          {/* Stats - 3 colunas limpas */}
+          <section className="grid grid-cols-3 gap-2">
+            <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
+              <MapPin size={14} className="text-primary mx-auto mb-1" />
+              <span className="text-[9px] font-bold text-muted uppercase block">Distância</span>
+              <span className="text-[17px] font-black text-foreground font-heading block mt-0.5">
+                {liveDistance.toFixed(1).replace('.', ',')}
+              </span>
+              <span className="text-[9px] font-bold text-muted">km</span>
             </div>
-
-            <div className="border-t border-border my-3"></div>
-
-            {/* Tempo */}
-            <div className="text-center">
-              <Clock size={16} className="text-muted mx-auto mb-1" />
+            <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
+              <Zap size={14} className="text-primary mx-auto mb-1" />
+              <span className="text-[9px] font-bold text-muted uppercase block">Velocidade</span>
+              <span className="text-[17px] font-black text-foreground font-heading block mt-0.5">
+                {speed !== null ? speed : '0'}
+              </span>
+              <span className="text-[9px] font-bold text-muted">km/h</span>
+            </div>
+            <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
+              <Clock size={14} className="text-primary mx-auto mb-1" />
               <span className="text-[9px] font-bold text-muted uppercase block">Tempo</span>
-              <span className="text-[15px] font-extrabold text-foreground font-heading">{elapsedTime.slice(0, 5)}h</span>
+              <span className="text-[17px] font-black text-foreground font-heading block mt-0.5">
+                {elapsedTime.slice(0, 5)}
+              </span>
+              <span className="text-[9px] font-bold text-muted">h</span>
             </div>
           </section>
 
@@ -145,78 +143,89 @@ export default function Jornada() {
               else router.push('/');
             }}
             disabled={isFinishing}
-            className="w-full py-3.5 bg-primary-muted text-white font-extrabold text-[14px] rounded-[20px] flex items-center justify-center space-x-2 shadow-lg hover:bg-primary/80 transition-all active:scale-[0.97] cursor-pointer disabled:opacity-50"
+            className="w-full py-3.5 bg-[#EA1D2C] text-white font-extrabold text-[14px] rounded-[20px] flex items-center justify-center shadow-lg hover:bg-[#EA1D2C]/80 transition-all active:scale-[0.97] cursor-pointer disabled:opacity-50"
           >
-            {isFinishing ? <span>Salvando...</span> : (
-              <><Square size={16} fill="white" className="mr-1" /><span>Finalizar Corrida</span></>
+            {isFinishing ? (
+              <span>Salvando...</span>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Square size={16} fill="white" />
+                <span>Finalizar Corrida</span>
+              </div>
             )}
           </button>
         </>
       ) : (
         <>
-          {/* Header Histórico */}
+          {/* Header Inativo */}
           <header className="flex items-center justify-center py-2">
             <h1 className="text-[16px] font-extrabold text-foreground font-heading">Corridas</h1>
           </header>
 
           {/* Stats Gerais */}
-          <section className="bg-card border border-border rounded-[20px] p-3.5 shadow-premium flex justify-between items-center text-center">
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-muted block uppercase">Km Total</span>
-              <span className="text-[14px] font-extrabold text-foreground mt-0.5 block font-heading">{totalCompletedDistance.toFixed(0)} km</span>
+          <section className="grid grid-cols-3 gap-2">
+            <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
+              <span className="text-[9px] font-bold text-muted uppercase block">Km Total</span>
+              <span className="text-[16px] font-black text-foreground font-heading block mt-0.5">
+                {totalCompletedDistance.toFixed(0)}
+              </span>
+              <span className="text-[9px] font-bold text-muted">km</span>
             </div>
-            <div className="border-l border-border h-6"></div>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-muted block uppercase">Tempo</span>
-              <span className="text-[14px] font-extrabold text-foreground mt-0.5 block font-heading">{Math.floor(totalCompletedHours)}h {Math.round((totalCompletedHours % 1) * 60)}m</span>
+            <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
+              <span className="text-[9px] font-bold text-muted uppercase block">Tempo</span>
+              <span className="text-[16px] font-black text-foreground font-heading block mt-0.5">
+                {Math.floor(totalCompletedHours)}h{Math.round((totalCompletedHours % 1) * 60) > 0 ? ` ${Math.round((totalCompletedHours % 1) * 60)}m` : ''}
+              </span>
+              <span className="text-[9px] font-bold text-muted">total</span>
             </div>
-            <div className="border-l border-border h-6"></div>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-muted block uppercase">Corridas</span>
-              <span className="text-[14px] font-extrabold text-foreground mt-0.5 block font-heading">{historicalJourneys.length}</span>
+            <div className="bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-center">
+              <span className="text-[9px] font-bold text-muted uppercase block">Corridas</span>
+              <span className="text-[16px] font-black text-foreground font-heading block mt-0.5">
+                {historicalJourneys.length}
+              </span>
+              <span className="text-[9px] font-bold text-muted">feitas</span>
             </div>
           </section>
 
-          {/* Timeline */}
+          {/* Lista de Corridas */}
           <section>
             {historicalJourneys.length === 0 ? (
-              <div className="bg-card border border-border rounded-[20px] p-6 text-center">
+              <div className="bg-card border border-border rounded-[20px] p-8 text-center">
+                <Route size={28} className="text-muted mx-auto mb-2 opacity-50" />
                 <p className="text-[13px] text-muted font-bold">Nenhuma corrida registrada.</p>
               </div>
             ) : (
-              <div className="relative">
-                <div className="absolute left-[18px] top-0 bottom-0 w-[2px] bg-border"></div>
-                <div className="space-y-1">
-                  {historicalJourneys.map((journey, index) => {
-                    const isLast = index === historicalJourneys.length - 1;
-                    return (
-                      <div key={journey.id} className="relative flex items-start pl-10">
-                        <div className="absolute left-[12px] top-4 w-[14px] h-[14px] rounded-full border-[3px] border-card z-10 bg-emerald-500"></div>
-                        <div className={`flex-1 ${isLast ? '' : 'mb-1.5'}`}>
-                          <div className="bg-card border border-border rounded-[16px] p-3 shadow-sm hover:shadow-md transition-all">
-                            <div className="flex justify-between items-start mb-2">
-                              <div>
-                                <span className="text-[13px] font-extrabold text-foreground block font-heading">{formatJourneyDate(journey.started_at)}</span>
-                                <span className="text-[10px] font-semibold text-muted mt-0.5 block">{formatJourneyTimeRange(journey.started_at, journey.ended_at)}</span>
-                              </div>
-                              <span className="text-[14px] font-extrabold text-foreground font-heading">{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-[10px] font-bold text-muted">
-                              <div className="flex items-center space-x-1">
-                                <Clock size={12} />
-                                <span>{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Route size={12} />
-                                <span>{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+              <div className="space-y-2">
+                {historicalJourneys.map((journey) => (
+                  <button
+                    key={journey.id}
+                    onClick={() => router.push(`/jornada/detalhes?id=${journey.id}`)}
+                    className="w-full bg-card border border-border rounded-[20px] p-3.5 shadow-sm text-left active:scale-[0.98] transition-transform cursor-pointer"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[13px] font-extrabold text-foreground font-heading block">
+                          {formatJourneyDate(journey.started_at)}
+                        </span>
+                        <span className="text-[11px] font-semibold text-muted block mt-0.5">
+                          {formatJourneyTimeRange(journey.started_at, journey.ended_at)}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="text-right">
+                        <span className="text-[16px] font-black text-primary font-heading block">
+                          {journey.distance_km.toFixed(1).replace('.', ',')}
+                        </span>
+                        <span className="text-[10px] font-bold text-muted">km</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 mt-2 pt-2 border-t border-border/60 text-[10px] font-bold text-muted">
+                      <div className="flex items-center space-x-1">
+                        <Clock size={11} />
+                        <span>{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
             )}
           </section>
