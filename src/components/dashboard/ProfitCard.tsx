@@ -160,7 +160,7 @@ export function ProfitCard({
     );
   }
 
-  // ESTADO A: Sem jornada — card limpo e minimalista
+  // ESTADO A: Sem jornada — card expandido
   return (
     <section 
       className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col space-y-2.5 shadow-premium text-white animate-fade-in-up"
@@ -185,10 +185,39 @@ export function ProfitCard({
         </span>
       </div>
 
-      {netProfit > 0 && (
-        <div className="flex justify-between items-center pt-2 border-t border-white/15 text-white/90 text-[11px] font-bold">
-          <span>{deliveriesCount} entregas</span>
-          <span>{goalPercentage.toFixed(0)}% da meta</span>
+      <div className="flex justify-between items-center pt-2 border-t border-white/15 text-white/95">
+        <div className="text-left flex-1">
+          <span className="opacity-75 block text-[9px] font-bold uppercase">Ganhos</span>
+          <span className="text-[13px] font-black">
+            {showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}
+          </span>
+        </div>
+        <div className="h-5 border-l border-white/20 mx-2" />
+        <div className="text-left flex-1">
+          <span className="opacity-75 block text-[9px] font-bold uppercase">Gastos</span>
+          <span className="text-[13px] font-black">
+            {showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}
+          </span>
+        </div>
+        <div className="h-5 border-l border-white/20 mx-2" />
+        <div className="text-left flex-1">
+          <span className="opacity-75 block text-[9px] font-bold uppercase">Entregas</span>
+          <span className="text-[13px] font-black">{deliveriesCount}</span>
+        </div>
+      </div>
+
+      {dailyGoal > 0 && (
+        <div className="space-y-1 pt-2 border-t border-white/15">
+          <div className="flex justify-between text-[10px] font-bold text-white/90">
+            <span>Meta {goalPercentage.toFixed(0)}%</span>
+            <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
+          </div>
+          <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-white rounded-full transition-all duration-1000"
+              style={{ width: `${goalPercentage}%` }}
+            />
+          </div>
         </div>
       )}
     </section>
