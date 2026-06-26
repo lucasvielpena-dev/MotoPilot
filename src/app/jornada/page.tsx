@@ -3,44 +3,26 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { 
-  Eye, EyeOff, Clock, Route, Package, TrendingUp, Square, Wallet
-} from 'lucide-react';
+import { Clock, Route, Square } from 'lucide-react';
 import { useJourneys } from '@/hooks/useJourneys';
-import { useEntries } from '@/hooks/useEntries';
 
 const MiniMap = dynamic(() => import('@/components/MiniMap'), { ssr: false });
 
 export default function Jornada() {
   const router = useRouter();
   const { 
-    activeJourney, historicalJourneys, loading, startJourney, finishJourney, 
+    activeJourney, historicalJourneys, loading, finishJourney, 
     fetchHistoricalJourneys, liveDistance, isTracking, gpsAccuracy, gpsStatus, speed, trackerError 
   } = useJourneys();
-  const { entries, fetchRecentEntries } = useEntries();
 
   const [elapsedTime, setElapsedTime] = useState('00:00:00');
   const [activeStartTime, setActiveStartTime] = useState('--:--');
   const [isFinishing, setIsFinishing] = useState(false);
   const [journeyError, setJourneyError] = useState<string | null>(null);
-  const [showAmount, setShowAmount] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('motopilot_show_amount') !== 'false';
-    setShowAmount(saved);
-  }, []);
-
-  const toggleShowAmount = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const next = !showAmount;
-    setShowAmount(next);
-    localStorage.setItem('motopilot_show_amount', String(next));
-  };
 
   useEffect(() => {
     fetchHistoricalJourneys();
-    fetchRecentEntries(500);
-  }, [fetchHistoricalJourneys, fetchRecentEntries]);
+  }, [fetchHistoricalJourneys]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -70,10 +52,6 @@ export default function Jornada() {
     ? gpsAccuracy <= 15 ? 'bg-emerald-500' : gpsAccuracy <= 40 ? 'bg-amber-500' : 'bg-red-500'
     : 'bg-neutral-500';
 
-  const activeEntries = entries.filter(e => e.journey_id === activeJourney?.id);
-  const activeGains = activeEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-  const activeExpenses = activeEntries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-
   const totalCompletedHours = historicalJourneys.reduce((acc, curr) => acc + curr.duration_minutes, 0) / 60;
   const totalCompletedDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
 
@@ -91,39 +69,26 @@ export default function Jornada() {
     return `${start} às ${end}`;
   };
 
-  const getJourneyStats = (journeyId: string) => {
-    const jEntries = entries.filter(e => e.journey_id === journeyId);
-    const gains = jEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-    const expenses = jEntries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-    return { profit: gains - expenses, deliveries: jEntries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0) };
-  };
-
   return (
     <div className="space-y-3 pb-28 pt-2 px-4 animate-fade-in-up">
       {activeJourney ? (
         <>
           {/* Header Ativo */}
-          <header className="flex items-center justify-between py-2">
+          <header className="flex items-center justify-center py-2">
             <div className="flex items-center space-x-2">
               <span className="flex h-3 w-3 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
               <div>
-                <h1 className="text-[14px] font-extrabold text-foreground font-heading">Jornada ativa</h1>
-                <p className="text-[10px] text-muted">Iniciada às {activeStartTime}</p>
+                <h1 className="text-[14px] font-extrabold text-foreground font-heading">Corrida ativa</h1>
+                <p className="text-[10px] text-muted text-center">Iniciada às {activeStartTime}</p>
               </div>
             </div>
-            <button 
-              onClick={toggleShowAmount}
-              className="w-9 h-9 rounded-full bg-card-secondary hover:bg-card-secondary/80 flex items-center justify-center border border-border transition-transform active:scale-95 cursor-pointer"
-            >
-              {showAmount ? <Eye size={18} className="text-foreground" /> : <EyeOff size={18} className="text-foreground" />}
-            </button>
           </header>
 
           {(trackerError || journeyError) && (
-            <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-[16px] flex items-start space-x-3">
+            <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-[16px]">
               <p className="text-[12px] text-red-500 font-medium">{trackerError || journeyError}</p>
             </div>
           )}
@@ -139,11 +104,12 @@ export default function Jornada() {
             </div>
           </section>
 
-          {/* Stats Ativos */}
+          {/* Stats da Corrida */}
           <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium">
+            {/* Distância + Velocidade */}
             <div className="flex justify-between items-end mb-3">
               <div>
-                <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Odômetro</span>
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Distância</span>
                 <div className="flex items-baseline space-x-1">
                   <span className="text-2xl font-black text-foreground tracking-tight font-heading">{liveDistance.toFixed(1).replace('.', ',')}</span>
                   <span className="text-xs font-bold text-muted">km</span>
@@ -160,26 +126,11 @@ export default function Jornada() {
 
             <div className="border-t border-border my-3"></div>
 
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <Clock size={14} className="text-muted mx-auto mb-0.5" />
-                <span className="text-[9px] font-bold text-muted uppercase block">Tempo</span>
-                <span className="text-[13px] font-extrabold text-foreground font-heading">{elapsedTime.slice(0, 5)}h</span>
-              </div>
-              <div className="border-l border-border">
-                <Wallet size={14} className="text-muted mx-auto mb-0.5" />
-                <span className="text-[9px] font-bold text-muted uppercase block">Ganhos</span>
-                <span className="text-[13px] font-extrabold text-emerald-500 font-heading">
-                  {showAmount ? `R$ ${activeGains.toFixed(2).replace('.', ',')}` : 'R$ •••'}
-                </span>
-              </div>
-              <div className="border-l border-border">
-                <TrendingUp size={14} className="text-muted mx-auto mb-0.5" />
-                <span className="text-[9px] font-bold text-muted uppercase block">Gastos</span>
-                <span className="text-[13px] font-extrabold text-primary-muted font-heading">
-                  {showAmount ? `R$ ${activeExpenses.toFixed(2).replace('.', ',')}` : 'R$ •••'}
-                </span>
-              </div>
+            {/* Tempo */}
+            <div className="text-center">
+              <Clock size={16} className="text-muted mx-auto mb-1" />
+              <span className="text-[9px] font-bold text-muted uppercase block">Tempo</span>
+              <span className="text-[15px] font-extrabold text-foreground font-heading">{elapsedTime.slice(0, 5)}h</span>
             </div>
           </section>
 
@@ -197,7 +148,7 @@ export default function Jornada() {
             className="w-full py-3.5 bg-primary-muted text-white font-extrabold text-[14px] rounded-[20px] flex items-center justify-center space-x-2 shadow-lg hover:bg-primary/80 transition-all active:scale-[0.97] cursor-pointer disabled:opacity-50"
           >
             {isFinishing ? <span>Salvando...</span> : (
-              <><Square size={16} fill="white" className="mr-1" /><span>Finalizar Jornada</span></>
+              <><Square size={16} fill="white" className="mr-1" /><span>Finalizar Corrida</span></>
             )}
           </button>
         </>
@@ -205,16 +156,14 @@ export default function Jornada() {
         <>
           {/* Header Histórico */}
           <header className="flex items-center justify-center py-2">
-            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Jornadas</h1>
+            <h1 className="text-[16px] font-extrabold text-foreground font-heading">Corridas</h1>
           </header>
 
           {/* Stats Gerais */}
           <section className="bg-card border border-border rounded-[20px] p-3.5 shadow-premium flex justify-between items-center text-center">
             <div className="flex-1">
-              <span className="text-[9px] font-bold text-muted block uppercase">Lucro total</span>
-              <span className="text-[14px] font-extrabold text-emerald-500 mt-0.5 block font-heading">
-                R$ {(entries.filter(e => e.type === 'gain' && e.journey_id).reduce((a, c) => a + c.amount, 0) - entries.filter(e => e.type === 'expense' && e.journey_id).reduce((a, c) => a + c.amount, 0)).toFixed(2).replace('.', ',')}
-              </span>
+              <span className="text-[9px] font-bold text-muted block uppercase">Km Total</span>
+              <span className="text-[14px] font-extrabold text-foreground mt-0.5 block font-heading">{totalCompletedDistance.toFixed(0)} km</span>
             </div>
             <div className="border-l border-border h-6"></div>
             <div className="flex-1">
@@ -223,8 +172,8 @@ export default function Jornada() {
             </div>
             <div className="border-l border-border h-6"></div>
             <div className="flex-1">
-              <span className="text-[9px] font-bold text-muted block uppercase">Km</span>
-              <span className="text-[14px] font-extrabold text-foreground mt-0.5 block font-heading">{totalCompletedDistance.toFixed(0)} km</span>
+              <span className="text-[9px] font-bold text-muted block uppercase">Corridas</span>
+              <span className="text-[14px] font-extrabold text-foreground mt-0.5 block font-heading">{historicalJourneys.length}</span>
             </div>
           </section>
 
@@ -232,20 +181,17 @@ export default function Jornada() {
           <section>
             {historicalJourneys.length === 0 ? (
               <div className="bg-card border border-border rounded-[20px] p-6 text-center">
-                <p className="text-[13px] text-muted font-bold">Nenhuma jornada registrada.</p>
+                <p className="text-[13px] text-muted font-bold">Nenhuma corrida registrada.</p>
               </div>
             ) : (
               <div className="relative">
                 <div className="absolute left-[18px] top-0 bottom-0 w-[2px] bg-border"></div>
                 <div className="space-y-1">
                   {historicalJourneys.map((journey, index) => {
-                    const stats = getJourneyStats(journey.id);
                     const isLast = index === historicalJourneys.length - 1;
                     return (
                       <div key={journey.id} className="relative flex items-start pl-10">
-                        <div className={`absolute left-[12px] top-4 w-[14px] h-[14px] rounded-full border-[3px] border-card z-10 ${
-                          stats.profit > 0 ? 'bg-emerald-500' : 'bg-primary-muted'
-                        }`}></div>
+                        <div className="absolute left-[12px] top-4 w-[14px] h-[14px] rounded-full border-[3px] border-card z-10 bg-emerald-500"></div>
                         <div className={`flex-1 ${isLast ? '' : 'mb-1.5'}`}>
                           <div className="bg-card border border-border rounded-[16px] p-3 shadow-sm hover:shadow-md transition-all">
                             <div className="flex justify-between items-start mb-2">
@@ -253,7 +199,7 @@ export default function Jornada() {
                                 <span className="text-[13px] font-extrabold text-foreground block font-heading">{formatJourneyDate(journey.started_at)}</span>
                                 <span className="text-[10px] font-semibold text-muted mt-0.5 block">{formatJourneyTimeRange(journey.started_at, journey.ended_at)}</span>
                               </div>
-                              <span className="text-[14px] font-extrabold text-emerald-500 font-heading">R$ {stats.profit.toFixed(2).replace('.', ',')}</span>
+                              <span className="text-[14px] font-extrabold text-foreground font-heading">{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
                             </div>
                             <div className="flex items-center gap-3 text-[10px] font-bold text-muted">
                               <div className="flex items-center space-x-1">
@@ -263,10 +209,6 @@ export default function Jornada() {
                               <div className="flex items-center space-x-1">
                                 <Route size={12} />
                                 <span>{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Package size={12} />
-                                <span>{stats.deliveries} entregas</span>
                               </div>
                             </div>
                           </div>
