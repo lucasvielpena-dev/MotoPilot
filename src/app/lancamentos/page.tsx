@@ -7,17 +7,17 @@ import {
   ChevronDown,
   Calendar,
   Fuel,
-  ForkKnife,
+  UtensilsCrossed,
   Wrench,
   MapPin,
   MoreHorizontal,
   Trash2,
   Plus,
-  ClipboardList,
-  Upload,
-  FileSpreadsheet,
+  ListTodo,
+  CloudUpload,
+  FileText,
   ChevronUp,
-  DollarSign,
+  Wallet,
   Bike,
   Route,
   Clock
@@ -243,7 +243,7 @@ export default function Lancamentos() {
 
   const quickRecords = [
     { Icon: Fuel, label: 'Combustível', category: 'Combustível', amount: '50' },
-    { Icon: ForkKnife, label: 'Almoço', category: 'Alimentação', amount: '25' },
+    { Icon: UtensilsCrossed, label: 'Almoço', category: 'Alimentação', amount: '25' },
     { Icon: Wrench, label: 'Manutenção', category: 'Manutenção', amount: '40' }
   ];
 
@@ -534,14 +534,14 @@ export default function Lancamentos() {
 
   const getCategoryIcon = (desc: string | null, type?: string) => {
     if (type === 'gain') {
-      return { Icon: DollarSign, bg: 'bg-foreground/5', color: 'text-muted' };
+      return { Icon: Wallet, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     const d = (desc || '').toLowerCase();
     if (d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer')) {
       return { Icon: Fuel, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     if (d.includes('alimentação') || d.includes('almoço') || d.includes('lanche') || d.includes('comer')) {
-      return { Icon: ForkKnife, bg: 'bg-foreground/5', color: 'text-muted' };
+      return { Icon: UtensilsCrossed, bg: 'bg-foreground/5', color: 'text-muted' };
     }
     if (d.includes('manutenção') || d.includes('oficina') || d.includes('óleo') || d.includes('conserto')) {
       return { Icon: Wrench, bg: 'bg-foreground/5', color: 'text-muted' };
@@ -568,7 +568,7 @@ export default function Lancamentos() {
   };
 
   const categoriesList = [
-    { name: 'Alimentação', label: 'Alimentação', Icon: ForkKnife, color: 'rose' },
+    { name: 'Alimentação', label: 'Alimentação', Icon: UtensilsCrossed, color: 'rose' },
     { name: 'Combustível', label: 'Combustível', Icon: Fuel, color: 'emerald' },
     { name: 'Manutenção', label: 'Manutenção', Icon: Wrench, color: 'indigo' },
     { name: 'Estacionamento', label: 'Estacionamento', Icon: MapPin, color: 'blue' },

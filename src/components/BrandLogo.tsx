@@ -6,9 +6,9 @@ import {
   MoreHorizontal, 
   Coins,
   Fuel,
-  ForkKnife,
+  UtensilsCrossed,
   Droplet,
-  AlertTriangle
+  TriangleAlert
 } from 'lucide-react';
 
 type BrandLogoProps = {
@@ -105,7 +105,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('aliment') || cleanName.includes('almoço') || cleanName.includes('comida') || cleanName.includes('lanche') || cleanName.includes('janta')) {
       return (
         <div className={`${className} bg-[#10B981] rounded-2xl flex items-center justify-center`} title="Alimentação">
-          <ForkKnife size={20} className="text-white" />
+          <UtensilsCrossed size={20} className="text-white" />
         </div>
       );
     }
@@ -141,7 +141,7 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     if (cleanName.includes('multa')) {
       return (
         <div className={`${className} bg-[#FF4444] rounded-2xl flex items-center justify-center`} title="Multa">
-          <AlertTriangle size={20} className="text-white" />
+          <TriangleAlert size={20} className="text-white" />
         </div>
       );
     }

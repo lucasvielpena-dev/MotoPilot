@@ -1,6 +1,6 @@
 'use client';
 
-import { Motorbike, Menu, Landmark } from 'lucide-react';
+import { Bike, Menu, Landmark } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface DashboardHeaderProps {
@@ -23,7 +23,7 @@ export function DashboardHeader({ onOpenMenu }: DashboardHeaderProps) {
 
       {/* Logo */}
       <div className="flex items-center space-x-2">
-        <Motorbike size={20} strokeWidth={2.5} className="text-foreground animate-pulse" />
+        <Bike size={20} strokeWidth={2.5} className="text-foreground animate-pulse" />
         <span className="text-[16px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 

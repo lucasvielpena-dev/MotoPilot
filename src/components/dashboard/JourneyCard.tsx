@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Square } from 'lucide-react';
+import { PlayCircle, Square } from 'lucide-react';
 import React from 'react';
 
 interface JourneyCardProps {
@@ -58,7 +58,7 @@ export function JourneyCard({
           disabled={isTransitioning}
           className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3.5 rounded-xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
         >
-          <Play size={14} fill="currentColor" className="mr-1" />
+          <PlayCircle size={14} fill="currentColor" className="mr-1" />
           <span>{isTransitioning ? 'Iniciando...' : 'Iniciar Jornada'}</span>
         </button>
       )}

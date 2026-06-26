@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  UserCircle, 
+  CircleUserRound, 
   Settings, 
   LogOut, 
-  Flag, 
+  Target, 
   X, 
   Sun, 
   Moon,
@@ -182,7 +182,7 @@ export default function Perfil() {
       {/* Info do Usuário */}
       <section className="flex items-center space-x-3 bg-card border border-border p-4 rounded-[20px] shadow-premium">
         <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center relative flex-shrink-0">
-          <UserCircle size={32} className="text-primary" />
+          <CircleUserRound size={32} className="text-primary" />
           <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-card flex items-center justify-center animate-pulse"></span>
         </div>
         <div className="flex-1 min-w-0">
@@ -371,7 +371,7 @@ export default function Perfil() {
           <div className="flex justify-between items-center p-3.5 border-b border-border/60">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-card-secondary/60 rounded-xl">
-                <Flag size={14} className="text-muted" />
+                <Target size={14} className="text-muted" />
               </div>
               <div>
                 <p className="text-[13px] font-extrabold text-foreground">Diária</p>

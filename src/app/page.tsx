@@ -3,9 +3,9 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  Motorbike, 
+  Bike, 
   X, 
-  User, 
+  CircleUserRound, 
   Settings, 
   LogOut 
 } from 'lucide-react';
@@ -185,7 +185,7 @@ export default function Home() {
           <div className="relative w-72 max-w-xs bg-card border-r border-border h-full shadow-2xl flex flex-col p-6 space-y-6 animate-in slide-in-from-left duration-300">
             <div className="flex justify-between items-center border-b border-border pb-4">
               <div className="flex items-center space-x-2">
-                <Motorbike size={22} strokeWidth={3} className="text-primary-muted" />
+                <Bike size={22} strokeWidth={3} className="text-primary-muted" />
                 <span className="text-[16px] font-extrabold text-foreground font-heading">Menu MotoPilot</span>
               </div>
               <button 
@@ -202,7 +202,7 @@ export default function Home() {
                   onClick={() => { setIsMenuOpen(false); router.push('/perfil'); }}
                   className="w-full flex items-center space-x-3 px-4 py-3.5 text-[14px] font-bold text-muted rounded-xl hover:bg-card-secondary hover:text-foreground transition-colors text-left cursor-pointer"
                 >
-                  <User size={20} strokeWidth={3} className="text-foreground/60" />
+                  <CircleUserRound size={20} strokeWidth={3} className="text-foreground/60" />
                   <span>Meu Perfil</span>
                 </button>
                 

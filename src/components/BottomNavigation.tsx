@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { 
   Home, 
-  CalendarCheck, 
-  Plus, 
-  Receipt, 
-  User 
+  Bike, 
+  PlusCircle, 
+  BarChart3, 
+  CircleUserRound 
 } from 'lucide-react';
 
 export function BottomNavigation() {
@@ -17,10 +17,10 @@ export function BottomNavigation() {
 
   const navItems = [
     { name: 'Início', href: '/', Icon: Home, active: pathname === '/' && !isNew },
-    { name: 'Jornadas', href: '/jornada', Icon: CalendarCheck, active: pathname === '/jornada' && !isNew },
-    { name: 'Novo', href: '/lancamentos?new=true', Icon: Plus, isCenter: true, active: isNew },
-    { name: 'Gastos', href: '/lancamentos', Icon: Receipt, active: pathname === '/lancamentos' && !isNew },
-    { name: 'Perfil', href: '/perfil', Icon: User, active: pathname === '/perfil' && !isNew },
+    { name: 'Corridas', href: '/lancamentos', Icon: Bike, active: pathname === '/lancamentos' && !isNew },
+    { name: 'Nova', href: '/lancamentos?new=true', Icon: PlusCircle, isCenter: true, active: isNew },
+    { name: 'Stats', href: '/relatorios', Icon: BarChart3, active: pathname === '/relatorios' && !isNew },
+    { name: 'Perfil', href: '/perfil', Icon: CircleUserRound, active: pathname === '/perfil' && !isNew },
   ];
 
   return (
@@ -35,7 +35,7 @@ export function BottomNavigation() {
               className="flex flex-col items-center justify-center py-1 w-14 cursor-pointer active:scale-95 transition-all"
             >
               <IconComponent 
-                size={item.isCenter ? 24 : 22}
+                size={item.isCenter ? 28 : 24}
                 strokeWidth={item.active ? 2.5 : 2}
                 className={`transition-all duration-200 ${
                   item.isCenter

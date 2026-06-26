@@ -6,8 +6,8 @@ import {
   ArrowLeft, 
   Share2, 
   Clock, 
-  Map, 
-  ShoppingBag, 
+  Route, 
+  Package, 
   TrendingUp, 
   Fuel, 
   Trophy,
@@ -272,7 +272,7 @@ function ResumoJornadaConteudo() {
         {/* Quilômetros */}
         <div className="bg-card border border-border rounded-[20px] p-4 space-y-2 flex flex-col justify-between shadow-sm">
           <div className="flex items-center space-x-2 text-muted">
-            <Map size={16} />
+            <Route size={16} />
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Distância</span>
           </div>
           <span className="text-[16px] font-extrabold text-foreground font-heading">
@@ -283,7 +283,7 @@ function ResumoJornadaConteudo() {
         {/* Entregas */}
         <div className="bg-card border border-border rounded-[20px] p-4 space-y-2 flex flex-col justify-between shadow-sm">
           <div className="flex items-center space-x-2 text-muted">
-            <ShoppingBag size={16} />
+            <Package size={16} />
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Entregas</span>
           </div>
           <span className="text-[16px] font-extrabold text-foreground font-heading">

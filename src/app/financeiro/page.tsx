@@ -6,10 +6,10 @@ import {
   ArrowLeft, 
   TrendingUp, 
   TrendingDown, 
-  DollarSign, 
+  Wallet, 
   Clock, 
-  Map, 
-  ShoppingBag, 
+  Route, 
+  Package, 
   Fuel, 
   Target 
 } from 'lucide-react';
@@ -111,7 +111,7 @@ export default function CentralFinanceira() {
         {/* Lucro por Km */}
         <div className="bg-card border border-border rounded-[20px] p-4 flex items-center space-x-3.5 shadow-sm">
           <div className="w-9 h-9 rounded-xl bg-card-secondary flex items-center justify-center text-muted">
-            <Map size={18} />
+            <Route size={18} />
           </div>
           <div className="space-y-0.5">
             <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Lucro por Km</span>
@@ -122,7 +122,7 @@ export default function CentralFinanceira() {
         {/* Total Entregas */}
         <div className="bg-card border border-border rounded-[20px] p-4 flex items-center space-x-3.5 shadow-sm">
           <div className="w-9 h-9 rounded-xl bg-card-secondary flex items-center justify-center text-muted">
-            <ShoppingBag size={18} />
+            <Package size={18} />
           </div>
           <div className="space-y-0.5">
             <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Entregas Realizadas</span>
@@ -133,7 +133,7 @@ export default function CentralFinanceira() {
         {/* Km Rodados */}
         <div className="bg-card border border-border rounded-[20px] p-4 flex items-center space-x-3.5 shadow-sm">
           <div className="w-9 h-9 rounded-xl bg-card-secondary flex items-center justify-center text-muted">
-            <Map size={18} />
+            <Route size={18} />
           </div>
           <div className="space-y-0.5">
             <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Km Rodados</span>

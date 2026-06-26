@@ -7,14 +7,14 @@ import {
   Eye,
   EyeOff,
   Clock,
-  Map,
-  ShoppingBag,
+  Route,
+  Package,
   TrendingUp,
   Square,
-  Play,
-  Calendar,
-  AlertTriangle,
-  CircleDollarSign
+  PlayCircle,
+  Sunrise,
+  TriangleAlert,
+  Wallet
 } from 'lucide-react';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
@@ -168,7 +168,7 @@ export default function Jornada() {
 
           {(trackerError || journeyError) && (
             <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-[16px] flex items-start space-x-3 mx-1">
-              <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <TriangleAlert size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
               <p className="text-[12px] text-red-500 font-medium">{trackerError || journeyError}</p>
             </div>
           )}
@@ -218,7 +218,7 @@ export default function Jornada() {
                 <span className="text-[13px] font-extrabold text-foreground block font-heading">{elapsedTime.slice(0, 5)}h</span>
               </div>
               <div className="space-y-0.5 border-l border-border">
-                <CircleDollarSign size={14} className="text-muted mx-auto mb-0.5" />
+                <Wallet size={14} className="text-muted mx-auto mb-0.5" />
                 <span className="text-[9px] font-bold text-muted uppercase tracking-wider block">Ganhos</span>
                 <span className="text-[13px] font-extrabold text-success-muted block font-heading">
                   {showAmount ? `R$ ${activeGains.toFixed(2).replace('.', ',')}` : 'R$ •••'}
@@ -330,11 +330,11 @@ export default function Jornada() {
                                 <span>{Math.floor(journey.duration_minutes / 60)}h {journey.duration_minutes % 60}m</span>
                               </div>
                               <div className="flex items-center space-x-1">
-                                <Map size={12} className="text-muted" />
+                                <Route size={12} className="text-muted" />
                                 <span>{journey.distance_km.toFixed(1).replace('.', ',')} km</span>
                               </div>
                               <div className="flex items-center space-x-1">
-                                <ShoppingBag size={12} className="text-muted" />
+                                <Package size={12} className="text-muted" />
                                 <span>{stats.deliveries} entregas</span>
                               </div>
                             </div>

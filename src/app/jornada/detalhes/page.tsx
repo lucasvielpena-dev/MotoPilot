@@ -7,11 +7,10 @@ import {
   ArrowLeft,
   Share2,
   Clock,
-  Map,
-  ShoppingBag,
+  Route,
+  Package,
   TrendingUp,
-  MapPin,
-  List
+  ListTodo
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import type { Journey } from '@/hooks/useJourneys';
@@ -172,7 +171,7 @@ function DetalhesJornadaConteudo() {
 
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center">
-              <Map size={16} strokeWidth={2.5} className="text-muted" />
+              <Route size={16} strokeWidth={2.5} className="text-muted" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Km rodados</span>
@@ -182,7 +181,7 @@ function DetalhesJornadaConteudo() {
 
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center">
-              <ShoppingBag size={16} strokeWidth={2.5} className="text-muted" />
+              <Package size={16} strokeWidth={2.5} className="text-muted" />
             </div>
             <div>
               <span className="text-[10px] font-bold text-muted block uppercase">Entregas</span>
@@ -207,7 +206,7 @@ function DetalhesJornadaConteudo() {
         {detailTab === 'mapa' ? (
           <>
             <h3 className="text-[14px] font-bold text-foreground flex items-center space-x-2">
-              <MapPin size={18} className="text-muted" />
+              <Route size={18} className="text-muted" />
               <span>Caminho percorrido</span>
             </h3>
             <div className="w-full relative overflow-hidden rounded-[24px]">
@@ -218,7 +217,7 @@ function DetalhesJornadaConteudo() {
           /* Resumo/Lista de transacoes da jornada */
           <div className="space-y-3">
             <h3 className="text-[14px] font-bold text-foreground flex items-center space-x-2">
-              <List size={18} className="text-muted" />
+              <ListTodo size={18} className="text-muted" />
               <span>Transações do percurso</span>
             </h3>
             {entries.length === 0 ? (

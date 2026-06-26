@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, EyeOff, Trophy, Sparkles, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Trophy, Lightbulb, TriangleAlert } from 'lucide-react';
 import React from 'react';
 
 interface ProfitCardProps {
@@ -41,7 +41,7 @@ export function ProfitCard({
       >
         <div className="flex justify-between items-center">
           <span className="text-[11px] font-black tracking-wider uppercase opacity-90 flex items-center space-x-1">
-            <Sparkles size={12} className="text-white fill-white animate-spin" style={{ animationDuration: '4s' }} />
+            <Lightbulb size={12} className="text-white fill-white animate-spin" style={{ animationDuration: '4s' }} />
             <span>Dia de Trabalho</span>
           </span>
           <button 
@@ -210,7 +210,7 @@ export function ProfitCard({
           />
         </div>
         <div className="text-[10px] font-extrabold opacity-90 flex items-center space-x-1.5 mt-1 bg-white/10 p-2 rounded-lg">
-          <AlertCircle size={14} className="text-white flex-shrink-0 animate-pulse" />
+          <TriangleAlert size={14} className="text-white flex-shrink-0 animate-pulse" />
           <span>Faltam R$ {remaining.toFixed(0)} para atingir sua meta.</span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, TrendingUp, Trophy, AlertTriangle, Fuel } from 'lucide-react';
+import { Lightbulb, TrendingUp, Trophy, TriangleAlert, Fuel } from 'lucide-react';
 import React from 'react';
 import { InsightCardData } from '@/hooks/useFinancialStats';
 
@@ -17,7 +17,7 @@ const INSIGHT_THEMES = {
     borderColor: 'hover:border-[#10B981]/30'
   },
   info: {
-    icon: Sparkles,
+    icon: Lightbulb,
     iconColor: 'text-[#3B82F6]',
     bgColor: 'bg-[#3B82F6]/10',
     borderColor: 'hover:border-[#3B82F6]/30'
@@ -29,7 +29,7 @@ const INSIGHT_THEMES = {
     borderColor: 'hover:border-[#F59E0B]/30'
   },
   warning: {
-    icon: AlertTriangle,
+    icon: TriangleAlert,
     iconColor: 'text-[#EF4444]',
     bgColor: 'bg-[#EF4444]/10',
     borderColor: 'hover:border-[#EF4444]/30'
@@ -47,7 +47,7 @@ export function InsightsSection({ insights, hasData }: InsightsSectionProps) {
     <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium card-premium space-y-3.5 animate-fade-in-up">
       {/* Header */}
       <div className="flex items-center space-x-2">
-        <Sparkles size={14} className="text-[#F59E0B] fill-[#F59E0B]/10" />
+        <Lightbulb size={14} className="text-[#F59E0B] fill-[#F59E0B]/10" />
         <span className="text-[11px] font-extrabold text-foreground uppercase tracking-wider">Insights Inteligentes</span>
       </div>
 
