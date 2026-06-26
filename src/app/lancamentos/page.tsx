@@ -673,7 +673,7 @@ export default function Lancamentos() {
                   <div className="space-y-1">
                     <div className="flex items-center space-x-1">
                       <Bike size={11} className="text-muted" />
-                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Corridas</label>
+                      <label className="text-[9px] font-black text-muted uppercase tracking-wider">Financeiro</label>
                     </div>
                     <input
                       type="number"

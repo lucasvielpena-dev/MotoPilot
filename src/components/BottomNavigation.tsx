@@ -17,7 +17,7 @@ export function BottomNavigation() {
 
   const navItems = [
     { name: 'Início', href: '/', Icon: Home, active: pathname === '/' && !isNew },
-    { name: 'Corridas', href: '/lancamentos', Icon: Bike, active: pathname === '/lancamentos' && !isNew },
+    { name: 'Financeiro', href: '/lancamentos', Icon: Bike, active: pathname === '/lancamentos' && !isNew },
     { name: 'Nova', href: '/lancamentos?new=true', Icon: PlusCircle, isCenter: true, active: isNew },
     { name: 'Stats', href: '/relatorios', Icon: BarChart3, active: pathname === '/relatorios' && !isNew },
     { name: 'Perfil', href: '/perfil', Icon: CircleUserRound, active: pathname === '/perfil' && !isNew },
