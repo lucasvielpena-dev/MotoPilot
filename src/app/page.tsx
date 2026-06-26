@@ -120,19 +120,7 @@ export default function Home() {
       {/* Header Refatorado */}
       <DashboardHeader onOpenMenu={() => setIsMenuOpen(true)} />
 
-      {/* 1. ProfitCard Inteligente e Dinâmico */}
-      <ProfitCard
-        netProfit={stats.todayNetProfit}
-        totalGains={stats.todayGains}
-        totalExpenses={stats.todayExpenses}
-        deliveriesCount={stats.todayDeliveries}
-        dailyGoal={dailyGoal}
-        showAmount={showAmount}
-        onToggleShowAmount={toggleShowAmount}
-        hasActiveJourney={!!activeJourney}
-      />
-
-      {/* 2. Controle de Jornada */}
+      {/* 1. Controle de Jornada — Ação Principal */}
       <JourneyCard
         activeJourney={activeJourney}
         elapsedTime={elapsedTime}
@@ -144,7 +132,19 @@ export default function Home() {
         onFinishJourney={handleFinishJourney}
       />
 
-      {/* 3. Insights Inteligentes Unificados */}
+      {/* 2. Lucro do Dia */}
+      <ProfitCard
+        netProfit={stats.todayNetProfit}
+        totalGains={stats.todayGains}
+        totalExpenses={stats.todayExpenses}
+        deliveriesCount={stats.todayDeliveries}
+        dailyGoal={dailyGoal}
+        showAmount={showAmount}
+        onToggleShowAmount={toggleShowAmount}
+        hasActiveJourney={!!activeJourney}
+      />
+
+      {/* 3. Insights Inteligentes */}
       <InsightsSection
         insights={stats.insights}
         hasData={stats.hasData}
