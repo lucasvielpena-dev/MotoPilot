@@ -11,29 +11,26 @@ export function DashboardHeader({ onOpenMenu }: DashboardHeaderProps) {
   const router = useRouter();
 
   return (
-    <div className="flex items-center justify-between mb-4 px-1">
-      {/* Menu Trigger */}
+    <div className="flex items-center justify-between px-1">
       <button 
         onClick={onOpenMenu}
-        className="w-9 h-9 rounded-xl bg-card border border-border flex items-center justify-center text-muted hover:text-foreground active:scale-95 transition-all cursor-pointer"
+        className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-muted hover:text-foreground active:scale-95 transition-all cursor-pointer"
         title="Abrir Menu"
       >
-        <Menu size={18} strokeWidth={2.5} />
+        <Menu size={20} strokeWidth={2.5} />
       </button>
 
-      {/* Logo */}
       <div className="flex items-center space-x-2">
-        <Bike size={20} strokeWidth={2.5} className="text-foreground animate-pulse" />
-        <span className="text-[16px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
+        <Bike size={22} strokeWidth={2.5} className="text-primary" />
+        <span className="text-[17px] font-extrabold tracking-tight text-foreground font-heading">MotoPilot</span>
       </div>
 
-      {/* Central Financeira Link */}
       <button 
         onClick={() => router.push('/financeiro')}
-        className="w-9 h-9 rounded-xl bg-card border border-border flex items-center justify-center text-primary hover:text-primary-muted active:scale-95 transition-all cursor-pointer"
+        className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center text-primary hover:text-primary-muted active:scale-95 transition-all cursor-pointer"
         title="Central Financeira"
       >
-        <Landmark size={18} strokeWidth={2.5} />
+        <Landmark size={20} strokeWidth={2.5} />
       </button>
     </div>
   );
