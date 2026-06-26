@@ -578,38 +578,31 @@ export default function Lancamentos() {
   const filterOptions = ['Todos', 'Ganhos', 'Gastos', 'Combustível', 'Alimentação', 'Manutenção', 'Estacionamento', 'Outros'] as const;
 
   return (
-    <div className="space-y-4 pb-28 pt-1">
+    <div className="space-y-3 pb-28 pt-2 px-4 animate-fade-in-up">
       {isNew ? (
-        /* SCREEN 4: NOVO GASTO */
-        <div className="space-y-4">
-          {/* Header */}
-          <header className="flex justify-between items-center bg-card px-2 py-2 border-b border-border -mx-4">
+        <div className="space-y-3">
+          <header className="flex items-center space-x-3 py-2">
             <button 
               onClick={() => router.push('/lancamentos')}
-              className="w-9 h-9 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
             >
               <ArrowLeft size={22} strokeWidth={2.5} />
             </button>
             <h1 className="text-[16px] font-extrabold text-foreground font-heading">Novo lançamento</h1>
-            <div className="w-9 h-9" /> {/* Spacer */}
           </header>
 
           {saveSuccessType ? (
-            /* SUCCESS STATE */
-            <div className="bg-card border border-border rounded-[24px] p-5 text-center space-y-4 shadow-premium animate-fade-in-up">
+            <div className="bg-card border border-border rounded-[20px] p-5 text-center space-y-4 shadow-premium animate-fade-in-up">
               <div className="w-14 h-14 bg-card-secondary rounded-full flex items-center justify-center mx-auto border border-border">
                 <svg className="w-7 h-7 text-foreground" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               </div>
-              
               <div className="space-y-1.5">
                 <h3 className="text-[16px] font-black text-foreground font-heading">
-                  {saveSuccessType === 'gasto' ? 'Gasto salvo com sucesso!' : 'Ganho salvo com sucesso!'}
+                  {saveSuccessType === 'gasto' ? 'Gasto salvo!' : 'Ganho salvo!'}
                 </h3>
-                <p className="text-[12px] text-muted font-semibold">
-                  O lançamento foi registrado e atualizado em seus relatórios.
-                </p>
+                <p className="text-[12px] text-muted font-semibold">Lançamento registrado.</p>
               </div>
 
               <div className="flex flex-col space-y-2 pt-1">
@@ -636,8 +629,7 @@ export default function Lancamentos() {
             </div>
           ) : (
             <>
-              {/* Tabs */}
-          <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
+              <div className="flex bg-card-secondary/80 p-0.5 rounded-xl border border-border">
             <button 
               onClick={() => setExpenseTab('gasto')} 
               className={`flex-1 py-2 text-[13px] font-bold rounded-lg transition-all cursor-pointer ${expenseTab === 'gasto' ? 'bg-card text-foreground border border-border shadow-sm' : 'text-muted hover:text-foreground'}`}
@@ -1004,32 +996,28 @@ export default function Lancamentos() {
           )}
         </div>
       ) : (
-        /* SCREEN 5: GASTOS (LIST VIEW) */
-        <div className="space-y-4 animate-fade-in-up">
-          {/* Header */}
-          <header className="flex justify-between items-center bg-card px-2 py-2 border-b border-border -mx-4">
+        <div className="space-y-3 animate-fade-in-up">
+          <header className="flex items-center space-x-3 py-2">
             <button 
               onClick={() => router.push('/')}
-              className="w-9 h-9 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-card-secondary rounded-xl transition-colors cursor-pointer"
             >
               <ArrowLeft size={22} strokeWidth={2.5} />
             </button>
             <h1 className="text-[16px] font-extrabold text-foreground font-heading">Lançamentos</h1>
-            <div className="w-9 h-9" /> {/* Spacer */}
           </header>
 
-          {/* Financial stats summary indicators */}
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
-                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Total Mês</span>
+          <div className="grid grid-cols-3 gap-2">
+                <div className="bg-card border border-border rounded-[20px] p-2.5 text-center shadow-sm">
+                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Mês</span>
                   <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {totalExpensesSum.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
-                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Média Diária</span>
+                <div className="bg-card border border-border rounded-[20px] p-2.5 text-center shadow-sm">
+                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Média/dia</span>
                   <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {dailyAverage.toFixed(0).replace('.', ',')}</span>
                 </div>
-                <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-2.5 text-center">
-                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Maior Gasto</span>
+                <div className="bg-card border border-border rounded-[20px] p-2.5 text-center shadow-sm">
+                  <span className="text-[8px] font-extrabold text-muted uppercase tracking-wider block">Maior</span>
                   <span className="text-[13px] font-black text-foreground mt-0.5 block font-heading">R$ {maxExpense.toFixed(0).replace('.', ',')}</span>
                 </div>
               </div>
@@ -1123,8 +1111,7 @@ export default function Lancamentos() {
                 </div>
               </div>
 
-              {/* Filtration pills - Categorias (Sticky top-0 z-30) */}
-              <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm py-2 -mx-4 px-4 border-b border-border/10 flex overflow-x-auto gap-1.5 hide-scrollbar">
+          <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm py-2 -mx-4 px-4 border-b border-border/10 flex overflow-x-auto gap-1.5 hide-scrollbar">
                 {filterOptions.map((filter) => {
                   const isActive = activeFilter === filter;
                   return (
@@ -1146,23 +1133,21 @@ export default function Lancamentos() {
                 })}
               </div>
 
-              {/* Total display card of the current filter */}
-              {activeFilter !== 'Todos' && (
-                <div className="bg-card border border-border rounded-[24px] p-4 shadow-sm flex items-center justify-between">
+          {activeFilter !== 'Todos' && (
+                <div className="bg-card border border-border rounded-[20px] p-4 shadow-sm flex items-center justify-between">
                   <span className="text-[12px] font-bold text-muted uppercase tracking-wider">Total {activeFilter}</span>
                   <span className="text-[16px] font-extrabold text-foreground font-heading">R$ {totalFilteredSum.toFixed(2).replace('.', ',')}</span>
                 </div>
               )}
 
-              {/* Scrollable list */}
               <section className="space-y-2">
                 {entriesLoading && !fetched ? (
-                  <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-sm">
+                  <div className="bg-card border border-border rounded-[20px] p-8 text-center shadow-sm">
                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                    <p className="text-[14px] text-muted font-bold">Buscando seus gastos...</p>
+                    <p className="text-[14px] text-muted font-bold">Buscando lançamentos...</p>
                   </div>
                 ) : filteredEntries.length === 0 ? (
-                  <div className="bg-card border border-border rounded-3xl p-8 text-center shadow-sm">
+                  <div className="bg-card border border-border rounded-[20px] p-8 text-center shadow-sm">
                     <p className="text-[14px] text-muted font-bold">Nenhum lançamento encontrado.</p>
                   </div>
                 ) : (
@@ -1175,9 +1160,9 @@ export default function Lancamentos() {
                     const hasPlatform = !!platformId;
 
                     return (
-                      <div 
+                    <div 
                         key={entry.id}
-                        className="relative bg-card border border-border rounded-[16px] p-3.5 flex justify-between items-center active:scale-[0.99] transition-all overflow-hidden hover:border-border/80"
+                        className="relative bg-card border border-border rounded-[16px] p-3 flex justify-between items-center active:scale-[0.99] transition-all overflow-hidden"
                         style={{ borderLeft: `4px solid ${stripeColor}` }}
                       >
                         <div className="flex items-center space-x-3.5">
@@ -1252,11 +1237,10 @@ export default function Lancamentos() {
                 )}
               </section>
 
-              {/* Bottom New Expense Trigger button */}
               <div className="pt-1">
                 <button
                   onClick={() => router.push('/lancamentos?new=true')}
-                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-[16px] transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
+                  className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-[20px] transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
                 >
                   <Plus size={16} strokeWidth={2.5} />
                   <span>Novo lançamento</span>
@@ -1268,11 +1252,11 @@ export default function Lancamentos() {
       {/* Delete Confirmation Modal */}
       {deleteId && (
         <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-card w-full max-w-sm rounded-[32px] border border-border overflow-hidden shadow-2xl p-6 space-y-6 animate-fade-in-up">
+          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl p-6 space-y-6 animate-fade-in-up">
             <div className="text-center space-y-2">
               <h3 className="text-[18px] font-extrabold text-foreground font-heading">Apagar Lançamento?</h3>
               <p className="text-[13px] text-muted font-semibold leading-relaxed">
-                Esta ação removerá permanentemente este lançamento do seu histórico e relatórios.
+                Esta ação é permanente.
               </p>
             </div>
             <div className="flex space-x-3">
