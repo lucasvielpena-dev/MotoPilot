@@ -10,7 +10,7 @@ export interface InsightCardData {
   title: string;
   value: string;
   description: string;
-  type: 'growth' | 'info' | 'success' | 'warning' | 'fuel' | 'hourly';
+  type: 'growth' | 'info' | 'success' | 'warning' | 'fuel';
 }
 
 export interface PlatformStat {
@@ -287,16 +287,6 @@ export function useFinancialStats(
         });
       }
 
-      // Custo do combustível recuperado
-      if (todayGains > fuelExpenses && fuelExpenses > 0) {
-        insightsList.push({
-          title: 'Combustível',
-          value: 'Recuperado',
-          description: 'Custos pagos hoje',
-          type: 'fuel'
-        });
-      }
-
       // Percentual de combustível sobre gastos
       if (fuelPercentage > 0) {
         insightsList.push({
@@ -325,15 +315,7 @@ export function useFinancialStats(
         });
       }
 
-      // Média por km ou por hora excelente
-      if (avgHourlyEarnings > 30) {
-        insightsList.push({
-          title: 'Ganhos/Hora',
-          value: `R$ ${avgHourlyEarnings.toFixed(0)}/h`,
-          description: 'Desempenho excelente',
-          type: 'hourly'
-        });
-      }
+
     }
 
     return {

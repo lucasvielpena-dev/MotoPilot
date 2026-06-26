@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, TrendingUp, Trophy, AlertTriangle, Fuel, Clock } from 'lucide-react';
+import { Sparkles, TrendingUp, Trophy, AlertTriangle, Fuel } from 'lucide-react';
 import React from 'react';
 import { InsightCardData } from '@/hooks/useFinancialStats';
 
@@ -39,12 +39,6 @@ const INSIGHT_THEMES = {
     iconColor: 'text-[#F97316]',
     bgColor: 'bg-[#F97316]/10',
     borderColor: 'hover:border-[#F97316]/30'
-  },
-  hourly: {
-    icon: Clock,
-    iconColor: 'text-[#8B5CF6]',
-    bgColor: 'bg-[#8B5CF6]/10',
-    borderColor: 'hover:border-[#8B5CF6]/30'
   }
 };
 
@@ -63,7 +57,7 @@ export function InsightsSection({ insights, hasData }: InsightsSectionProps) {
           <p className="text-[10px] text-muted/80">Registre suas corridas e jornadas para obter insights automáticos.</p>
         </div>
       ) : (
-        <div className="flex overflow-x-auto gap-3 pb-2 -mx-4 px-4 hide-scrollbar">
+        <div className="grid grid-cols-5 gap-2">
           {insights.map((insight, index) => {
             const theme = INSIGHT_THEMES[insight.type] || INSIGHT_THEMES.info;
             const IconComponent = theme.icon;
@@ -71,24 +65,24 @@ export function InsightsSection({ insights, hasData }: InsightsSectionProps) {
             return (
               <div 
                 key={index} 
-                className={`flex-shrink-0 w-36 bg-card-secondary/50 border border-border/50 rounded-2xl p-3 flex flex-col justify-between h-28 hover:bg-card-secondary/80 ${theme.borderColor} transition-all active:scale-[0.98] cursor-pointer`}
+                className={`bg-card-secondary/50 border border-border/50 rounded-2xl p-2 flex flex-col justify-between h-24 hover:bg-card-secondary/80 ${theme.borderColor} transition-all active:scale-[0.98] cursor-pointer`}
               >
                 {/* Header do Card */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider truncate mr-1">
+                  <span className="text-[7px] font-extrabold text-muted uppercase tracking-wider truncate mr-1">
                     {insight.title}
                   </span>
-                  <div className={`w-5 h-5 rounded-md ${theme.bgColor} flex items-center justify-center flex-shrink-0`}>
-                    <IconComponent size={12} className={theme.iconColor} />
+                  <div className={`w-4 h-4 rounded-md ${theme.bgColor} flex items-center justify-center flex-shrink-0`}>
+                    <IconComponent size={10} className={theme.iconColor} />
                   </div>
                 </div>
 
                 {/* Conteúdo do Card */}
-                <div className="mt-2 space-y-0.5">
-                  <p className="text-[13px] font-black text-foreground tracking-tight leading-none font-heading line-clamp-2">
+                <div className="mt-1 space-y-0.5">
+                  <p className="text-[10px] font-black text-foreground tracking-tight leading-none font-heading line-clamp-2">
                     {insight.value}
                   </p>
-                  <p className="text-[9px] font-extrabold text-muted leading-tight line-clamp-2">
+                  <p className="text-[6px] font-extrabold text-muted leading-tight line-clamp-2">
                     {insight.description}
                   </p>
                 </div>
