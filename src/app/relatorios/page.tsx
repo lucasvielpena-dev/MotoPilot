@@ -117,7 +117,9 @@ export default function Relatorios() {
   const totalHours = historicalJourneys.reduce((acc, curr) => acc + curr.duration_minutes, 0) / 60;
   const activeJourneyHours = activeJourney ? (Date.now() - new Date(activeJourney.started_at).getTime()) / 3600000 : 0;
   const totalHoursWithActive = totalHours + activeJourneyHours;
-  const totalDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
+  const completedDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
+  const manualKm = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.km_total || 0), 0);
+  const totalDistance = completedDistance > 0 ? completedDistance : manualKm;
   const totalRides = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
 
   const earningsPerHour = totalHoursWithActive > 0 ? totalGains / totalHoursWithActive : 0;
