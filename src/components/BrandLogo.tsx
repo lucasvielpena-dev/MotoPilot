@@ -74,8 +74,8 @@ export default function BrandLogo({ name, type = 'gain', className = 'w-10 h-10'
     // aiqfome
     if (cleanName.includes('aiqfome') || cleanName.includes('aiq')) {
       return (
-        <div className={`${className} bg-[#C71B5F] rounded-2xl flex items-center justify-center transition-transform hover:scale-105 select-none`} title="aiqfome">
-          <span className="text-white font-black italic tracking-tighter text-[11px]">aiqfome</span>
+        <div className={`${className} rounded-2xl overflow-hidden transition-transform hover:scale-105 select-none`} title="aiqfome">
+          <img src="/platforms/aiqfome.svg" alt="Aiqfome" className="w-full h-full object-cover" />
         </div>
       );
     }
