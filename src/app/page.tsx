@@ -86,7 +86,7 @@ export default function Home() {
   }, [finishJourney, router]);
 
   return (
-    <div className="space-y-3 pb-28 pt-2 px-4 animate-fade-in-up">
+    <div className="space-y-2 pb-28 pt-1 px-4 animate-fade-in-up">
       <DashboardHeader />
 
       <JourneyCard

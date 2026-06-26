@@ -44,14 +44,14 @@ const INSIGHT_THEMES = {
 
 export function InsightsSection({ insights, hasData }: InsightsSectionProps) {
   return (
-    <section className="bg-card border border-border rounded-[20px] p-4 shadow-premium card-premium space-y-3 animate-fade-in-up">
+    <section className="bg-card border border-border rounded-[20px] p-3.5 shadow-premium card-premium space-y-2.5 animate-fade-in-up">
       <div className="flex items-center space-x-2">
         <Lightbulb size={16} className="text-[#F59E0B] fill-[#F59E0B]/20" />
         <span className="text-[12px] font-extrabold text-foreground uppercase tracking-wider">Insights</span>
       </div>
 
       {!hasData || insights.length === 0 ? (
-        <div className="text-center py-5 space-y-1.5">
+        <div className="text-center py-3 space-y-1">
           <Lightbulb size={24} className="text-muted/30 mx-auto" />
           <p className="text-[13px] text-muted font-bold">Aguardando lançamentos...</p>
           <p className="text-[11px] text-muted/60">Registre corridas para ver insights automáticos.</p>

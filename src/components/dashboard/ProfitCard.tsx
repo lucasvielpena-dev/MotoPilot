@@ -33,7 +33,7 @@ export function ProfitCard({
   if (hasActiveJourney && isGoalMet) {
     return (
       <section 
-        className="rounded-[20px] p-4 relative overflow-hidden flex flex-col justify-between space-y-3 shadow-premium text-white animate-fade-in-up"
+        className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-premium text-white animate-fade-in-up"
         style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
       >
         <div className="flex justify-between items-center">
@@ -94,7 +94,7 @@ export function ProfitCard({
   if (hasActiveJourney) {
     return (
       <section 
-        className="rounded-[20px] p-4 relative overflow-hidden flex flex-col justify-between space-y-3 shadow-premium text-white animate-fade-in-up"
+        className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-premium text-white animate-fade-in-up"
         style={{ background: 'linear-gradient(135deg, #1db96b 0%, #158f52 100%)' }}
       >
         <div className="flex justify-between items-center">
@@ -163,7 +163,7 @@ export function ProfitCard({
   // ESTADO A: Sem jornada — card limpo e minimalista
   return (
     <section 
-      className="rounded-[20px] p-4 relative overflow-hidden flex flex-col space-y-3 shadow-premium text-white animate-fade-in-up"
+      className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col space-y-2.5 shadow-premium text-white animate-fade-in-up"
       style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
     >
       <div className="flex justify-between items-center">
