@@ -6,6 +6,13 @@ import type { Journey } from './useJourneys';
 
 export type TimeSlot = 'Manhã' | 'Almoço' | 'Tarde' | 'Noite' | 'Madrugada';
 
+export interface InsightCardData {
+  title: string;
+  value: string;
+  description: string;
+  type: 'growth' | 'info' | 'success' | 'warning' | 'fuel' | 'hourly';
+}
+
 export interface PlatformStat {
   id: string;
   name: string;
@@ -231,51 +238,101 @@ export function useFinancialStats(
     );
 
     // 9. Geração de Insights Inteligentes
-    const insightsList: string[] = [];
+    const insightsList: InsightCardData[] = [];
     if (entries.length > 0) {
       // Diferença de ontem para hoje
       if (todayGains > 0 && yesterdayGains > 0) {
         const pctDiff = ((todayGains - yesterdayGains) / yesterdayGains) * 100;
         if (pctDiff > 0) {
-          insightsList.push(`Hoje você faturou ${pctDiff.toFixed(0)}% mais que ontem.`);
+          insightsList.push({
+            title: 'Faturamento',
+            value: `+${pctDiff.toFixed(0)}%`,
+            description: 'Mais que ontem',
+            type: 'growth'
+          });
         } else if (pctDiff < 0) {
-          insightsList.push(`Ontem seu faturamento foi ${Math.abs(pctDiff).toFixed(0)}% maior que hoje.`);
+          insightsList.push({
+            title: 'Faturamento',
+            value: `-${Math.abs(pctDiff).toFixed(0)}%`,
+            description: 'Menos que ontem',
+            type: 'warning'
+          });
         }
       }
 
       // Melhor horário
       if (bestSlot && bestSlot.total > 0) {
-        insightsList.push(`Seu melhor horário de faturamento é no período da ${bestSlot.label}.`);
+        insightsList.push({
+          title: 'Turno Ideal',
+          value: bestSlot.label,
+          description: 'Melhor média horária',
+          type: 'info'
+        });
       }
 
       // Plataforma mais lucrativa hoje vs geral
       if (todayTopPlatform) {
-        insightsList.push(`O ${PLATFORM_NAMES[todayTopPlatform[0]] || todayTopPlatform[0]} está sendo sua plataforma mais lucrativa hoje.`);
+        insightsList.push({
+          title: 'Melhor App',
+          value: PLATFORM_NAMES[todayTopPlatform[0]] || todayTopPlatform[0],
+          description: 'Líder de ganhos hoje',
+          type: 'success'
+        });
       } else if (topPlatform) {
-        insightsList.push(`O ${topPlatform.name} é a sua plataforma mais lucrativa no histórico.`);
+        insightsList.push({
+          title: 'Melhor App',
+          value: topPlatform.name,
+          description: 'Líder de ganhos histórico',
+          type: 'success'
+        });
       }
 
       // Custo do combustível recuperado
       if (todayGains > fuelExpenses && fuelExpenses > 0) {
-        insightsList.push('Você já recuperou todo o custo do combustível gasto hoje!');
+        insightsList.push({
+          title: 'Combustível',
+          value: 'Recuperado',
+          description: 'Custos pagos hoje',
+          type: 'fuel'
+        });
       }
 
       // Percentual de combustível sobre gastos
       if (fuelPercentage > 0) {
-        insightsList.push(`O combustível representa ${fuelPercentage.toFixed(0)}% das suas despesas totais.`);
+        insightsList.push({
+          title: 'Combustível',
+          value: `${fuelPercentage.toFixed(0)}%`,
+          description: 'Das despesas totais',
+          type: 'fuel'
+        });
       }
 
       // Progresso da meta diária
       if (todayNetProfit < dailyGoal) {
         const remaining = dailyGoal - todayNetProfit;
-        insightsList.push(`Faltam R$ ${remaining.toFixed(0)} para você atingir sua meta diária de hoje.`);
+        insightsList.push({
+          title: 'Meta Diária',
+          value: `Faltam R$ ${remaining.toFixed(0)}`,
+          description: 'Para atingir a meta',
+          type: 'warning'
+        });
       } else {
-        insightsList.push('Meta diária concluída! Excelente trabalho hoje! 🎉🏍️');
+        insightsList.push({
+          title: 'Meta Diária',
+          value: 'Concluída!',
+          description: 'Excelente trabalho hoje! 🎉',
+          type: 'success'
+        });
       }
 
       // Média por km ou por hora excelente
       if (avgHourlyEarnings > 30) {
-        insightsList.push(`Sua média horária está excelente: R$ ${avgHourlyEarnings.toFixed(2).replace('.', ',')}/hora.`);
+        insightsList.push({
+          title: 'Ganhos/Hora',
+          value: `R$ ${avgHourlyEarnings.toFixed(0)}/h`,
+          description: 'Desempenho excelente',
+          type: 'hourly'
+        });
       }
     }
 
