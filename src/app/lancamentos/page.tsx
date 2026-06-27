@@ -1246,7 +1246,7 @@ export default function Lancamentos() {
 
       {/* Delete Confirmation Modal */}
       {deleteId && (
-        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl p-6 space-y-6 animate-fade-in-up">
             <div className="text-center space-y-2">
               <h3 className="text-[18px] font-extrabold text-foreground font-heading">Apagar Lançamento?</h3>

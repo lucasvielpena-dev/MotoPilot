@@ -296,7 +296,7 @@ export default function Perfil() {
 
       {/* Modais */}
       {isOdometerModalOpen && (
-        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h3 className="text-[15px] font-extrabold text-foreground font-heading">Ajustar Odômetro</h3>
@@ -312,7 +312,7 @@ export default function Perfil() {
       )}
 
       {isMaintenanceModalOpen && (
-        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h3 className="text-[15px] font-extrabold text-foreground font-heading">Nova Revisão</h3>
@@ -330,7 +330,7 @@ export default function Perfil() {
       )}
 
       {isGoalModalOpen && (
-        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
+        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h3 className="text-[15px] font-extrabold text-foreground font-heading">
@@ -353,8 +353,8 @@ export default function Perfil() {
       )}
 
       {isVehicleModalOpen && (
-        <div className="fixed inset-0 z-[500] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-sm px-4 pb-4 sm:p-0">
-          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up">
+        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-card w-full max-w-sm rounded-[24px] border border-border overflow-hidden shadow-2xl animate-fade-in-up max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-center p-4 border-b border-border">
               <h3 className="text-[15px] font-extrabold text-foreground font-heading">Editar Veículo</h3>
               <button onClick={() => setIsVehicleModalOpen(false)} className="text-muted hover:text-foreground transition-colors cursor-pointer"><X size={20} /></button>
