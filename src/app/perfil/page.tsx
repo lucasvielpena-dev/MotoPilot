@@ -38,6 +38,17 @@ export default function Perfil() {
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark' | 'ifood'>('dark');
 
+  const anyModalOpen = isOdometerModalOpen || isMaintenanceModalOpen || isGoalModalOpen || isVehicleModalOpen;
+
+  useEffect(() => {
+    if (anyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [anyModalOpen]);
+
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') || 'dark') as 'light' | 'dark' | 'ifood';
     setTheme(savedTheme);

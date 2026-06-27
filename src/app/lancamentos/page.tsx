@@ -265,6 +265,15 @@ export default function Lancamentos() {
 
   // Screen 5 (List) States
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (deleteId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [deleteId]);
   const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<'Todos' | 'Ganhos' | 'Gastos' | 'Combustível' | 'Alimentação' | 'Manutenção' | 'Estacionamento' | 'Outros'>('Todos');
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
