@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  CircleUserRound, LogOut, Target, X, Sun, Plus, Trash2, CheckCircle, 
+  CircleUserRound, LogOut, X, Plus, Trash2, CheckCircle, 
   Bike, Route, TrendingUp, Wrench
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGoals } from '@/hooks/useGoals';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useEntries } from '@/hooks/useEntries';
-import { useMaintenance } from '@/hooks/useMaintenance';
+import { useMaintenance, type MaintenanceItemWithStatus } from '@/hooks/useMaintenance';
 import { useFinancialStats } from '@/hooks/useFinancialStats';
 import { supabase } from '@/lib/supabase/client';
 
@@ -52,6 +52,7 @@ export default function Perfil() {
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') || 'dark') as 'light' | 'dark' | 'ifood';
     setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
     const savedVehicle = localStorage.getItem('active_vehicle');
     if (savedVehicle) {
       try { setVehicle(JSON.parse(savedVehicle)); } catch {}
@@ -212,7 +213,7 @@ export default function Perfil() {
 
         {/* Itens de Manutenção */}
         <div className="space-y-2">
-          {maintenanceItems.map((item: any) => {
+          {maintenanceItems.map((item: MaintenanceItemWithStatus) => {
             const styles = getUrgencyStyles(item.urgency);
             return (
               <div key={item.id} className="bg-card-secondary/20 border border-border/50 rounded-xl p-3">

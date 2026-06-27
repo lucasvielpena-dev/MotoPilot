@@ -178,25 +178,3 @@ svg:focus,
 path:focus {
   outline: none !important;
 }
-
-.delivery-hero {
-  background:
-    radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 22%),
-    linear-gradient(135deg, #EA1D2C 0%, #FF4D34 100%);
-  color: #FFFFFF;
-  border: 0;
-  box-shadow: 0 22px 48px -24px rgba(234, 29, 44, 0.65);
-}
-
-.delivery-pill {
-  background: var(--primary-soft);
-  color: var(--primary-color);
-  border: 1px solid rgba(234, 29, 44, 0.18);
-}
-
-.goal-bar {
-  height: 16px;
-  border-radius: 9999px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}

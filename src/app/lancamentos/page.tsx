@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   ArrowLeft,
   ChevronDown,
-  Calendar,
   Fuel,
   UtensilsCrossed,
   Wrench,
@@ -18,7 +17,7 @@ import {
   Route,
   Clock
 } from 'lucide-react';
-import { useEntries } from '@/hooks/useEntries';
+import { useEntries, type Entry } from '@/hooks/useEntries';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase/client';
 
@@ -108,7 +107,7 @@ const PlatformLogo = ({ id, className = 'w-6 h-6' }: { id: string; className?: s
 };
 
 // Parser para Lançamentos
-const parseEntry = (entry: any) => {
+const parseEntry = (entry: Entry) => {
   const parts = (entry.description || '').split(' - ');
   const isGain = entry.type === 'gain';
   
@@ -179,7 +178,7 @@ const parseEntry = (entry: any) => {
 };
 
 // Cores Oficiais das Chaves
-const getStripeColor = (entry: any, platformId: string) => {
+const getStripeColor = (entry: Entry, platformId: string) => {
   if (entry.type === 'gain') {
     const platformColors: Record<string, string> = {
       ifood: '#EA1D2C',

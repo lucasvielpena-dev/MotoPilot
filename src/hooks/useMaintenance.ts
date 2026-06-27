@@ -9,6 +9,13 @@ export interface MaintenanceItem {
   lastServiceKm: number;
 }
 
+export interface MaintenanceItemWithStatus extends MaintenanceItem {
+  kmRemaining: number;
+  progress: number;
+  urgency: 'ok' | 'warning' | 'urgent';
+  nextServiceKm: number;
+}
+
 const DEFAULT_ITEMS: MaintenanceItem[] = [
   { id: 'oleo', name: 'Troca de Óleo', intervalKm: 3000, lastServiceKm: 0 },
   { id: 'relacao', name: 'Relação (Corrente/Coroa/Pinhão)', intervalKm: 15000, lastServiceKm: 0 },

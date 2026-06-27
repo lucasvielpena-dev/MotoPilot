@@ -1,16 +1,17 @@
 'use client';
 
 import { PlayCircle, Square, Clock, Route, TrendingUp, Package } from 'lucide-react';
+import type { Journey } from '@/hooks/useJourneys';
 
 interface JourneyCardProps {
-  activeJourney: any;
+  activeJourney: Journey | null;
   elapsedTime: string;
   liveDistance: number;
   avgHourlyEarnings: number;
   deliveriesCount: number;
   isTransitioning: boolean;
-  onStartJourney: () => Promise<any>;
-  onFinishJourney: () => Promise<any>;
+  onStartJourney: () => Promise<unknown>;
+  onFinishJourney: () => Promise<unknown>;
 }
 
 export function JourneyCard({
