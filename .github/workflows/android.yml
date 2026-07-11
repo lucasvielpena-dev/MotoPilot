@@ -25,6 +25,9 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Patch Geolocation Plugin Proguard Configuration
+        run: sed -i 's/proguard-android.txt/proguard-android-optimize.txt/g' node_modules/@capacitor-community/background-geolocation/android/build.gradle
+
       - name: Build Web Assets (Static Export)
         run: |
           export EXPORT_STATIC=true
