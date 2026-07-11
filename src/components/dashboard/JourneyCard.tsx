@@ -42,30 +42,30 @@ export function JourneyCard({
 
         {/* Stats Grid — sempre visível */}
         <div className="grid grid-cols-4 gap-1.5">
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
+          <div className="bg-card-secondary/50 rounded-xl p-2 text-center border border-border/40">
             <Clock size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">Tempo</span>
+            <span className="text-[7.5px] font-bold text-muted block uppercase tracking-wider whitespace-nowrap">Tempo Online</span>
             <span className="text-[13px] font-black text-foreground block font-heading">
               {activeJourney ? elapsedTime : '00:00'}
             </span>
           </div>
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
+          <div className="bg-card-secondary/50 rounded-xl p-2 text-center border border-border/40">
             <Route size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">Km</span>
+            <span className="text-[7.5px] font-bold text-muted block uppercase tracking-wider whitespace-nowrap">Quilometragem</span>
             <span className="text-[13px] font-black text-foreground block font-heading">
               {activeJourney ? liveDistance.toFixed(1).replace('.', ',') : '0,0'}
             </span>
           </div>
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
+          <div className="bg-card-secondary/50 rounded-xl p-2 text-center border border-border/40">
             <TrendingUp size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">R$/h</span>
+            <span className="text-[7.5px] font-bold text-muted block uppercase tracking-wider whitespace-nowrap">R$/Hora</span>
             <span className="text-[13px] font-black text-foreground block font-heading">
               {activeJourney ? avgHourlyEarnings.toFixed(0) : '0'}
             </span>
           </div>
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
+          <div className="bg-card-secondary/50 rounded-xl p-2 text-center border border-border/40">
             <Package size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">Ent.</span>
+            <span className="text-[7.5px] font-bold text-muted block uppercase tracking-wider whitespace-nowrap">Entregas</span>
             <span className="text-[13px] font-black text-foreground block font-heading">
               {activeJourney ? deliveriesCount : '0'}
             </span>

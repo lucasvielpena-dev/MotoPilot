@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, TrendingUp, Clock, Fuel, Trophy, Target
@@ -8,6 +8,7 @@ import {
 import { useEntries } from '@/hooks/useEntries';
 import { useJourneys } from '@/hooks/useJourneys';
 import { useGoals } from '@/hooks/useGoals';
+import { useFinancialStats } from '@/hooks/useFinancialStats';
 import { BarChart, Bar, Cell, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const PlatformLogo = ({ id, className = 'w-6 h-6' }: { id: string; className?: string }) => {
@@ -105,22 +106,7 @@ export default function Relatorios() {
   const { activeJourney, historicalJourneys, fetchHistoricalJourneys } = useJourneys();
   const { dailyGoal, weeklyGoal, monthlyGoal, fetchGoal } = useGoals();
 
-  const [activeJourneyHours, setActiveJourneyHours] = useState(0);
 
-  useEffect(() => {
-    if (activeJourney) {
-      const calcHours = () => {
-        const diff = Date.now() - new Date(activeJourney.started_at).getTime();
-        setActiveJourneyHours(diff / 3600000);
-      };
-      calcHours();
-      const interval = setInterval(calcHours, 60000);
-      return () => clearInterval(interval);
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setActiveJourneyHours(0);
-    }
-  }, [activeJourney]);
 
   useEffect(() => {
     fetchRecentEntries(500);
@@ -128,43 +114,20 @@ export default function Relatorios() {
     fetchGoal();
   }, [fetchRecentEntries, fetchHistoricalJourneys, fetchGoal]);
 
-  const totalGains = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
-  const totalExpenses = entries.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
-  const netProfit = totalGains - totalExpenses;
-  const totalHours = historicalJourneys.reduce((acc, curr) => acc + curr.duration_minutes, 0) / 60;
-  const totalHoursWithActive = totalHours + activeJourneyHours;
-  const completedDistance = historicalJourneys.reduce((acc, curr) => acc + curr.distance_km, 0);
-  const manualKm = entries.filter(e => e.type === 'gain').reduce((acc, curr) => acc + (curr.km_total || 0), 0);
-  const totalDistance = completedDistance > 0 ? completedDistance : manualKm;
+  const stats = useFinancialStats(entries, historicalJourneys || [], activeJourney, dailyGoal);
 
-  const earningsPerHour = totalHoursWithActive > 0 ? totalGains / totalHoursWithActive : 0;
-  const earningsPerKm = totalDistance > 0 ? totalGains / totalDistance : 0;
-  const profitPerKm = totalDistance > 0 ? netProfit / totalDistance : 0;
+  const totalGains = stats.totalGains;
+  const totalExpenses = stats.totalExpenses;
+  const netProfit = stats.netProfit;
+  const totalHours = stats.totalCompletedHours;
+  const totalDistance = stats.totalDistance;
+  const earningsPerHour = stats.avgHourlyEarnings;
+  const earningsPerKm = stats.avgEarningsPerKm;
+  const profitPerKm = stats.profitPerKm;
+  const fuelExpenses = stats.fuelExpenses;
+  const fuelPercentage = stats.fuelPercentage;
 
-  const fuelExpenses = entries.filter(e => e.type === 'expense').filter(e => {
-    const d = (e.description || '').toLowerCase();
-    return d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer');
-  }).reduce((acc, curr) => acc + curr.amount, 0);
-  const fuelPercentage = totalExpenses > 0 ? (fuelExpenses / totalExpenses) * 100 : 0;
-
-  const platformStats = useMemo(() => {
-    const platformKnown = ['ifood', 'aiqfome', 'uber', '99', 'indrive', 'lalamove', 'shopee', 'loggi'];
-    const stats: Record<string, { total: number; count: number; rides: number; km: number }> = {};
-    entries.filter(e => e.type === 'gain').forEach(e => {
-      const desc = (e.description || '').toLowerCase();
-      const matched = platformKnown.find(p => desc.includes(p));
-      if (matched) {
-        if (!stats[matched]) stats[matched] = { total: 0, count: 0, rides: 0, km: 0 };
-        stats[matched].total += e.amount;
-        stats[matched].count += 1;
-        stats[matched].rides += e.rides_count || 0;
-        stats[matched].km += e.km_total || 0;
-      }
-    });
-    return Object.entries(stats)
-      .map(([id, data]) => ({ id, ...data, avgPerRide: data.rides > 0 ? data.total / data.rides : 0 }))
-      .sort((a, b) => b.total - a.total);
-  }, [entries]);
+  const platformStats = stats.platformStats;
 
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -268,20 +231,58 @@ export default function Relatorios() {
             <Fuel size={12} className="text-muted" />
             <span className="text-[10px] font-extrabold text-muted uppercase tracking-wider">Combustível</span>
           </div>
-          <span className="text-[13px] font-black text-foreground font-heading">{fuelPercentage.toFixed(0)}%</span>
+          <span className="text-[13px] font-black text-foreground font-heading">{fuelPercentage.toFixed(1).replace('.', ',')}% do faturamento</span>
         </div>
         <div className="w-full bg-card-secondary h-2 rounded-full overflow-hidden border border-border/40">
           <div 
             className="h-full rounded-full transition-all duration-700"
             style={{ 
               width: `${Math.min(fuelPercentage, 100)}%`,
-              backgroundColor: fuelPercentage > 50 ? '#EF4444' : fuelPercentage > 30 ? '#F59E0B' : '#10B981'
+              backgroundColor: fuelPercentage > 25 ? '#EF4444' : fuelPercentage > 15 ? '#F59E0B' : '#10B981'
             }}
           />
         </div>
         <div className="flex justify-between text-[9px] font-bold text-muted">
           <span>R$ {fuelExpenses.toFixed(0)} combustível</span>
-          <span>R$ {totalExpenses.toFixed(0)} total</span>
+          <span>R$ {totalGains.toFixed(0)} faturamento bruto</span>
+        </div>
+      </section>
+
+      {/* Insights de Produtividade */}
+      <section className="bg-card border border-border rounded-[20px] p-4 shadow-sm space-y-3">
+        <div className="flex items-center space-x-2">
+          <Trophy size={14} className="text-muted" />
+          <h3 className="text-[13px] font-bold text-foreground">Insights de Produtividade</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {/* Turno Ideal */}
+          <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-3 flex flex-col justify-between">
+            <span className="text-[9px] font-bold text-muted uppercase">Turno Ideal</span>
+            <p className="text-[14px] font-black text-foreground mt-1 font-heading">
+              {stats.turnoIdeal}
+            </p>
+            {stats.turnoIdealStats && (
+              <div className="text-[9.5px] text-muted mt-2 space-y-0.5 border-t border-border/40 pt-1.5">
+                <p>Média/Jornada: <span className="font-extrabold text-foreground">R$ {stats.turnoIdealStats.netProfit.toFixed(0)}</span></p>
+                <p>Ganho Médio: <span className="font-extrabold text-foreground">R$ {stats.turnoIdealStats.avgHourlyRate.toFixed(0)}/h</span></p>
+                <p>Entregas: <span className="font-extrabold text-foreground">{stats.turnoIdealStats.ridesCount}</span></p>
+              </div>
+            )}
+          </div>
+          {/* Melhor App */}
+          <div className="bg-card-secondary/50 border border-border/60 rounded-xl p-3 flex flex-col justify-between">
+            <span className="text-[9px] font-bold text-muted uppercase">Melhor App (Histórico)</span>
+            <p className="text-[14px] font-black text-foreground mt-1 font-heading">
+              {stats.topPlatform ? stats.topPlatform.name : 'Aguardando dados'}
+            </p>
+            {stats.topPlatform && (
+              <div className="text-[9.5px] text-muted mt-2 space-y-0.5 border-t border-border/40 pt-1.5">
+                <p>Total Ganho: <span className="font-extrabold text-foreground">R$ {stats.topPlatform.total.toFixed(0)}</span></p>
+                <p>Média/Corrida: <span className="font-extrabold text-foreground">R$ {stats.topPlatform.avgPerRide.toFixed(0)}</span></p>
+                <p>Corridas: <span className="font-extrabold text-foreground">{stats.topPlatform.rides}</span></p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

@@ -137,7 +137,7 @@ export default function CentralFinanceira() {
             <Fuel size={14} />
             <span className="text-[10px] font-extrabold uppercase tracking-wider">Combustível</span>
           </div>
-          <span className="text-[13px] font-black text-foreground font-heading">{stats.fuelPercentage.toFixed(0)}% dos gastos</span>
+          <span className="text-[13px] font-black text-foreground font-heading">{stats.fuelPercentage.toFixed(1).replace('.', ',')}% do faturamento</span>
         </div>
         <div className="w-full bg-card-secondary h-2 rounded-full overflow-hidden">
           <div 
@@ -147,7 +147,7 @@ export default function CentralFinanceira() {
         </div>
         <div className="flex justify-between text-[10px] font-bold text-muted">
           <span>R$ {stats.fuelExpenses.toFixed(2).replace('.', ',')} combustível</span>
-          <span>R$ {stats.totalExpenses.toFixed(2).replace('.', ',')} total</span>
+          <span>R$ {stats.totalGains.toFixed(2).replace('.', ',')} faturamento bruto</span>
         </div>
       </section>
 

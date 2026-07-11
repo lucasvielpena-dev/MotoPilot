@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import type { Entry } from './useEntries';
 import type { Journey } from './useJourneys';
 
-export type TimeSlot = 'Manhã' | 'Almoço' | 'Tarde' | 'Noite' | 'Madrugada';
+export type TimeSlot = 'Manhã' | 'Tarde' | 'Noite' | 'Madrugada';
 
 export interface InsightCardData {
   title: string;
@@ -36,14 +36,6 @@ const PLATFORM_NAMES: Record<string, string> = {
   loggi: 'Loggi'
 };
 
-
-const TIME_SLOTS = [
-  { label: 'Manhã' as TimeSlot, range: [6, 12] },
-  { label: 'Almoço' as TimeSlot, range: [12, 14] },
-  { label: 'Tarde' as TimeSlot, range: [14, 18] },
-  { label: 'Noite' as TimeSlot, range: [18, 23] },
-  { label: 'Madrugada' as TimeSlot, range: [23, 6] }
-];
 
 export function useFinancialStats(
   entries: Entry[],
@@ -89,7 +81,7 @@ export function useFinancialStats(
         return d.includes('combustível') || d.includes('gasolina') || d.includes('abastecer');
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
-    const fuelPercentage = totalExpenses > 0 ? (fuelExpenses / totalExpenses) * 100 : 0;
+    const fuelPercentage = totalGains > 0 ? (fuelExpenses / totalGains) * 100 : 0;
 
     // 5. Filtros Temporais (Hoje, Semana, Mês)
     const now = new Date();
@@ -190,52 +182,79 @@ export function useFinancialStats(
       null
     );
 
-    // 8. Melhor horário
-    const slotTotals: Record<TimeSlot, number> = {
-      Manhã: 0,
-      Almoço: 0,
-      Tarde: 0,
-      Noite: 0,
-      Madrugada: 0
-    };
-    const slotCount: Record<TimeSlot, number> = {
-      Manhã: 0,
-      Almoço: 0,
-      Tarde: 0,
-      Noite: 0,
-      Madrugada: 0
+    // 8. Turno Ideal baseado nas jornadas de histórico
+    interface ShiftStats {
+      totalGains: number;
+      totalExpenses: number;
+      totalNetProfit: number;
+      totalRides: number;
+      totalHours: number;
+      journeyCount: number;
+    }
+
+    const shiftStats: Record<TimeSlot, ShiftStats> = {
+      'Manhã': { totalGains: 0, totalExpenses: 0, totalNetProfit: 0, totalRides: 0, totalHours: 0, journeyCount: 0 },
+      'Tarde': { totalGains: 0, totalExpenses: 0, totalNetProfit: 0, totalRides: 0, totalHours: 0, journeyCount: 0 },
+      'Noite': { totalGains: 0, totalExpenses: 0, totalNetProfit: 0, totalRides: 0, totalHours: 0, journeyCount: 0 },
+      'Madrugada': { totalGains: 0, totalExpenses: 0, totalNetProfit: 0, totalRides: 0, totalHours: 0, journeyCount: 0 }
     };
 
-    gainsList.forEach((e) => {
-      const hour = new Date(e.date).getHours();
-      let slotLabel: TimeSlot = 'Madrugada';
-      for (const slot of TIME_SLOTS) {
-        if (slot.label === 'Madrugada') {
-          if (hour >= 23 || hour < 6) {
-            slotLabel = 'Madrugada';
-            break;
-          }
-        } else {
-          if (hour >= slot.range[0] && hour < slot.range[1]) {
-            slotLabel = slot.label;
-            break;
-          }
-        }
+    historicalJourneys.forEach((j) => {
+      if (!j.started_at) return;
+      const hour = new Date(j.started_at).getHours();
+      let slot: TimeSlot;
+      if (hour >= 6 && hour < 12) {
+        slot = 'Manhã';
+      } else if (hour >= 12 && hour < 18) {
+        slot = 'Tarde';
+      } else if (hour >= 18 && hour < 24) {
+        slot = 'Noite';
+      } else {
+        slot = 'Madrugada';
       }
-      slotTotals[slotLabel] += e.amount;
-      slotCount[slotLabel] += 1;
+
+      const jGains = entries.filter(e => e.journey_id === j.id && e.type === 'gain').reduce((acc, curr) => acc + curr.amount, 0);
+      const jExpenses = entries.filter(e => e.journey_id === j.id && e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
+      const jNet = jGains - jExpenses;
+      const jRides = entries.filter(e => e.journey_id === j.id && e.type === 'gain').reduce((acc, curr) => acc + (curr.rides_count || 1), 0);
+      const jHours = (j.duration_minutes || 0) / 60;
+
+      shiftStats[slot].totalGains += jGains;
+      shiftStats[slot].totalExpenses += jExpenses;
+      shiftStats[slot].totalNetProfit += jNet;
+      shiftStats[slot].totalRides += jRides;
+      shiftStats[slot].totalHours += jHours;
+      shiftStats[slot].journeyCount += 1;
     });
 
-    const bestSlot = Object.entries(slotTotals).reduce<{ label: TimeSlot; avg: number; total: number } | null>(
-      (best, [labelStr, total]) => {
-        const label = labelStr as TimeSlot;
-        const count = slotCount[label] || 1;
-        const avg = total / count;
-        if (!best || avg > best.avg) return { label, avg, total };
-        return best;
-      },
-      null
-    );
+    let bestSlotLabel: TimeSlot | null = null;
+    let maxAvgNetProfit = -Infinity;
+
+    Object.entries(shiftStats).forEach(([key, stats]) => {
+      const label = key as TimeSlot;
+      if (stats.journeyCount > 0) {
+        const avgNet = stats.totalNetProfit / stats.journeyCount;
+        if (avgNet > maxAvgNetProfit) {
+          maxAvgNetProfit = avgNet;
+          bestSlotLabel = label;
+        }
+      }
+    });
+
+    const turnoIdeal = bestSlotLabel || 'Aguardando dados para calcular.';
+    const turnoIdealStats = bestSlotLabel ? {
+      label: bestSlotLabel,
+      totalGains: shiftStats[bestSlotLabel as TimeSlot].totalGains,
+      netProfit: shiftStats[bestSlotLabel as TimeSlot].totalNetProfit,
+      ridesCount: shiftStats[bestSlotLabel as TimeSlot].totalRides,
+      avgHourlyRate: shiftStats[bestSlotLabel as TimeSlot].totalHours > 0 ? shiftStats[bestSlotLabel as TimeSlot].totalGains / shiftStats[bestSlotLabel as TimeSlot].totalHours : 0
+    } : null;
+
+    const bestSlot = bestSlotLabel ? {
+      label: bestSlotLabel,
+      avg: maxAvgNetProfit,
+      total: shiftStats[bestSlotLabel as TimeSlot].totalGains
+    } : null;
 
     // 9. Geração de Insights Inteligentes
     const insightsList: InsightCardData[] = [];
@@ -260,12 +279,12 @@ export function useFinancialStats(
         }
       }
 
-      // Melhor horário
-      if (bestSlot && bestSlot.total > 0) {
+      // Turno Ideal
+      if (bestSlotLabel) {
         insightsList.push({
           title: 'Turno Ideal',
-          value: bestSlot.label,
-          description: 'Melhor média horária',
+          value: bestSlotLabel,
+          description: 'Melhor lucro líquido médio',
           type: 'info'
         });
       }
@@ -349,6 +368,9 @@ export function useFinancialStats(
       topPlatform,
       bestWeekday,
       bestSlot,
+      turnoIdeal,
+      turnoIdealStats,
+      shiftStats,
       // Insights
       insights: insightsList,
       hasData: entries.length > 0

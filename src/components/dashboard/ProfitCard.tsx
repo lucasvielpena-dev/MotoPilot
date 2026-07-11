@@ -33,58 +33,54 @@ export function ProfitCard({
   if (hasActiveJourney && isGoalMet) {
     return (
       <section 
-        className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-premium text-white animate-fade-in-up"
+        className="rounded-[20px] p-3 relative overflow-hidden flex flex-col space-y-2 shadow-premium text-white animate-fade-in-up"
         style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
       >
         <div className="flex justify-between items-center">
-          <span className="text-[11px] font-black tracking-wider uppercase opacity-90 flex items-center space-x-1 bg-white/20 px-2 py-0.5 rounded-full border border-white/10">
-            <Trophy size={11} className="fill-white mr-1" />
+          <span className="text-[10px] font-black tracking-wider uppercase opacity-90 flex items-center bg-white/20 px-2 py-0.5 rounded-full border border-white/10">
+            <Trophy size={10} className="fill-white mr-1" />
             <span>Meta Concluída</span>
           </span>
           <button 
             onClick={onToggleShowAmount}
-            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
           >
-            {showAmount ? <Eye size={14} className="text-white" /> : <EyeOff size={14} className="text-white" />}
+            {showAmount ? <Eye size={12} className="text-white" /> : <EyeOff size={12} className="text-white" />}
           </button>
         </div>
 
-        <div>
-          <span className="text-[10px] font-extrabold tracking-wide opacity-80 block uppercase">Lucro Líquido</span>
-          <div className="text-[32px] font-black tracking-tight leading-none font-heading select-none">
-            {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+        <div className="flex justify-between items-baseline">
+          <div>
+            <span className="text-[9px] font-extrabold tracking-wide opacity-80 block uppercase">Lucro Líquido</span>
+            <div className="text-[26px] font-black tracking-tight leading-none font-heading select-none mt-0.5">
+              {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+            </div>
           </div>
-        </div>
-
-        <div className="flex justify-between items-center pt-2 border-t border-white/15 text-white/95">
-          <div className="text-left flex-1">
-            <span className="opacity-75 block text-[9px] font-bold uppercase">Ganhos</span>
-            <span className="text-[13px] font-black">
-              {showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}
-            </span>
-          </div>
-          <div className="h-5 border-l border-white/20 mx-2" />
-          <div className="text-left flex-1">
-            <span className="opacity-75 block text-[9px] font-bold uppercase">Gastos</span>
-            <span className="text-[13px] font-black">
-              {showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}
-            </span>
-          </div>
-          <div className="h-5 border-l border-white/20 mx-2" />
-          <div className="text-left flex-1">
-            <span className="opacity-75 block text-[9px] font-bold uppercase">Entregas</span>
-            <span className="text-[13px] font-black">{deliveriesCount}</span>
-          </div>
-        </div>
-
-        <div className="space-y-1.5 pt-2 border-t border-white/15">
-          <div className="flex justify-between text-[10px] font-bold text-white/90">
+          <div className="text-right text-[10px] font-bold text-white/90">
             <span>Meta 100%</span>
-            <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
+            <span className="block text-[11px] font-black">R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
           </div>
-          <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
-            <div className="h-full bg-white rounded-full w-full transition-all duration-1000" />
+        </div>
+
+        <div className="flex justify-between items-center pt-1.5 border-t border-white/15 text-white/95 text-[11px]">
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[8px] font-bold uppercase">Ganhos</span>
+            <span className="font-extrabold">{showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}</span>
           </div>
+          <div className="h-4 border-l border-white/20 mx-1.5" />
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[8px] font-bold uppercase">Gastos</span>
+            <span className="font-extrabold">{showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}</span>
+          </div>
+          <div className="h-4 border-l border-white/20 mx-1.5" />
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[8px] font-bold uppercase">Entregas</span>
+            <span className="font-extrabold">{deliveriesCount}</span>
+          </div>
+        </div>
+
+        <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
+          <div className="h-full bg-white rounded-full w-full transition-all duration-1000" />
         </div>
       </section>
     );
@@ -94,130 +90,121 @@ export function ProfitCard({
   if (hasActiveJourney) {
     return (
       <section 
-        className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-premium text-white animate-fade-in-up"
+        className="rounded-[20px] p-3 relative overflow-hidden flex flex-col space-y-2 shadow-premium text-white animate-fade-in-up"
         style={{ background: 'linear-gradient(135deg, #1db96b 0%, #158f52 100%)' }}
       >
         <div className="flex justify-between items-center">
-          <span className="text-[11px] font-black tracking-wider uppercase opacity-90 flex items-center space-x-1">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+          <span className="text-[10px] font-black tracking-wider uppercase opacity-90 flex items-center space-x-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             <span>Lucro do Dia</span>
           </span>
           <button 
             onClick={onToggleShowAmount}
-            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
           >
-            {showAmount ? <Eye size={14} className="text-white" /> : <EyeOff size={14} className="text-white" />}
+            {showAmount ? <Eye size={12} className="text-white" /> : <EyeOff size={12} className="text-white" />}
           </button>
         </div>
 
-        <div>
-          <span className="text-[10px] font-extrabold tracking-wide opacity-80 block uppercase">Lucro Líquido</span>
-          <div className="text-[32px] font-black tracking-tight leading-none font-heading select-none">
-            {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center pt-2 border-t border-white/15 text-white/95">
-          <div className="text-left flex-1">
-            <span className="opacity-75 block text-[9px] font-bold uppercase">Ganhos</span>
-            <span className="text-[13px] font-black">
-              {showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}
-            </span>
-          </div>
-          <div className="h-5 border-l border-white/20 mx-2" />
-          <div className="text-left flex-1">
-            <span className="opacity-75 block text-[9px] font-bold uppercase">Gastos</span>
-            <span className="text-[13px] font-black">
-              {showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}
-            </span>
-          </div>
-          <div className="h-5 border-l border-white/20 mx-2" />
-          <div className="text-left flex-1">
-            <span className="opacity-75 block text-[9px] font-bold uppercase">Entregas</span>
-            <span className="text-[13px] font-black">{deliveriesCount}</span>
-          </div>
-        </div>
-
-        <div className="space-y-1.5 pt-2 border-t border-white/15">
-          <div className="flex justify-between text-[10px] font-bold text-white/90">
-            <span>Meta {goalPercentage.toFixed(0)}%</span>
-            <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
-          </div>
-          <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-white rounded-full transition-all duration-1000"
-              style={{ width: `${goalPercentage}%` }}
-            />
-          </div>
-          {remaining > 0 && (
-            <div className="text-[10px] font-extrabold opacity-90 flex items-center space-x-1.5 bg-white/10 p-2 rounded-lg">
-              <TriangleAlert size={12} className="text-white flex-shrink-0 animate-pulse" />
-              <span>Faltam R$ {remaining.toFixed(0)} para atingir sua meta.</span>
+        <div className="flex justify-between items-baseline">
+          <div>
+            <span className="text-[9px] font-extrabold tracking-wide opacity-80 block uppercase">Lucro Líquido</span>
+            <div className="text-[26px] font-black tracking-tight leading-none font-heading select-none mt-0.5">
+              {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
             </div>
-          )}
+          </div>
+          <div className="text-right text-[10px] font-bold text-white/90">
+            <span>Meta {goalPercentage.toFixed(0)}%</span>
+            <span className="block text-[11px] font-black">R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
+          </div>
         </div>
+
+        <div className="flex justify-between items-center pt-1.5 border-t border-white/15 text-white/95 text-[11px]">
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[8px] font-bold uppercase">Ganhos</span>
+            <span className="font-extrabold">{showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}</span>
+          </div>
+          <div className="h-4 border-l border-white/20 mx-1.5" />
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[8px] font-bold uppercase">Gastos</span>
+            <span className="font-extrabold">{showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}</span>
+          </div>
+          <div className="h-4 border-l border-white/20 mx-1.5" />
+          <div className="text-left flex-1">
+            <span className="opacity-75 block text-[8px] font-bold uppercase">Entregas</span>
+            <span className="font-extrabold">{deliveriesCount}</span>
+          </div>
+        </div>
+
+        <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-white rounded-full transition-all duration-1000"
+            style={{ width: `${goalPercentage}%` }}
+          />
+        </div>
+
+        {remaining > 0 && (
+          <div className="text-[9px] font-extrabold opacity-95 flex items-center space-x-1.5 bg-white/10 p-1.5 rounded-lg leading-tight">
+            <TriangleAlert size={11} className="text-white flex-shrink-0 animate-pulse" />
+            <span>Faltam R$ {remaining.toFixed(0)} para a meta.</span>
+          </div>
+        )}
       </section>
     );
   }
 
-  // ESTADO A: Sem jornada — card expandido
+  // ESTADO A: Sem jornada
   return (
     <section 
-      className="rounded-[20px] p-3.5 relative overflow-hidden flex flex-col space-y-2.5 shadow-premium text-white animate-fade-in-up"
+      className="rounded-[20px] p-3 relative overflow-hidden flex flex-col space-y-2 shadow-premium text-white animate-fade-in-up"
       style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}
     >
       <div className="flex justify-between items-center">
-        <span className="text-[11px] font-black tracking-wider uppercase opacity-90">Lucro do Dia</span>
+        <span className="text-[10px] font-black tracking-wider uppercase opacity-90">Lucro do Dia</span>
         <button 
           onClick={onToggleShowAmount}
-          className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
+          className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center border border-white/15 transition-transform active:scale-95 cursor-pointer"
         >
-          {showAmount ? <Eye size={14} className="text-white" /> : <EyeOff size={14} className="text-white" />}
+          {showAmount ? <Eye size={12} className="text-white" /> : <EyeOff size={12} className="text-white" />}
         </button>
       </div>
 
-      <div>
-        <div className="text-[32px] font-black tracking-tight leading-none font-heading select-none">
-          {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+      <div className="flex justify-between items-baseline">
+        <div>
+          <span className="text-[9px] font-extrabold tracking-wide opacity-80 block uppercase">Lucro Líquido</span>
+          <div className="text-[26px] font-black tracking-tight leading-none font-heading select-none mt-0.5">
+            {showAmount ? `R$ ${netProfit.toFixed(2).replace('.', ',')}` : 'R$ •••••'}
+          </div>
         </div>
-        <span className="text-[11px] font-bold opacity-75 block mt-1">
-          Meta: R$ {dailyGoal.toFixed(0)}
-        </span>
+        <div className="text-right text-[10px] font-bold text-white/90">
+          <span>Meta {goalPercentage.toFixed(0)}%</span>
+          <span className="block text-[11px] font-black">R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
+        </div>
       </div>
 
-      <div className="flex justify-between items-center pt-2 border-t border-white/15 text-white/95">
+      <div className="flex justify-between items-center pt-1.5 border-t border-white/15 text-white/95 text-[11px]">
         <div className="text-left flex-1">
-          <span className="opacity-75 block text-[9px] font-bold uppercase">Ganhos</span>
-          <span className="text-[13px] font-black">
-            {showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}
-          </span>
+          <span className="opacity-75 block text-[8px] font-bold uppercase">Ganhos</span>
+          <span className="font-extrabold">{showAmount ? `R$ ${totalGains.toFixed(0)}` : 'R$ ••••'}</span>
         </div>
-        <div className="h-5 border-l border-white/20 mx-2" />
+        <div className="h-4 border-l border-white/20 mx-1.5" />
         <div className="text-left flex-1">
-          <span className="opacity-75 block text-[9px] font-bold uppercase">Gastos</span>
-          <span className="text-[13px] font-black">
-            {showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}
-          </span>
+          <span className="opacity-75 block text-[8px] font-bold uppercase">Gastos</span>
+          <span className="font-extrabold">{showAmount ? `R$ ${totalExpenses.toFixed(0)}` : 'R$ ••••'}</span>
         </div>
-        <div className="h-5 border-l border-white/20 mx-2" />
+        <div className="h-4 border-l border-white/20 mx-1.5" />
         <div className="text-left flex-1">
-          <span className="opacity-75 block text-[9px] font-bold uppercase">Entregas</span>
-          <span className="text-[13px] font-black">{deliveriesCount}</span>
+          <span className="opacity-75 block text-[8px] font-bold uppercase">Entregas</span>
+          <span className="font-extrabold">{deliveriesCount}</span>
         </div>
       </div>
 
       {dailyGoal > 0 && (
-        <div className="space-y-1 pt-2 border-t border-white/15">
-          <div className="flex justify-between text-[10px] font-bold text-white/90">
-            <span>Meta {goalPercentage.toFixed(0)}%</span>
-            <span>R$ {netProfit.toFixed(0)} / R$ {dailyGoal.toFixed(0)}</span>
-          </div>
-          <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-white rounded-full transition-all duration-1000"
-              style={{ width: `${goalPercentage}%` }}
-            />
-          </div>
+        <div className="w-full bg-white/25 h-1.5 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-white rounded-full transition-all duration-1000"
+            style={{ width: `${goalPercentage}%` }}
+          />
         </div>
       )}
     </section>

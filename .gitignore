@@ -48,3 +48,8 @@ next-env.d.ts
 
 # expo
 expo-app/
+
+# local settings
+/android/local.properties
+/android/.idea/
+
