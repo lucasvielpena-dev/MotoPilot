@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#6B21A8"/>
+  <g transform="translate(256,260)">
+    <!-- Cookie body -->
+    <path d="M-120,-140 C-120,-210 -60,-260 0,-260 C60,-260 120,-210 120,-140 C120,-70 100,0 80,60 C60,120 20,160 0,160 C-20,160 -60,120 -80,60 C-100,0 -120,-70 -120,-140 Z" fill="white"/>
+    <!-- Bite -->
+    <circle cx="100" cy="-160" r="55" fill="#6B21A8"/>
+    <!-- Left eye -->
+    <ellipse cx="-40" cy="-60" rx="20" ry="28" fill="#6B21A8"/>
+    <!-- Right eye -->
+    <ellipse cx="50" cy="-60" rx="20" ry="28" fill="#6B21A8"/>
+    <!-- Mouth -->
+    <path d="M-50,50 C-30,75 -10,65 0,75 C10,65 30,75 50,50" stroke="#6B21A8" stroke-width="12" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
