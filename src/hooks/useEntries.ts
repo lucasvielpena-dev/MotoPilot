@@ -7,12 +7,9 @@ import { useAuth } from '@/contexts/AuthContext';
 export type Entry = {
   id: string;
   user_id: string;
-  journey_id: string | null;
   type: 'gain' | 'expense';
   amount: number;
   description: string | null;
-  rides_count: number | null;
-  km_total: number | null;
   date: string;
 };
 
@@ -42,37 +39,16 @@ export function useEntries() {
   const addEntry = async (
     type: 'gain' | 'expense', 
     amount: number, 
-    description: string, 
-    journeyId?: string | null,
-    ridesCount?: number | null,
-    kmTotal?: number | null
+    description: string
   ) => {
     if (!user) return { error: { message: 'Usuário não logado' } };
 
-    interface InsertEntryPayload {
-      user_id: string;
-      journey_id: string | null;
-      type: 'gain' | 'expense';
-      amount: number;
-      description: string;
-      rides_count?: number | null;
-      km_total?: number | null;
-    }
-
-    const insertData: InsertEntryPayload = {
+    const insertData = {
       user_id: user.id,
-      journey_id: journeyId ?? null,
       type,
       amount,
       description
     };
-
-    if (ridesCount !== undefined && ridesCount !== null) {
-      insertData.rides_count = ridesCount;
-    }
-    if (kmTotal !== undefined && kmTotal !== null) {
-      insertData.km_total = kmTotal;
-    }
 
     const { data, error } = await supabase
       .from('entries')

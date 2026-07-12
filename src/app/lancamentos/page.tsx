@@ -148,7 +148,7 @@ export default function Lancamentos() {
     setLoading(true);
     // Format description: Category - PaymentMethod - Notes
     const desc = notes ? `${category} - ${paymentMethod} - ${notes}` : `${category} - ${paymentMethod}`;
-    const res = await addEntry('expense', parsedAmount, desc, null);
+    const res = await addEntry('expense', parsedAmount, desc);
     setLoading(false);
 
     if (!res.error) {
@@ -168,7 +168,7 @@ export default function Lancamentos() {
     const platformName = platformObj ? platformObj.name : 'Outros';
     const desc = notes ? `${platformName} - ${notes}` : platformName;
 
-    const res = await addEntry('gain', parsedAmount, desc, null);
+    const res = await addEntry('gain', parsedAmount, desc);
     setLoading(false);
 
     if (!res.error) {
