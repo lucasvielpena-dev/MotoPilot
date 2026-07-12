@@ -10,17 +10,6 @@ const config: CapacitorConfig = {
   },
   android: {
     useLegacyBridge: true
-  },
-  plugins: {
-    BackgroundGeolocation: {
-      backgroundTitle: 'MotoPilot',
-      backgroundMessage: 'Sua jornada está ativa e os km continuam sendo marcados.',
-      requestPermissions: true,
-      stale: false,
-      distanceFilter: 5,
-      pauseLocationUpdates: false,
-      disableStopDetection: true
-    }
   }
 };
 

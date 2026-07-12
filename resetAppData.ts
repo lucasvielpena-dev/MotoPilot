@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 
-// List of tables to clean up
-const tables = ['entries', 'journeys', 'goals'];
+const tables = ['entries'];
 
 async function resetSupabase() {
   for (const table of tables) {
