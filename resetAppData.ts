@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 
-const tables = ['entries'];
+const tables = ['entries', 'goals'];
 
 async function resetSupabase() {
   for (const table of tables) {
