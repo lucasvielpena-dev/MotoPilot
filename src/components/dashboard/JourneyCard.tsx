@@ -1,6 +1,6 @@
 'use client';
 
-import { PlayCircle, Square, Clock, Route, TrendingUp, Package } from 'lucide-react';
+import { PlayCircle, Square } from 'lucide-react';
 import type { Journey } from '@/hooks/useJourneys';
 
 interface JourneyCardProps {
@@ -25,74 +25,68 @@ export function JourneyCard({
   onFinishJourney
 }: JourneyCardProps) {
   return (
-    <section className="bg-card border border-border rounded-[20px] shadow-premium card-premium animate-fade-in-up">
-      <div className="p-3.5 space-y-2.5">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${activeJourney ? 'bg-emerald-500 animate-pulse' : 'bg-muted'}`} />
-            <span className="text-[12px] font-extrabold text-foreground uppercase tracking-wide">
-              {activeJourney ? 'Jornada Ativa' : 'Jornada'}
-            </span>
-          </div>
-          <span className={`text-[11px] font-bold ${activeJourney ? 'text-emerald-500' : 'text-muted'}`}>
-            {activeJourney ? 'Em andamento' : 'Parada'}
+    <section className="bg-card border border-border rounded-2xl p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className={`w-2.5 h-2.5 rounded-full ${activeJourney ? 'bg-emerald-500' : 'bg-muted'}`} />
+          <span className="text-sm font-semibold text-foreground">
+            {activeJourney ? 'Jornada ativa' : 'Jornada'}
           </span>
         </div>
-
-        {/* Stats Grid — sempre visível */}
-        <div className="grid grid-cols-4 gap-1.5">
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
-            <Clock size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">Tempo</span>
-            <span className="text-[13px] font-black text-foreground block font-heading">
-              {activeJourney ? elapsedTime : '00:00'}
-            </span>
-          </div>
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
-            <Route size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">Km</span>
-            <span className="text-[13px] font-black text-foreground block font-heading">
-              {activeJourney ? liveDistance.toFixed(1).replace('.', ',') : '0,0'}
-            </span>
-          </div>
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
-            <TrendingUp size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">R$/h</span>
-            <span className="text-[13px] font-black text-foreground block font-heading">
-              {activeJourney ? avgHourlyEarnings.toFixed(0) : '0'}
-            </span>
-          </div>
-          <div className="bg-card-secondary/50 rounded-xl p-2.5 text-center border border-border/40">
-            <Package size={14} className="text-muted mx-auto mb-1" />
-            <span className="text-[8px] font-bold text-muted block uppercase tracking-wider">Ent.</span>
-            <span className="text-[13px] font-black text-foreground block font-heading">
-              {activeJourney ? deliveriesCount : '0'}
-            </span>
-          </div>
-        </div>
-
-        {/* Botão */}
-        {activeJourney ? (
-          <button
-            onClick={onFinishJourney}
-            disabled={isTransitioning}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3 rounded-2xl transition-all active:scale-[0.98] text-[13px] flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50"
-          >
-            <Square size={16} fill="currentColor" />
-            <span>{isTransitioning ? 'Encerrando...' : 'Encerrar Jornada'}</span>
-          </button>
-        ) : (
-          <button
-            onClick={onStartJourney}
-            disabled={isTransitioning}
-            className="w-full bg-primary hover:bg-primary/95 text-white font-extrabold py-3 rounded-2xl transition-all active:scale-[0.98] text-[14px] flex items-center justify-center space-x-2 cursor-pointer shadow-lg disabled:opacity-50"
-          >
-            <PlayCircle size={22} fill="currentColor" />
-            <span>{isTransitioning ? 'Iniciando...' : 'Iniciar Jornada'}</span>
-          </button>
-        )}
+        <span className={`text-xs font-medium ${activeJourney ? 'text-emerald-500' : 'text-muted'}`}>
+          {activeJourney ? 'Em andamento' : 'Parada'}
+        </span>
       </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-3">
+        <div className="text-center">
+          <span className="text-xs text-muted block">Tempo</span>
+          <span className="text-base font-semibold text-foreground font-heading block mt-1">
+            {activeJourney ? elapsedTime : '00:00'}
+          </span>
+        </div>
+        <div className="text-center">
+          <span className="text-xs text-muted block">Km</span>
+          <span className="text-base font-semibold text-foreground font-heading block mt-1">
+            {activeJourney ? liveDistance.toFixed(1).replace('.', ',') : '0,0'}
+          </span>
+        </div>
+        <div className="text-center">
+          <span className="text-xs text-muted block">R$/h</span>
+          <span className="text-base font-semibold text-foreground font-heading block mt-1">
+            {activeJourney ? avgHourlyEarnings.toFixed(0) : '0'}
+          </span>
+        </div>
+        <div className="text-center">
+          <span className="text-xs text-muted block">Ent.</span>
+          <span className="text-base font-semibold text-foreground font-heading block mt-1">
+            {activeJourney ? deliveriesCount : '0'}
+          </span>
+        </div>
+      </div>
+
+      {/* Botão */}
+      {activeJourney ? (
+        <button
+          onClick={onFinishJourney}
+          disabled={isTransitioning}
+          className="w-full bg-red-500 text-white font-semibold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <Square size={16} fill="currentColor" />
+          {isTransitioning ? 'Encerrando...' : 'Encerrar jornada'}
+        </button>
+      ) : (
+        <button
+          onClick={onStartJourney}
+          disabled={isTransitioning}
+          className="w-full bg-primary text-black font-semibold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <PlayCircle size={18} />
+          {isTransitioning ? 'Iniciando...' : 'Iniciar jornada'}
+        </button>
+      )}
     </section>
   );
 }
