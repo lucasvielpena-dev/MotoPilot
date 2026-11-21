@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ======================== SISTEMA DE DESIGN ========================
+   Baseado em referências de apps de delivery (aiqfome) e de
+   finanças (Nubank, Monzo, PicPay): paleta, raio, tipografia e
+   padrões de aplicativo minimalista e padronizado.                  */
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  /* Paleta — financeiro (Monzo — azul escuro #112231) */
+  --rota-bg: #0E131D;
+  --rota-surface: #171E2B;
+  --rota-surface-2: #1F2736;
+  --rota-surface-3: #2A3546;
+  --rota-track: #131A26;
+  --rota-line: rgba(255, 255, 255, 0.07);
+  --rota-text: #F5F7FA;
+  --rota-text-soft: #9AA6B8;
+  --rota-accent: #112231;           /* azul escuro — Monzo (#112231) */
+  --rota-accent-soft: #0C1A2E;       /* hover — mais escuro */
+  --rota-accent-strong: #2975A8;     /* progress — azul claro */
+  --rota-accent-muted: rgba(17, 34, 49, 0.25);
+  --rota-accent-tint: rgba(17, 34, 49, 0.35);
+  --rota-success: #35D39A;
+  --rota-danger: #F07878;
+  --rota-danger-text: #F48C8C;
+  --rota-danger-soft: rgba(240, 120, 120, 0.18);
+  --rota-danger-strong: rgba(240, 120, 120, 0.25);
+  --rota-danger-tint: rgba(240, 120, 120, 0.14);
+  --rota-warn: #F59E0B;
+
+  /* Escala de raio */
+  --rota-r-sm: 12px;
+  --rota-r-md: 16px;
+  --rota-r-lg: 24px;
+
+  /* Tipografia */
+  --rota-font: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    font-family: var(--rota-font);
+  }
+
+  html,
+  body {
+    background-color: var(--rota-bg);
+    color: var(--rota-text);
+    min-height: 100%;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+.app-canvas {
+  position: relative;
+  background-color: var(--rota-bg);
+}
+
+/* Cartão principal: superfície mais clara, raio maior e hairline sutil de separação visual — as páginas continuam juntas (sem gaps) */
+.neu-card {
+  background-color: var(--rota-surface);
+  border: 1px solid var(--rota-line);
+  border-radius: var(--rota-r-lg);
+}
+
+/* Sub-cartão / indicador interno */
+.neu-tile {
+  background-color: var(--rota-surface-2);
+  border-radius: var(--rota-r-md);
+}
+
+/* Ícone em bloco */
+.icon-tile {
+  background-color: var(--rota-surface-2);
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  line-height: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--rota-text);
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--rota-text);
+}
+
+/* Campos internos */
+.neu-inset {
+  background-color: var(--rota-surface-2);
+  border-radius: var(--rota-r-md);
+  transition: box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.neu-inset:focus-within {
+  box-shadow: 0 0 0 2px rgba(17, 34, 49, 0.6);
+}
+
+/* Botões secundários */
+.neu-btn-secondary {
+  background-color: var(--rota-surface-2);
+  border-radius: var(--rota-r-md);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.neu-btn-secondary:hover {
+  background-color: var(--rota-surface-3);
+}
+
+/* Botão principal */
+.btn-primary-glow {
+  background-color: var(--rota-accent);
+  border-radius: var(--rota-r-md);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.btn-primary-glow:hover {
+  background-color: var(--rota-accent-soft);
+}
+
+/* Seletor segmentado */
+.tab-track {
+  background-color: var(--rota-track);
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+}
+
+.tab-item {
+  min-height: 44px;
+  border-radius: 12px;
+  padding: 0 8px;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+@media (min-width: 640px) {
+  .tab-item {
+    padding: 0 12px;
+    font-size: 0.875rem;
+  }
+}
+
+.tab-item:active {
+  transform: scale(0.98);
+}
+
+.tab-item-active {
+  background-color: var(--rota-accent-strong);
+  color: var(--rota-text);
+}
+
+.tab-item-idle {
+  color: var(--rota-text-soft);
+}
+
+.tab-item-idle:hover {
+  color: var(--rota-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

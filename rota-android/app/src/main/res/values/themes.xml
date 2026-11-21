@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.Rota" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#1D2232</item>
+        <item name="android:navigationBarColor">#1D2232</item>
+        <item name="android:windowBackground">#1D2232</item>
+    </style>
+</resources>

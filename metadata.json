@@ -1,0 +1,6 @@
+{
+  "name": "Rota",
+  "description": "Controle de ganhos, gastos e quilômetros rodados para entregadores de moto.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}
